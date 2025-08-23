@@ -42,28 +42,19 @@ namespace ComedyPull.Application.DataSync.Services
         /// <returns>A <see cref="Task"/> that completes when the <see cref="PlaywrightScraper"/> is initialized.</returns>
         public async Task InitializeAsync(BrowserTypeLaunchOptions? options = null)
         {
-            if (_playwright == null)
-            {
-                _playwright = await Playwright.CreateAsync();
-            }
+            _playwright ??= await Playwright.CreateAsync();
 
-            if (_browser == null)
+            _browser ??= await _playwright.Chromium.LaunchAsync(options ?? new BrowserTypeLaunchOptions
             {
-                _browser = await _playwright.Chromium.LaunchAsync(options ?? new BrowserTypeLaunchOptions
-                {
-                    Headless = true,
-                    Args = ["--no-sandbox", "--disable-dev-shm-usage"]
-                });
-            }
+                Headless = true,
+                Args = ["--no-sandbox", "--disable-dev-shm-usage"]
+            });
 
-            if (_context == null)
+            _context ??= await _browser.NewContextAsync(new BrowserNewContextOptions
             {
-                _context = await _browser.NewContextAsync(new BrowserNewContextOptions
-                {
-                    UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                    ViewportSize = new ViewportSize { Width = 1920, Height = 1080 }
-                });
-            }
+                UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                ViewportSize = new ViewportSize { Width = 1920, Height = 1080 }
+            });
         }
 
         /// <summary>
@@ -73,7 +64,7 @@ namespace ComedyPull.Application.DataSync.Services
         /// <param name="urls">A list of urls to scrape.</param>
         /// <param name="processorFactory">A factory method that returns the desired processor to scrape with.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A Task that complets when all workers have completed processing the urls.</returns>
+        /// <returns>A Task that completes when all workers have completed processing the urls.</returns>
         /// <exception cref="InvalidOperationException">Thrown if the <see cref="PlaywrightScraper"/> was not properly initialized.</exception>
         public async Task RunAsync<TProcessor>(IEnumerable<string> urls, Func<TProcessor> processorFactory, CancellationToken cancellationToken = default)
             where TProcessor : IPageProcessor
@@ -118,26 +109,23 @@ namespace ComedyPull.Application.DataSync.Services
         {
             while (await _urlReader.WaitToReadAsync(cancellationToken))
             {
-                if (_urlReader.TryRead(out var url))
-                {
-                    await _semaphore.WaitAsync(cancellationToken);
+                if (!_urlReader.TryRead(out var url)) continue;
+                await _semaphore.WaitAsync(cancellationToken);
 
-                    IPage page = null!;
-                    try
-                    {
-                        page = await _context!.NewPageAsync();
-                        await processor.ProcessPageAsync(url, page, cancellationToken);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error processing url ${url}: {ex.Message}");
-                    }
-                    finally
-                    {
-                        if (page != null)
-                            await page.CloseAsync();
-                        _semaphore.Release();
-                    }
+                IPage page = null!;
+                try
+                {
+                    page = await _context!.NewPageAsync();
+                    await processor.ProcessPageAsync(url, page, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error processing url ${url}: {ex.Message}");
+                }
+                finally
+                {
+                    await page.CloseAsync();
+                    _semaphore.Release();
                 }
             }
         }

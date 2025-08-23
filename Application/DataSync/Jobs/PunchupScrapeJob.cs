@@ -2,7 +2,7 @@
 using ComedyPull.Application.DataSync.Processors;
 using System.Text.RegularExpressions;
 
-namespace Application.DataSync.Jobs
+namespace ComedyPull.Application.DataSync.Jobs
 {
     public class PunchupScrapeJob(
         ISitemapLoader sitemapLoader,

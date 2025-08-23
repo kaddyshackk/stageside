@@ -11,3 +11,6 @@
 /Core/obj
 /Data/obj
 /Data/bin/Debug/net8.0
+**/bin/
+**/obj/
+.idea/
