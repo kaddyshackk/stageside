@@ -1,10 +1,11 @@
 ﻿using System.Xml.Linq;
+using ComedyPull.Application.DataSync.Interfaces;
 
 namespace ComedyPull.Application.DataSync.Services
 {
-    public class SitemapLoader(HttpClient httpClient)
+    public class SitemapLoader(IHttpClientFactory httpClientFactory) : ISitemapLoader
     {
-        private static readonly string NamespaceUrl = "http://www.sitemaps.org/schemas/sitemap/0.9";
+        private const string NamespaceUrl = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
         /// <summary>
         /// Loads a sitemap from the given URL and returns a list of URLs found in it.
@@ -13,8 +14,8 @@ namespace ComedyPull.Application.DataSync.Services
         /// <returns>Returns a list of URLs parsed from the sitemap.</returns>
         public async Task<List<string>> LoadSitemapAsync(string sitemapUrl)
         {
-            var response = await httpClient.GetStringAsync(sitemapUrl);
-            if (response is null) return [];
+            using var client = httpClientFactory.CreateClient();
+            var response = await client.GetStringAsync(sitemapUrl);
             var sitemap = XDocument.Parse(response);
             var ns = XNamespace.Get(NamespaceUrl);
             return sitemap.Descendants(ns + "url")

@@ -1,4 +1,4 @@
-﻿namespace Domain.Models
+﻿namespace ComedyPull.Domain.Models
 {
     internal class Event
     {

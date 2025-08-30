@@ -34,27 +34,32 @@ namespace ComedyPull.Application.Tests.DataSync.Services
 
         private MockHttpMessageHandler _mockHandler = null!;
         private HttpClient _httpClient = null!;
+        private IHttpClientFactory _mockHttpClientFactory = null!;
 
         [TestInitialize]
         public void Setup()
         {
             _mockHandler = new MockHttpMessageHandler();
             _httpClient = new HttpClient(_mockHandler);
+            _mockHttpClientFactory = A.Fake<IHttpClientFactory>();
+            
+            A.CallTo(() => _mockHttpClientFactory.CreateClient(A<string>._))
+                .Returns(_httpClient);
         }
 
         [TestCleanup]
         public void Cleanup()
         {
-            _httpClient?.Dispose();
-            _mockHandler?.Dispose();
+            _httpClient.Dispose();
+            _mockHandler.Dispose();
         }
 
         [TestMethod]
         public async Task LoadSitemapAsync_ShouldFetchAndParseSitemap()
         {
             // Arrange
-            var sitemapUrl = "https://www.punchup.live/sitemap.xml";
-            var sitemapService = new SitemapLoader(_httpClient);
+            const string sitemapUrl = "https://www.punchup.live/sitemap.xml";
+            var sitemapService = new SitemapLoader(_mockHttpClientFactory);
 
             _mockHandler
                 .When(sitemapUrl)
@@ -66,7 +71,60 @@ namespace ComedyPull.Application.Tests.DataSync.Services
             // Assert
             response.Should().NotBeNull();
             response.Should().HaveCount(3);
-            response.ElementAt(0).Should().BeOfType<string>(); 
+            response.Should().Contain("https://example.com/");
+            response.Should().Contain("https://example.com/about");
+            response.Should().Contain("https://example.com/products");
+        }
+
+        [TestMethod]
+        public async Task LoadSitemapAsync_CreatesHttpClientFromFactory()
+        {
+            // Arrange
+            var sitemapUrl = "https://www.punchup.live/sitemap.xml";
+            var sitemapService = new SitemapLoader(_mockHttpClientFactory);
+
+            _mockHandler
+                .When(sitemapUrl)
+                .Respond("application/xml", SampleSitemap);
+
+            // Act
+            await sitemapService.LoadSitemapAsync(sitemapUrl);
+
+            // Assert
+            A.CallTo(() => _mockHttpClientFactory.CreateClient(A<string>._))
+                .MustHaveHappenedOnceExactly();
+        }
+
+        [TestMethod]
+        public async Task LoadSitemapAsync_WithInvalidXml_ThrowsException()
+        {
+            // Arrange
+            var sitemapUrl = "https://www.punchup.live/sitemap.xml";
+            var sitemapService = new SitemapLoader(_mockHttpClientFactory);
+
+            _mockHandler
+                .When(sitemapUrl)
+                .Respond("application/xml", "invalid xml content");
+
+            // Act & Assert
+            var act = async () => await sitemapService.LoadSitemapAsync(sitemapUrl);
+            await act.Should().ThrowAsync<System.Xml.XmlException>();
+        }
+
+        [TestMethod]
+        public async Task LoadSitemapAsync_WithHttpError_ThrowsHttpRequestException()
+        {
+            // Arrange
+            var sitemapUrl = "https://www.punchup.live/sitemap.xml";
+            var sitemapService = new SitemapLoader(_mockHttpClientFactory);
+
+            _mockHandler
+                .When(sitemapUrl)
+                .Respond(System.Net.HttpStatusCode.NotFound);
+
+            // Act & Assert
+            var act = async () => await sitemapService.LoadSitemapAsync(sitemapUrl);
+            await act.Should().ThrowAsync<HttpRequestException>();
         }
     }
 }

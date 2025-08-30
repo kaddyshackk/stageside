@@ -1,29 +1,47 @@
 ﻿using ComedyPull.Application.DataSync.Interfaces;
 using ComedyPull.Application.DataSync.Processors;
 using System.Text.RegularExpressions;
+using ComedyPull.Domain.Enums;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace ComedyPull.Application.DataSync.Jobs
 {
-    public class PunchupScrapeJob(
+    public partial class PunchupScrapeJob(
         ISitemapLoader sitemapLoader,
-        IScraper scraper
+        [FromKeyedServices(DataSource.Punchup)] IScraper scraper,
+        IServiceProvider serviceProvider,
+        ILogger<PunchupScrapeJob> logger
     )
     {
         public async Task ExecuteAsync()
         {
-            var sitemapUrl = "https://www.punchup.live/sitemap.xml";
-            
-            var urls = await sitemapLoader.LoadSitemapAsync(sitemapUrl);
-
-            // Filter Urls
-            var regex = new Regex("/^https?:\\/\\/(?:www\\.)?punchup\\.live\\/([^\\/]+)\\/tickets(?:\\/)?$/");
-            var mathed = urls.Where(url => regex.IsMatch(url)).ToList();
-
-            // Scrape urls
-            await scraper.InitializeAsync();
-            await scraper.RunAsync(urls, () => new PunchupTicketsPageProcessor());
-
-            // For each URL: Scrape data, transform it, deduplicate it, save to database
+            logger.LogInformation("DataSync - Job started - {JobName}", nameof(PunchupScrapeJob));
+            const string sitemapUrl = "https://www.punchup.live/sitemap.xml";
+            try
+            {
+                var urls = await sitemapLoader.LoadSitemapAsync(sitemapUrl);
+                // Filter Urls
+                var regex = TicketsPageUrlRegex();
+                var matched = urls.Where(url => regex.IsMatch(url)).ToList();
+                // Perform Job
+                await scraper.InitializeAsync();
+                await scraper.RunAsync(matched, serviceProvider.GetRequiredService<PunchupTicketsPageProcessor>);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "DataSync - Job failed - {JobName}", nameof(PunchupScrapeJob));
+            }
+            finally
+            {
+                scraper.Dispose();
+                logger.LogInformation("DataSync - Job finished - {JobName}", nameof(PunchupScrapeJob));
+            }
         }
+
+        [GeneratedRegex(@"^https?:\/\/(?:www\.)?punchup\.live\/([^\/]+)\/tickets(?:\/)?$")]
+        private static partial Regex TicketsPageUrlRegex();
+
+        public static Regex GetTicketsPageUrlRegexForTesting() => TicketsPageUrlRegex();
     }
 }

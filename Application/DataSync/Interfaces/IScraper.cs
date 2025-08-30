@@ -2,7 +2,7 @@
 
 namespace ComedyPull.Application.DataSync.Interfaces
 {
-    public interface IScraper
+    public interface IScraper : IDisposable
     {
         /// <summary>
         /// Initializes the <see cref="IScraper"/> with the specified launch options.

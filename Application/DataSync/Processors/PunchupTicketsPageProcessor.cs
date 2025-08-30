@@ -17,6 +17,7 @@ namespace ComedyPull.Application.DataSync.Processors
         /// <returns>A <see cref="Task"/> that completes when processing is completed.</returns>
         public Task ProcessPageAsync(string url, IPage page, CancellationToken cancellationToken)
         {
+            Console.WriteLine($"Processed page {url}");
             return Task.CompletedTask;
         }
     }

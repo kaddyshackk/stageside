@@ -4,11 +4,10 @@ using System.Threading.Channels;
 
 namespace ComedyPull.Application.DataSync.Services
 {
-    public class PlaywrightScraper : IScraper, IDisposable
+    public class PlaywrightScraper : IScraper
     {
         private readonly int _concurrency;
         private readonly SemaphoreSlim _semaphore;
-        private readonly Channel<string> _urlQueue;
         private readonly ChannelWriter<string> _urlWriter;
         private readonly ChannelReader<string> _urlReader;
         private bool _disposed;
@@ -26,9 +25,9 @@ namespace ComedyPull.Application.DataSync.Services
         {
             _concurrency = concurrency;
             _semaphore = new SemaphoreSlim(_concurrency);
-            _urlQueue = Channel.CreateUnbounded<string>();
-            _urlWriter = _urlQueue.Writer;
-            _urlReader = _urlQueue.Reader;
+            var queue = Channel.CreateUnbounded<string>();
+            _urlWriter = queue.Writer;
+            _urlReader = queue.Reader;
 
             _playwright = playwright;
             _browser = browser;
@@ -75,26 +74,12 @@ namespace ComedyPull.Application.DataSync.Services
                 throw new InvalidOperationException("Scraper failed to initialize a new context.");
 
             var workers = Enumerable.Range(0, _concurrency)
-                .Select(i => WorkAsync(processorFactory(), cancellationToken))
+                .Select(_ => WorkAsync(processorFactory(), cancellationToken))
                 .ToArray();
 
             await EnqueueUrlsAsync(urls);
 
             await Task.WhenAll(workers);
-        }
-
-        /// <summary>
-        /// Enqueues the provided URLs into the internal channel for processing.
-        /// </summary>
-        /// <param name="urls">The URLs to enqueue.</param>
-        /// <returns>A <see cref="Task"/> that completes when the URLs have been enqueued.</returns>
-        private async Task EnqueueUrlsAsync(IEnumerable<string> urls)
-        {
-            foreach (var url in urls)
-            {
-                await _urlWriter.WriteAsync(url);
-            }
-            _urlWriter.Complete();
         }
 
         /// <summary>
@@ -128,6 +113,20 @@ namespace ComedyPull.Application.DataSync.Services
                     _semaphore.Release();
                 }
             }
+        }
+        
+        /// <summary>
+        /// Enqueues the provided URLs into the internal channel for processing.
+        /// </summary>
+        /// <param name="urls">The URLs to enqueue.</param>
+        /// <returns>A <see cref="Task"/> that completes when the URLs have been enqueued.</returns>
+        private async Task EnqueueUrlsAsync(IEnumerable<string> urls)
+        {
+            foreach (var url in urls)
+            {
+                await _urlWriter.WriteAsync(url);
+            }
+            _urlWriter.Complete();
         }
 
         /// <summary>
