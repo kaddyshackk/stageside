@@ -1,11 +1,10 @@
 ﻿using ComedyPull.Application.DataSync.Interfaces;
-using ComedyPull.Application.DataSync.Processors;
 using System.Text.RegularExpressions;
 using ComedyPull.Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace ComedyPull.Application.DataSync.Jobs
+namespace ComedyPull.Application.DataSync.Punchup
 {
     public partial class PunchupScrapeJob(
         ISitemapLoader sitemapLoader,
@@ -21,12 +20,14 @@ namespace ComedyPull.Application.DataSync.Jobs
             try
             {
                 var urls = await sitemapLoader.LoadSitemapAsync(sitemapUrl);
+                
                 // Filter Urls
                 var regex = TicketsPageUrlRegex();
                 var matched = urls.Where(url => regex.IsMatch(url)).ToList();
+                
                 // Perform Job
                 await scraper.InitializeAsync();
-                await scraper.RunAsync(matched, serviceProvider.GetRequiredService<PunchupTicketsPageProcessor>);
+                await scraper.RunAsync(matched.GetRange(0, 3), serviceProvider.GetRequiredService<PunchupTicketsPageProcessor>);
             }
             catch (Exception ex)
             {

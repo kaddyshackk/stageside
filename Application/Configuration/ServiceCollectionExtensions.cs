@@ -1,6 +1,5 @@
 using ComedyPull.Application.DataSync.Interfaces;
-using ComedyPull.Application.DataSync.Jobs;
-using ComedyPull.Application.DataSync.Processors;
+using ComedyPull.Application.DataSync.Punchup;
 using ComedyPull.Application.DataSync.Services;
 using ComedyPull.Domain.Enums;
 using Microsoft.Extensions.Configuration;
@@ -28,7 +27,7 @@ namespace ComedyPull.Application.Configuration
             services.AddScoped<PunchupScrapeJob>();
             
             // Scrapers
-            services.AddKeyedSingleton<IScraper, PlaywrightScraper>(DataSource.Punchup, (provider, key) =>
+            services.AddKeyedSingleton<IScraper, PlaywrightScraper>(DataSource.Punchup, (provider, _) =>
             {
                 var options = provider.GetRequiredService<IOptions<ScrapeSettings>>();
                 return new PlaywrightScraper(

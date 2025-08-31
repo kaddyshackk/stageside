@@ -1,13 +1,13 @@
 ﻿namespace ComedyPull.Domain.Models
 {
-    internal class Event
+    public record Event
     {
         public string? Id { get; set; }
 
         public required string Title { get; set; }
 
-        public required DateTimeOffset StartTime { get; set; }
+        public required DateTimeOffset StartDateTime { get; set; }
 
-        public required DateTimeOffset EndTime { get; set; }
+        public required DateTimeOffset EndDateTime { get; set; }
     }
 }
