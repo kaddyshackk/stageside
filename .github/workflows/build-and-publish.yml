@@ -16,17 +16,12 @@ jobs:
     
     steps:
       - name: Checkout repository
-        run: |
-          git clone ${{ github.server_url }}/${{ github.repository }} .
-          git checkout ${{ github.sha }}
+        uses: actions/checkout@v4
         
       - name: Setup .NET
-        run: |
-          wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
-          chmod +x dotnet-install.sh
-          ./dotnet-install.sh --version 8.0.x
-          echo "$HOME/.dotnet" >> $GITHUB_PATH
-          echo "DOTNET_ROOT=$HOME/.dotnet" >> $GITHUB_ENV
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
           
       - name: Restore dependencies
         run: dotnet restore
@@ -46,9 +41,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        run: |
-          git clone ${{ github.server_url }}/${{ github.repository }} .
-          git checkout ${{ github.sha }}
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         run: |
