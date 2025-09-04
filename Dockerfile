@@ -17,6 +17,7 @@ COPY ["Application.Tests/Application.Tests.csproj", "Application.Tests/"]
 COPY ["Data/Data.csproj", "Data/"]
 COPY ["Domain/Domain.csproj", "Domain/"]
 COPY ["Directory.Build.props", "./"]
+COPY ["Directory.Packages.props", "./"]
 RUN dotnet restore "ComedyPull.sln"
 COPY . .
 WORKDIR "/src/Api"
