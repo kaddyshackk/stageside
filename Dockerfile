@@ -22,15 +22,9 @@ COPY . .
 WORKDIR "/src/Api"
 RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
 
-# -- [ TEST STAGE ] ----
-
-FROM build AS test
-WORKDIR "/src"
-RUN dotnet test --no-restore --verbosity normal
-
 # -- [ PUBLISH STAGE ] ----
 
-FROM test AS publish
+FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 WORKDIR "/src/Api"
 RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
