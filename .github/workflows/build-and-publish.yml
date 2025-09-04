@@ -16,12 +16,17 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        run: |
+          git clone ${{ github.server_url }}/${{ github.repository }} .
+          git checkout ${{ github.sha }}
         
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
+        run: |
+          wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+          chmod +x dotnet-install.sh
+          ./dotnet-install.sh --version 8.0.x
+          echo "$HOME/.dotnet" >> $GITHUB_PATH
+          echo "DOTNET_ROOT=$HOME/.dotnet" >> $GITHUB_ENV
           
       - name: Restore dependencies
         run: dotnet restore
@@ -41,37 +46,62 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        run: |
+          git clone ${{ github.server_url }}/${{ github.repository }} .
+          git checkout ${{ github.sha }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        run: |
+          docker buildx create --use --name mybuilder --driver docker-container
+          docker buildx inspect --bootstrap
 
       - name: Log in to Container Registry
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+          TAGS=""
+          LABELS=""
+          
+          # Generate tags based on event type
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            TAGS="${IMAGE}:pr-${{ github.event.number }}"
+          else
+            BRANCH_NAME=$(echo "${{ github.ref_name }}" | tr '/' '-')
+            TAGS="${IMAGE}:${BRANCH_NAME}"
+            TAGS="${TAGS},${IMAGE}:${{ github.sha }}"
+            if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.ref_name }}" == "master" ]]; then
+              TAGS="${TAGS},${IMAGE}:latest"
+            fi
+          fi
+          
+          # Generate labels
+          LABELS="org.opencontainers.image.title=${{ github.repository }}"
+          LABELS="${LABELS},org.opencontainers.image.description=ComedyPull API"
+          LABELS="${LABELS},org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }}"
+          LABELS="${LABELS},org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}"
+          LABELS="${LABELS},org.opencontainers.image.version=${{ github.sha }}"
+          LABELS="${LABELS},org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          LABELS="${LABELS},org.opencontainers.image.revision=${{ github.sha }}"
+          
+          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+          echo "labels=${LABELS}" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        run: |
+          PUSH_FLAG=""
+          if [[ "${{ github.event_name }}" != "pull_request" ]]; then
+            PUSH_FLAG="--push"
+          fi
+          
+          docker buildx build \
+            --platform linux/amd64 \
+            --tag ${{ steps.meta.outputs.tags }} \
+            --label "${{ steps.meta.outputs.labels }}" \
+            --cache-from type=gha \
+            --cache-to type=gha,mode=max \
+            ${PUSH_FLAG} \
+            .
