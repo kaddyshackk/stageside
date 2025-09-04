@@ -5,7 +5,7 @@ A .NET 8 API for comedy event data synchronization and scraping.
 ## Prerequisites
 
 - .NET 8 SDK
-- Docker (optional)
+- Docker
 
 ## Quick Start
 
