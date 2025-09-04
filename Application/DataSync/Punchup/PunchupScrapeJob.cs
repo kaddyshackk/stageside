@@ -27,7 +27,10 @@ namespace ComedyPull.Application.DataSync.Punchup
                 
                 // Perform Job
                 await scraper.InitializeAsync();
-                await scraper.RunAsync(matched.GetRange(0, 3), serviceProvider.GetRequiredService<PunchupTicketsPageProcessor>);
+                if (matched.Any())
+                {
+                    await scraper.RunAsync(matched.Take(3), () => serviceProvider.GetRequiredService<PunchupTicketsPageProcessor>());
+                }
             }
             catch (Exception ex)
             {

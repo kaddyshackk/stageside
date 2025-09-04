@@ -123,14 +123,14 @@ namespace ComedyPull.Application.Tests.DataSync.Punchup
             await _job.ExecuteAsync();
 
             A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageProcessor>>._, A<CancellationToken>._))
-                .MustHaveHappened();
+                .MustNotHaveHappened();
 
             A.CallTo(() => _mockScraper.Dispose())
                 .MustHaveHappenedOnceExactly();
         }
 
         [TestMethod]
-        public async Task ExecuteAsync_WithNoMatchingUrls_RunsScraperWithEmptyCollection()
+        public async Task ExecuteAsync_WithNoMatchingUrls_DoesNotCallScraper()
         {
             var sitemapUrls = new List<string>
             {
@@ -144,11 +144,8 @@ namespace ComedyPull.Application.Tests.DataSync.Punchup
 
             await _job.ExecuteAsync();
 
-            A.CallTo(() => _mockScraper.RunAsync(
-                A<IEnumerable<string>>.That.Matches(urls => !urls.Any()),
-                A<Func<PunchupTicketsPageProcessor>>._,
-                A<CancellationToken>._))
-                .MustHaveHappenedOnceExactly();
+            A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageProcessor>>._, A<CancellationToken>._))
+                .MustNotHaveHappened();
         }
 
         [TestMethod]

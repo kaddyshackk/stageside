@@ -9,6 +9,6 @@
 /Data/bin/Debug/net8.0
 **/bin/
 **/obj/
-/TestResults
+**/TestResults/*
 .DS_Store
 .idea/
