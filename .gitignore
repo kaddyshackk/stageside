@@ -12,3 +12,4 @@
 **/TestResults/*
 .DS_Store
 .idea/
+**/appsettings.Local.json
