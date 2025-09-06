@@ -29,22 +29,22 @@ namespace ComedyPull.Domain.Models
         /// <summary>
         /// Gets or sets the time the entity was created.
         /// </summary>
-        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         
         /// <summary>
         /// Gets or sets the user who created the entity.
         /// </summary>
-        public string CreatedBy { get; set; }
+        public required string CreatedBy { get; set; }
         
         /// <summary>
         /// Gets or sets the time the entity was updated.
         /// </summary>
-        public DateTimeOffset UpdatedAt { get; set; }
+        public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
         
         /// <summary>
         /// Gets or sets the user who last updated the entity.
         /// </summary>
-        public string UpdatedBy { get; set; }
+        public required string UpdatedBy { get; set; }
         
         // -- Traceable Fields ----
         
