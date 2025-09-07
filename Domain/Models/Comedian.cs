@@ -1,69 +1,33 @@
-﻿using ComedyPull.Domain.Enums;
-
-namespace ComedyPull.Domain.Models
+﻿namespace ComedyPull.Domain.Models
 {
     /// <summary>
-    /// Represents comedian.
+    /// Defined a comedian.
     /// </summary>
-    public record Comedian : IAuditable, ITraceable
+    public record Comedian : TraceableEntity
     {
-        /// <summary>
-        /// Gets or sets the comedian id.
-        /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString();
-
         /// <summary>
         /// Gets or sets the comedian name.
         /// </summary>
-        public required string Name { get; set; }
+        public required string Name { get; init; }
         
         /// <summary>
         /// Gets or sets the slug identifier.
         /// </summary>
-        public required string Slug { get; set; }
+        public required string Slug { get; init; }
         
         /// <summary>
         /// Gets or sets the comedian bio.
         /// </summary>
-        public required string Bio { get; set; }
+        public required string Bio { get; init; }
         
         /// <summary>
-        /// Gets the comedian event list.
+        /// Navigation property to ComedianEvent relationship table.
         /// </summary>
-        public virtual ICollection<Event> Events { get; init; } = new List<Event>();
-
-        // -- Auditable Fields ---- 
-        
-        /// <summary>
-        /// Gets or sets the time the entity was created.
-        /// </summary>
-        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-        
-        /// <summary>
-        /// Gets or sets the user who created the entity.
-        /// </summary>
-        public required string CreatedBy { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the time the entity was updated.
-        /// </summary>
-        public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public virtual ICollection<ComedianEvent> ComedianEvents { get; init; } = new List<ComedianEvent>();
 
         /// <summary>
-        /// Gets or sets the user who last updated the entity.
+        /// Navigation property to get comedians.
         /// </summary>
-        public required string UpdatedBy { get; set; }
-
-        // -- Traceable Fields ----
-        
-        /// <summary>
-        /// Gets or sets the source of the entity.
-        /// </summary>
-        public required DataSource Source { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the time the entity was ingested.
-        /// </summary>
-        public required DateTimeOffset IngestedAt { get; set; }
+        public virtual ICollection<Event> Events => ComedianEvents.Select(ce => ce.Event).ToList();
     }
 }
