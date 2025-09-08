@@ -1,5 +1,6 @@
 version: '3.8'
 services:
+  
   api:
     build:
       context: .
@@ -10,7 +11,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=comedypull;Username=postgres;Password=postgres
     volumes:
-      - ./Api:/app/Api # Hot reload for development
+      - ./Api:/app/Api
       - ./Application:/app/Application
     depends_on:
       postgres:
@@ -36,7 +37,6 @@ services:
     networks:
       - comedypull-dev
 
-  # Development tools
   pgadmin:
     image: dpage/pgadmin4:latest
     environment:
