@@ -1,37 +1,55 @@
 version: '3.8'
-
 services:
+  
   api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "5281:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Host=postgres;Database=ComedyPullDb;Username=postgres;Password=postgres
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=comedypull;Username=postgres;Password=postgres
+    volumes:
+      - ./Api:/app/Api
+      - ./Application:/app/Application
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
-      - comedypull-network
+      - comedypull-dev
 
   postgres:
     image: postgres:15-alpine
     environment:
-      - POSTGRES_DB=ComedyPullDb
+      - POSTGRES_DB=comedypull
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
-      - comedypull-network
+      - comedypull-dev
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@comedypull.io
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    networks:
+      - comedypull-dev
 
 volumes:
-  postgres_data:
+  postgres_dev_data:
 
 networks:
-  comedypull-network:
+  comedypull-dev:
     driver: bridge

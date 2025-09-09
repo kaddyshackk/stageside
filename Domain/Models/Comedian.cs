@@ -1,28 +1,33 @@
 ﻿namespace ComedyPull.Domain.Models
 {
     /// <summary>
-    /// Represents a standup comedian.
+    /// Defined a comedian.
     /// </summary>
-    public record Comedian
+    public record Comedian : TraceableEntity
     {
         /// <summary>
-        /// Gets and sets the identifier.
+        /// Gets or sets the comedian name.
         /// </summary>
-        public string? Id { get; set; }
-
-        /// <summary>
-        /// Gets and sets the slug identifier.
-        /// </summary>
-        public required string Slug { get; set; }
-
-        /// <summary>
-        /// Gets and sets the name.
-        /// </summary>
-        public required string Name { get; set; }
+        public required string Name { get; init; }
         
         /// <summary>
-        /// Gets and sets the comedian bio.
+        /// Gets or sets the slug identifier.
         /// </summary>
-        public required string Bio { get; set; }
+        public required string Slug { get; init; }
+        
+        /// <summary>
+        /// Gets or sets the comedian bio.
+        /// </summary>
+        public required string Bio { get; init; }
+        
+        /// <summary>
+        /// Navigation property to ComedianEvent relationship table.
+        /// </summary>
+        public virtual ICollection<ComedianEvent> ComedianEvents { get; init; } = new List<ComedianEvent>();
+
+        /// <summary>
+        /// Navigation property to get comedians.
+        /// </summary>
+        public virtual ICollection<Event> Events => ComedianEvents.Select(ce => ce.Event).ToList();
     }
 }

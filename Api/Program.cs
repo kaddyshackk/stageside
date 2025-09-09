@@ -1,5 +1,5 @@
-using ComedyPull.Api.Startup;
-using ComedyPull.Application.Configuration;
+using ComedyPull.Api.Extensions;
+using ComedyPull.Application.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

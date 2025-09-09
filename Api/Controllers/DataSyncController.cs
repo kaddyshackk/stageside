@@ -1,4 +1,4 @@
-using ComedyPull.Application.DataSync.Punchup;
+using ComedyPull.Application.Features.DataSync.Punchup;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ComedyPull.Api.Controllers
