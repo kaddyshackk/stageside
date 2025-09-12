@@ -1,10 +1,10 @@
-﻿using ComedyPull.Application.Features.DataSync.Interfaces;
+﻿using ComedyPull.Application.Features.Ingest.Interfaces;
 using System.Text.RegularExpressions;
 using ComedyPull.Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace ComedyPull.Application.Features.DataSync.Punchup
+namespace ComedyPull.Application.Features.Ingest.Punchup
 {
     public partial class PunchupScrapeJob(
         ISitemapLoader sitemapLoader,

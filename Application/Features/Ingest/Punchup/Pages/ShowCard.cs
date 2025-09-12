@@ -1,6 +1,6 @@
 using Microsoft.Playwright;
 
-namespace ComedyPull.Application.Features.DataSync.Punchup.Pages
+namespace ComedyPull.Application.Features.Ingest.Punchup.Pages
 {
     public class ShowCard(ILocator locator)
     {

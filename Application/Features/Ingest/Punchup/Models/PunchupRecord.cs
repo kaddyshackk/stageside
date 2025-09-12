@@ -1,4 +1,4 @@
-namespace ComedyPull.Application.Features.DataSync.Punchup.Models
+namespace ComedyPull.Application.Features.Ingest.Punchup.Models
 {
     public record PunchupRecord
     {

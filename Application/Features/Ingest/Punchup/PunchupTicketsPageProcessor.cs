@@ -1,10 +1,10 @@
-﻿using ComedyPull.Application.Features.DataSync.Interfaces;
-using ComedyPull.Application.Features.DataSync.Punchup.Models;
-using ComedyPull.Application.Features.DataSync.Punchup.Pages;
+﻿using ComedyPull.Application.Features.Ingest.Interfaces;
+using ComedyPull.Application.Features.Ingest.Punchup.Models;
+using ComedyPull.Application.Features.Ingest.Punchup.Pages;
 using ComedyPull.Application.Utils;
 using Microsoft.Playwright;
 
-namespace ComedyPull.Application.Features.DataSync.Punchup
+namespace ComedyPull.Application.Features.Ingest.Punchup
 {
     /// <summary>
     /// IPageProcessor implementation that scrapes and stores the result data.

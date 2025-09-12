@@ -1,11 +1,11 @@
-using ComedyPull.Application.Features.DataSync.Punchup;
+using ComedyPull.Application.Features.Ingest.Punchup;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ComedyPull.Api.Controllers
 {
     [ApiController]
-    [Route("api/data-sync")]
-    public class DataSyncController(ILogger<DataSyncController> logger)
+    [Route("api/ingest")]
+    public class IngestController(ILogger<IngestController> logger)
         : ControllerBase
     {
         [HttpPost("punchup")]

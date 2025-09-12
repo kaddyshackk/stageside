@@ -1,6 +1,6 @@
-using ComedyPull.Application.Features.DataSync.Interfaces;
-using ComedyPull.Application.Features.DataSync.Punchup;
-using ComedyPull.Application.Features.DataSync.Services;
+using ComedyPull.Application.Features.Ingest.Interfaces;
+using ComedyPull.Application.Features.Ingest.Punchup;
+using ComedyPull.Application.Features.Ingest.Services;
 using ComedyPull.Application.Options;
 using ComedyPull.Domain.Enums;
 using Microsoft.Extensions.Configuration;

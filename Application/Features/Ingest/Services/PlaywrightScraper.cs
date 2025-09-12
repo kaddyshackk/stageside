@@ -1,8 +1,8 @@
-﻿using ComedyPull.Application.Features.DataSync.Interfaces;
+﻿using ComedyPull.Application.Features.Ingest.Interfaces;
 using Microsoft.Playwright;
 using System.Threading.Channels;
 
-namespace ComedyPull.Application.Features.DataSync.Services
+namespace ComedyPull.Application.Features.Ingest.Services
 {
     public class PlaywrightScraper : IScraper
     {

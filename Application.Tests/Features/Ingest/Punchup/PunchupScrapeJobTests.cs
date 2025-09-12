@@ -1,10 +1,10 @@
-using ComedyPull.Application.Features.DataSync.Interfaces;
-using ComedyPull.Application.Features.DataSync.Punchup;
+using ComedyPull.Application.Features.Ingest.Interfaces;
+using ComedyPull.Application.Features.Ingest.Punchup;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 
-namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
+namespace ComedyPull.Application.Tests.Features.Ingest.Punchup
 {
     [TestClass]
     public class PunchupScrapeJobTests

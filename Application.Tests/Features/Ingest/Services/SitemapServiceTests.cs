@@ -1,9 +1,9 @@
-﻿using ComedyPull.Application.Features.DataSync.Services;
+﻿using ComedyPull.Application.Features.Ingest.Services;
 using FakeItEasy;
 using FluentAssertions;
 using RichardSzalay.MockHttp;
 
-namespace ComedyPull.Application.Tests.Features.DataSync.Services
+namespace ComedyPull.Application.Tests.Features.Ingest.Services
 {
     [TestClass]
     public class SitemapServiceTests

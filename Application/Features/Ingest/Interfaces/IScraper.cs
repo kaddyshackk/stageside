@@ -1,6 +1,6 @@
 ﻿using Microsoft.Playwright;
 
-namespace ComedyPull.Application.Features.DataSync.Interfaces
+namespace ComedyPull.Application.Features.Ingest.Interfaces
 {
     public interface IScraper : IDisposable
     {
