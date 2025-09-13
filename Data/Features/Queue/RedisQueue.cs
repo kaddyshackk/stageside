@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using ComedyPull.Application.Enums;
-using ComedyPull.Application.Features.Ingest.Interfaces;
+using ComedyPull.Application.Interfaces;
 using ComedyPull.Domain.Extensions;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
