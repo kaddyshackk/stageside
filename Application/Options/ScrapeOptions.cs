@@ -1,6 +1,7 @@
-namespace ComedyPull.Application.Options;
-
-public class ScrapeOptions
+namespace ComedyPull.Application.Options
 {
-    public PunchupScrapeOptions Punchup { get; set; } = new();
+    public class ScrapeOptions
+    {
+        public PunchupScrapeOptions Punchup { get; init; } = new();
+    }
 }

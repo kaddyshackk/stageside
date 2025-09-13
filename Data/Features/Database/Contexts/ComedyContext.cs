@@ -1,7 +1,7 @@
 using ComedyPull.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Contexts
+namespace ComedyPull.Data.Features.Database.Contexts
 {
     /// <summary>
     /// Default DbContext configuration.

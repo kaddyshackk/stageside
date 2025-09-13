@@ -1,4 +1,6 @@
-using ComedyPull.Data.Contexts;
+using ComedyPull.Application.Features.DataProcessing.Interfaces;
+using ComedyPull.Data.Features.Database.Contexts;
+using ComedyPull.Data.Features.Database.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,10 +14,10 @@ namespace ComedyPull.Data.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Configures services for the Data project.
+        /// Configures services for the Data layer.
         /// </summary>
-        /// <param name="services">The injected service provider.</param>
-        /// <param name="configuration">The injected configuration.</param>
+        /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
+        /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
         public static void AddDataServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDatabaseServices(configuration);
@@ -24,11 +26,14 @@ namespace ComedyPull.Data.Extensions
         /// <summary>
         /// Configures database services.
         /// </summary>
-        /// <param name="services">The injected service provider.</param>
-        /// <param name="configuration">The injected configuration.</param>
+        /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
+        /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
         /// <exception cref="InvalidOperationException">If the DefaultConnection or ASPNETCORE_EXCEPTION is misconfigured.</exception>
         private static void AddDatabaseServices(this IServiceCollection services, IConfiguration configuration)
         {
+            // Configure DbContext's
+            // TODO: Move database configuration to dedicated place
+            
             services.AddDbContext<ComedyContext>((serviceProvider, options) =>
             {
                 var connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -63,8 +68,19 @@ namespace ComedyPull.Data.Extensions
                         throw new InvalidOperationException("Unknown environment: " + environment);
                 }
             });
+            
+            // Configure Repositories
+            
+            services.AddScoped<IBronzeRecordRepository, BronzeRecordRepository>();
+        }
 
-            services.AddScoped<ComedyContext>();
+        /// <summary>
+        /// Configures queue services.
+        /// </summary>
+        /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
+        private static void AddQueueServices(this IServiceCollection services)
+        {
+            
         }
     }
 }

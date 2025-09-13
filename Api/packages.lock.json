@@ -181,6 +181,14 @@
           "Microsoft.Extensions.Options": "8.0.2"
         }
       },
+      "Microsoft.Extensions.FileProviders.Abstractions": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "ZbaMlhJlpisjuWbvXr4LdAst/1XxH3vZ6A0BsgTphZ2L4PGuxRLz7Jr/S7mkAAnOn78Vu0fKhEgNF5JO3zfjqQ==",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "8.0.0"
+        }
+      },
       "Microsoft.Extensions.Logging": {
         "type": "Transitive",
         "resolved": "8.0.1",
@@ -244,6 +252,14 @@
         "contentHash": "MuJzLoWCaQhQAR3oh66YR0Ir6mxuezncGX3f8wxvAc21g0+9HICktJQlqMoODhxztZKXE5k9GxRxqUAN+vPb4g==",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "8.0.0"
+        }
+      },
+      "Pipelines.Sockets.Unofficial": {
+        "type": "Transitive",
+        "resolved": "2.2.8",
+        "contentHash": "zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ==",
+        "dependencies": {
+          "System.IO.Pipelines": "5.0.1"
         }
       },
       "Swashbuckle.AspNetCore.Swagger": {
@@ -382,18 +398,22 @@
         "dependencies": {
           "Domain": "[1.0.0, )",
           "Microsoft.Extensions.DependencyInjection": "[8.0.1, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[8.0.0, )",
           "Microsoft.Extensions.Http": "[8.0.1, )",
-          "Microsoft.Playwright": "[1.54.0, )"
+          "Microsoft.Playwright": "[1.54.0, )",
+          "StackExchange.Redis": "[2.9.17, )"
         }
       },
       "data": {
         "type": "Project",
         "dependencies": {
+          "Application": "[1.0.0, )",
           "Domain": "[1.0.0, )",
           "Microsoft.EntityFrameworkCore": "[8.0.2, )",
           "Microsoft.EntityFrameworkCore.Design": "[8.0.2, )",
           "Microsoft.EntityFrameworkCore.Tools": "[8.0.2, )",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "[8.0.2, )"
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "[8.0.2, )",
+          "StackExchange.Redis": "[2.9.17, )"
         }
       },
       "domain": {
@@ -442,6 +462,19 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2"
         }
       },
+      "Microsoft.Extensions.Hosting.Abstractions": {
+        "type": "CentralTransitive",
+        "requested": "[8.0.0, )",
+        "resolved": "8.0.0",
+        "contentHash": "AG7HWwVRdCHlaA++1oKDxLsXIBxmDpMPb3VoyOoAghEWnkUvEAdYQUwnV4jJbAaa/nMYNiEh5ByoLauZBEiovg==",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Diagnostics.Abstractions": "8.0.0",
+          "Microsoft.Extensions.FileProviders.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0"
+        }
+      },
       "Microsoft.Extensions.Http": {
         "type": "CentralTransitive",
         "requested": "[8.0.1, )",
@@ -477,6 +510,16 @@
           "Microsoft.EntityFrameworkCore.Abstractions": "8.0.2",
           "Microsoft.EntityFrameworkCore.Relational": "8.0.2",
           "Npgsql": "8.0.2"
+        }
+      },
+      "StackExchange.Redis": {
+        "type": "CentralTransitive",
+        "requested": "[2.9.17, )",
+        "resolved": "2.9.17",
+        "contentHash": "Enpv0bfMP6SRownWx1CmaHantT9626Z6QSdHOidKlm0zLrBaPe7ueQf5phJH6Zkf3lDe5rr6JvXAgEP1ogijug==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
+          "Pipelines.Sockets.Unofficial": "2.2.8"
         }
       }
     }
