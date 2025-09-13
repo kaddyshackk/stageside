@@ -1,10 +1,15 @@
+using ComedyPull.Application.Enums;
 using ComedyPull.Application.Features.DataProcessing.Interfaces;
+using ComedyPull.Application.Interfaces;
 using ComedyPull.Data.Database.Contexts;
 using ComedyPull.Data.Database.Repositories;
+using ComedyPull.Data.Queue;
+using ComedyPull.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 
 namespace ComedyPull.Data.Extensions
 {
@@ -21,6 +26,7 @@ namespace ComedyPull.Data.Extensions
         public static void AddDataServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDatabaseServices(configuration);
+            services.AddQueueServices(configuration);
         }
 
         /// <summary>
@@ -78,9 +84,25 @@ namespace ComedyPull.Data.Extensions
         /// Configures queue services.
         /// </summary>
         /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
-        private static void AddQueueServices(this IServiceCollection services)
+        /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
+        private static void AddQueueServices(this IServiceCollection services, IConfiguration configuration)
         {
-            
+            services.AddSingleton<IConnectionMultiplexer>(provider =>
+            {
+                var connectionString = configuration.GetConnectionString("Redis");
+                if (string.IsNullOrEmpty(connectionString))
+                    throw new Exception("ConnectionStrings:Redis is not configured.");
+                return ConnectionMultiplexer.Connect(connectionString);
+            });
+
+            services.AddSingleton<IQueue<BronzeRecord>>(provider =>
+            {
+                var redis = provider.GetService<IConnectionMultiplexer>();
+                if (redis is null)
+                    throw new Exception("IConnectionMultiplexer is not configured.");
+                var logger = provider.GetRequiredService<ILogger<RedisQueue<BronzeRecord>>>();
+                return new RedisQueue<BronzeRecord>(redis, logger, QueueKey.BronzeRecord);
+            });
         }
     }
 }
