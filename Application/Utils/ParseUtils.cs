@@ -11,7 +11,8 @@ namespace ComedyPull.Application.Utils
         /// <param name="year">Year.</param>
         /// <param name="timezone">Timezone override.</param>
         /// <returns>Parsed <see cref="DateTimeOffset"/> object converted to UTC.</returns>
-        public static DateTimeOffset? ParseDateTime(string dateText, string timeText, int year, TimeZoneInfo? timezone = null)
+        public static DateTimeOffset? ParseDateTime(string dateText, string timeText, int year,
+            TimeZoneInfo? timezone = null)
         {
             var cleanDate = dateText.Trim();
             var cleanTime = timeText.Trim();
@@ -31,7 +32,8 @@ namespace ComedyPull.Application.Utils
         /// <param name="timeText">String containing time information.</param>
         /// <param name="timezone">Timezone override.</param>
         /// <returns>Parsed <see cref="DateTimeOffset"/> object converted to UTC.</returns>
-        public static DateTimeOffset? ParseFutureEventDateTime(string dateText, string timeText, TimeZoneInfo? timezone = null)
+        public static DateTimeOffset? ParseFutureEventDateTime(string dateText, string timeText,
+            TimeZoneInfo? timezone = null)
         {
             var currentDate = DateTime.Now;
             var currentYear = currentDate.Year;

@@ -1,4 +1,4 @@
-﻿namespace ComedyPull.Application.Features.Ingest.Interfaces
+﻿namespace ComedyPull.Application.Features.DataSync.Interfaces
 {
     public interface ISitemapLoader
     {

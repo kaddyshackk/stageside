@@ -1,6 +1,6 @@
 ﻿using Microsoft.Playwright;
 
-namespace ComedyPull.Application.Features.Ingest.Interfaces
+namespace ComedyPull.Application.Features.DataSync.Interfaces
 {
     public interface IPageProcessor
     {

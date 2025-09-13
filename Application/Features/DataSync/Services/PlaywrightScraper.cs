@@ -1,8 +1,8 @@
-﻿using ComedyPull.Application.Features.Ingest.Interfaces;
+﻿using ComedyPull.Application.Features.DataSync.Interfaces;
 using Microsoft.Playwright;
 using System.Threading.Channels;
 
-namespace ComedyPull.Application.Features.Ingest.Services
+namespace ComedyPull.Application.Features.DataSync.Services
 {
     public class PlaywrightScraper : IScraper
     {
@@ -65,7 +65,8 @@ namespace ComedyPull.Application.Features.Ingest.Services
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A Task that completes when all workers have completed processing the urls.</returns>
         /// <exception cref="InvalidOperationException">Thrown if the <see cref="PlaywrightScraper"/> was not properly initialized.</exception>
-        public async Task RunAsync<TProcessor>(IEnumerable<string> urls, Func<TProcessor> processorFactory, CancellationToken cancellationToken = default)
+        public async Task RunAsync<TProcessor>(IEnumerable<string> urls, Func<TProcessor> processorFactory,
+            CancellationToken cancellationToken = default)
             where TProcessor : IPageProcessor
         {
             if (_browser == null)
@@ -114,7 +115,7 @@ namespace ComedyPull.Application.Features.Ingest.Services
                 }
             }
         }
-        
+
         /// <summary>
         /// Enqueues the provided URLs into the internal channel for processing.
         /// </summary>
@@ -126,6 +127,7 @@ namespace ComedyPull.Application.Features.Ingest.Services
             {
                 await _urlWriter.WriteAsync(url);
             }
+
             _urlWriter.Complete();
         }
 

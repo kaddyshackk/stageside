@@ -1,18 +1,18 @@
 using Microsoft.Playwright;
 
-namespace ComedyPull.Application.Features.Ingest.Punchup.Pages
+namespace ComedyPull.Application.Features.DataSync.Punchup.Pages
 {
     public class TicketsPage
     {
         // Global
         public readonly ILocator SeeAllButton;
         public readonly ILocator NoShowsMessage;
-        
+
         // Bio
         public readonly ILocator BioSection;
         public readonly ILocator Name;
         public readonly ILocator Bio;
-        
+
         // Shows
         public readonly ILocator Show;
 

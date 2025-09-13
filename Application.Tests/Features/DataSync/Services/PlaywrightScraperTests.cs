@@ -1,10 +1,10 @@
-using ComedyPull.Application.Features.Ingest.Interfaces;
-using ComedyPull.Application.Features.Ingest.Services;
+using ComedyPull.Application.Features.DataSync.Interfaces;
+using ComedyPull.Application.Features.DataSync.Services;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Playwright;
 
-namespace ComedyPull.Application.Tests.Features.Ingest.Services
+namespace ComedyPull.Application.Tests.Features.DataSync.Services
 {
     [TestClass]
     public class PlaywrightScraperTests

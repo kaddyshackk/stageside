@@ -1,14 +1,14 @@
 ﻿using System.Text.Json;
-using ComedyPull.Application.Features.Ingest.Interfaces;
-using ComedyPull.Application.Features.Ingest.Punchup.Models;
-using ComedyPull.Application.Features.Ingest.Punchup.Pages;
+using ComedyPull.Application.Features.DataSync.Interfaces;
+using ComedyPull.Application.Features.DataSync.Punchup.Models;
+using ComedyPull.Application.Features.DataSync.Punchup.Pages;
 using ComedyPull.Application.Interfaces;
 using ComedyPull.Application.Utils;
 using ComedyPull.Domain.Enums;
 using ComedyPull.Domain.Models;
 using Microsoft.Playwright;
 
-namespace ComedyPull.Application.Features.Ingest.Punchup
+namespace ComedyPull.Application.Features.DataSync.Punchup
 {
     /// <summary>
     /// IPageProcessor implementation that scrapes and stores the result data.
@@ -25,11 +25,11 @@ namespace ComedyPull.Application.Features.Ingest.Punchup
         public async Task ProcessPageAsync(string url, IPage page, CancellationToken cancellationToken)
         {
             var pom = new TicketsPage(page);
-            
+
             // Load page
             await page.GotoAsync(url);
             await pom.BioSection.WaitForAsync();
-            
+
             // Parse bio
             var name = await pom.Name.InnerTextAsync();
             var bio = await pom.Bio.InnerTextAsync();
@@ -64,14 +64,14 @@ namespace ComedyPull.Application.Features.Ingest.Punchup
                 CreatedBy = "System",
                 UpdatedBy = "System",
             };
-            
-            await queue.EnqueueAsync(record,  cancellationToken);
+
+            await queue.EnqueueAsync(record, cancellationToken);
         }
 
         private async Task<PunchupEvent?> ProcessShowAsync(ILocator showLocator)
         {
             var pom = new ShowCard(showLocator);
-            
+
             // Load data from page
             var ticketLink = await pom.TicketsButton.GetAttributeAsync("href");
             var results = await Task.WhenAll(
@@ -90,7 +90,7 @@ namespace ComedyPull.Application.Features.Ingest.Punchup
             {
                 throw new InvalidDataException("Could not parse DateTimeOffset from event data.");
             }
-            
+
             return new PunchupEvent
             {
                 StartDateTime = startDateTime.Value,

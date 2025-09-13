@@ -29,7 +29,7 @@ namespace ComedyPull.Application.Features.DataProcessing.Services
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             logger.LogInformation("Bronze Record Processing Service started");
-            
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
@@ -44,7 +44,7 @@ namespace ComedyPull.Application.Features.DataProcessing.Services
             }
 
             await FlushCurrentBatchAsync(cancellationToken);
-            
+
             logger.LogInformation("Bronze Record Processing Service stopped");
         }
 
@@ -56,10 +56,10 @@ namespace ComedyPull.Application.Features.DataProcessing.Services
         {
             var timeout = TimeSpan.FromSeconds(_options.QueueTimeoutSeconds);
             var availableSpace = _options.BatchSize - _currentBatch.Count;
-            
+
             // Dequeue records up to available space in current batch
             var records = await queue.DequeueAsync(availableSpace, timeout, cancellationToken);
-            
+
             if (records.Count != 0)
             {
                 _currentBatch.AddRange(records);
@@ -69,14 +69,15 @@ namespace ComedyPull.Application.Features.DataProcessing.Services
 
             // Check if we should flush the batch
             var shouldFlushBySize = _currentBatch.Count >= _options.BatchSize;
-            var shouldFlushByTime = DateTime.UtcNow - _lastFlushTime >= TimeSpan.FromSeconds(_options.FlushIntervalSeconds);
-            
+            var shouldFlushByTime =
+                DateTime.UtcNow - _lastFlushTime >= TimeSpan.FromSeconds(_options.FlushIntervalSeconds);
+
             if (_currentBatch.Count != 0 && (shouldFlushBySize || shouldFlushByTime))
             {
                 await FlushCurrentBatchAsync(cancellationToken);
             }
         }
-        
+
         /// <summary>
         /// Flushes the current batch to the database.
         /// </summary>
@@ -88,12 +89,12 @@ namespace ComedyPull.Application.Features.DataProcessing.Services
             try
             {
                 logger.LogInformation("Flushing batch of {Count} bronze records to database", _currentBatch.Count);
-                
+
                 var batchSize = _currentBatch.Count;
                 await repository.BatchInsertAsync(_currentBatch, cancellationToken);
-                
+
                 logger.LogInformation("Successfully processed {Count} bronze records", batchSize);
-                
+
                 // Clear the batch and update flush time
                 _currentBatch.Clear();
                 _lastFlushTime = DateTime.UtcNow;
@@ -101,7 +102,7 @@ namespace ComedyPull.Application.Features.DataProcessing.Services
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed to flush bronze records batch of size {Count}", _currentBatch.Count);
-                
+
                 // TODO: Replace with better error handling
                 _currentBatch.Clear();
                 _lastFlushTime = DateTime.UtcNow;
@@ -114,7 +115,7 @@ namespace ComedyPull.Application.Features.DataProcessing.Services
         public async Task<ProcessingStatus> GetStatusAsync()
         {
             var queueLength = await queue.GetQueueLengthAsync();
-            
+
             return new ProcessingStatus
             {
                 QueueLength = queueLength,

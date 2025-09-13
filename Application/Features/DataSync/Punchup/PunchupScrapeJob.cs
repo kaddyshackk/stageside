@@ -1,14 +1,15 @@
-﻿using ComedyPull.Application.Features.Ingest.Interfaces;
+﻿using ComedyPull.Application.Features.DataSync.Interfaces;
 using System.Text.RegularExpressions;
 using ComedyPull.Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace ComedyPull.Application.Features.Ingest.Punchup
+namespace ComedyPull.Application.Features.DataSync.Punchup
 {
     public partial class PunchupScrapeJob(
         ISitemapLoader sitemapLoader,
-        [FromKeyedServices(DataSource.Punchup)] IScraper scraper,
+        [FromKeyedServices(DataSource.Punchup)]
+        IScraper scraper,
         IServiceProvider serviceProvider,
         ILogger<PunchupScrapeJob> logger
     )
@@ -20,16 +21,17 @@ namespace ComedyPull.Application.Features.Ingest.Punchup
             try
             {
                 var urls = await sitemapLoader.LoadSitemapAsync(sitemapUrl);
-                
+
                 // Filter Urls
                 var regex = TicketsPageUrlRegex();
                 var matched = urls.Where(url => regex.IsMatch(url)).ToList();
-                
+
                 // Perform Job
                 await scraper.InitializeAsync();
                 if (matched.Any())
                 {
-                    await scraper.RunAsync(matched.Take(3), () => serviceProvider.GetRequiredService<PunchupTicketsPageProcessor>());
+                    await scraper.RunAsync(matched.Take(3),
+                        () => serviceProvider.GetRequiredService<PunchupTicketsPageProcessor>());
                 }
             }
             catch (Exception ex)
