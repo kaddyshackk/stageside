@@ -1,7 +1,11 @@
-﻿using ComedyPull.Application.Features.Ingest.Interfaces;
+﻿using System.Text.Json;
+using ComedyPull.Application.Features.Ingest.Interfaces;
 using ComedyPull.Application.Features.Ingest.Punchup.Models;
 using ComedyPull.Application.Features.Ingest.Punchup.Pages;
+using ComedyPull.Application.Interfaces;
 using ComedyPull.Application.Utils;
+using ComedyPull.Domain.Enums;
+using ComedyPull.Domain.Models;
 using Microsoft.Playwright;
 
 namespace ComedyPull.Application.Features.Ingest.Punchup
@@ -9,7 +13,7 @@ namespace ComedyPull.Application.Features.Ingest.Punchup
     /// <summary>
     /// IPageProcessor implementation that scrapes and stores the result data.
     /// </summary>
-    public class PunchupTicketsPageProcessor : IPageProcessor
+    public class PunchupTicketsPageProcessor(IQueue<BronzeRecord> queue) : IPageProcessor
     {
         /// <summary>
         /// Processes a page at the given URL.
@@ -42,14 +46,26 @@ namespace ComedyPull.Application.Features.Ingest.Punchup
                 shows = results.Where(show => show != null).ToList()!;
             }
 
-            var data = new PunchupRecord
+            var record = new BronzeRecord
             {
-                Name = name,
-                Bio = bio,
-                Events = shows,
+                Source = DataSource.Punchup,
+                IngestedAt = DateTimeOffset.UtcNow,
+                EntityType = "TicketsPage",
+                // TODO: Implement consistent external Id generation
+                ExternalId = $"test-{Guid.NewGuid()}",
+                RawData = JsonSerializer.Serialize(new PunchupRecord
+                {
+                    Name = name,
+                    Bio = bio,
+                    Events = shows,
+                }),
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow,
+                CreatedBy = "System",
+                UpdatedBy = "System",
             };
             
-            Console.WriteLine(data);
+            await queue.EnqueueAsync(record,  cancellationToken);
         }
 
         private async Task<PunchupEvent?> ProcessShowAsync(ILocator showLocator)
