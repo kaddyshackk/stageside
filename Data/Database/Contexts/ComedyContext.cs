@@ -6,7 +6,7 @@ namespace ComedyPull.Data.Database.Contexts
     /// <summary>
     /// Default DbContext configuration.
     /// </summary>
-    public class ComedyContext : DbContext
+    public class ComedyContext(DbContextOptions<ComedyContext> options) : DbContext(options)
     {
         /// <summary>
         /// Gets or sets the Comedians DbSet.
