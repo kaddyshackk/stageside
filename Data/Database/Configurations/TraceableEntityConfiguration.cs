@@ -1,7 +1,7 @@
 using ComedyPull.Domain.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ComedyPull.Data.Features.Database.Configurations
+namespace ComedyPull.Data.Database.Configurations
 {
     /// <summary>
     /// Configuration class for the TraceableEntity fields of a table.

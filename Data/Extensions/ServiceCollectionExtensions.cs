@@ -1,6 +1,6 @@
 using ComedyPull.Application.Features.DataProcessing.Interfaces;
-using ComedyPull.Data.Features.Database.Contexts;
-using ComedyPull.Data.Features.Database.Repositories;
+using ComedyPull.Data.Database.Contexts;
+using ComedyPull.Data.Database.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

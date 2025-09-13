@@ -5,7 +5,7 @@ using ComedyPull.Domain.Extensions;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 
-namespace ComedyPull.Data.Features.Queue
+namespace ComedyPull.Data.Queue
 {
     /// <summary>
     /// Redis List implementation of bronze record queue.

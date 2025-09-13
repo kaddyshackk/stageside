@@ -1,8 +1,8 @@
 ﻿using ComedyPull.Application.Features.DataProcessing.Interfaces;
-using ComedyPull.Data.Features.Database.Contexts;
+using ComedyPull.Data.Database.Contexts;
 using ComedyPull.Domain.Models;
 
-namespace ComedyPull.Data.Features.Database.Repositories
+namespace ComedyPull.Data.Database.Repositories
 {
     /// <summary>
     /// A repository for interacting with BronzeRecord's.
