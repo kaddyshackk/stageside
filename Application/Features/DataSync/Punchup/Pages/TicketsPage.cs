@@ -7,12 +7,12 @@ namespace ComedyPull.Application.Features.DataSync.Punchup.Pages
         // Global
         public readonly ILocator SeeAllButton;
         public readonly ILocator NoShowsMessage;
-        
+
         // Bio
         public readonly ILocator BioSection;
         public readonly ILocator Name;
         public readonly ILocator Bio;
-        
+
         // Shows
         public readonly ILocator Show;
 

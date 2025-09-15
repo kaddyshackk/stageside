@@ -4,7 +4,12 @@ namespace ComedyPull.Domain.Enums
 {
     public enum DataSource
     {
-        [Description("punchup")]
+        [Description(DataSourceKeys.Punchup)]
         Punchup
-    }    
+    }
+
+    public static class DataSourceKeys
+    {
+        public const string Punchup = "punchup";
+    }
 }

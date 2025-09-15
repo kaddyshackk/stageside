@@ -20,7 +20,8 @@ namespace ComedyPull.Application.Features.DataSync.Interfaces
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A Task that complets when all workers have completed processing the urls.</returns>
         /// <exception cref="InvalidOperationException">Thrown if the <see cref="IScraper"/> was not properly initialized.</exception>
-        public Task RunAsync<TProcessor>(IEnumerable<string> urls, Func<TProcessor> processorFactory, CancellationToken cancellationToken = default)
+        public Task RunAsync<TProcessor>(IEnumerable<string> urls, Func<TProcessor> processorFactory,
+            CancellationToken cancellationToken = default)
             where TProcessor : IPageProcessor;
     }
 }

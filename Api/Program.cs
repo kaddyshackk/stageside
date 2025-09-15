@@ -1,6 +1,7 @@
 using ComedyPull.Api.Extensions;
 using ComedyPull.Application.Extensions;
 using ComedyPull.Data.Extensions;
+using Microsoft.Playwright;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,9 @@ builder.Services.AddDataServices(builder.Configuration);
 
 var app = builder.Build();
 
+// Verify Playwright is working
+await VerifyPlaywrightAsync();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -26,3 +30,23 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static async Task VerifyPlaywrightAsync()
+{
+    try
+    {
+        Console.WriteLine("Verifying Playwright is ready...");
+        using var playwright = await Playwright.CreateAsync();
+        var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+        {
+            Headless = true
+        });
+        await browser.CloseAsync();
+        Console.WriteLine("✅ Playwright is ready for web scraping.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Playwright verification failed: {ex.Message}");
+        Console.WriteLine("⚠️  Web scraping functionality may not work.");
+    }
+}
