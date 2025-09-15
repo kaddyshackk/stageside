@@ -41,7 +41,7 @@ namespace ComedyPull.Application.Features.DataSync.Punchup
                 await _scraper.InitializeAsync();
                 if (matched.Any())
                 {
-                    await _scraper.RunAsync(matched.Take(3),
+                    await _scraper.RunAsync(matched,
                         () => _serviceProvider.GetRequiredService<PunchupTicketsPageProcessor>());
                 }
             }
