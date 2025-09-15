@@ -1,14 +1,15 @@
 ﻿using ComedyPull.Application.Features.DataProcessing.Interfaces;
 using ComedyPull.Data.Database.Contexts;
 using ComedyPull.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ComedyPull.Data.Database.Repositories
 {
     /// <summary>
     /// A repository for interacting with BronzeRecord's.
     /// </summary>
-    /// <param name="context">Injected <see cref="ComedyContext"/> instance.</param>
-    public class BronzeRecordRepository(ComedyContext context) : IBronzeRecordRepository
+    /// <param name="contextFactory">Injected <see cref="IDbContextFactory{ComedyContext}"/> instance.</param>
+    public class BronzeRecordRepository(IDbContextFactory<ComedyContext> contextFactory) : IBronzeRecordRepository
     {
         /// <summary>
         /// Batch inserts a list of <see cref="BronzeRecord"/>.
@@ -17,6 +18,7 @@ namespace ComedyPull.Data.Database.Repositories
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task BatchInsertAsync(IEnumerable<BronzeRecord> records, CancellationToken cancellationToken)
         {
+            using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
             context.ChangeTracker.AutoDetectChangesEnabled = false;
             try
             {

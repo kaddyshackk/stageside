@@ -2,6 +2,7 @@
 using ComedyPull.Application.Interfaces;
 using ComedyPull.Application.Options;
 using ComedyPull.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;

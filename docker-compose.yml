@@ -3,7 +3,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - "5281:8080"
     environment:
@@ -17,6 +17,14 @@ services:
       - postgres
     networks:
       - comedypull-dev
+    # Playwright-specific configuration
+    init: true  # Equivalent to --init flag - prevents zombie processes
+    ipc: host   # Equivalent to --ipc=host flag - prevents Chromium memory issues
+    # Uncomment the following if you encounter Chrome sandbox issues:
+    # cap_add:
+    #   - SYS_ADMIN
+    # security_opt:
+    #   - seccomp:unconfined
 
   postgres:
     image: postgres:15-alpine

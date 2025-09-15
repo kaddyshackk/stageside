@@ -41,7 +41,7 @@ namespace ComedyPull.Application.Extensions
             services.AddScoped<PunchupScrapeJob>();
 
             // Scrapers
-            services.AddKeyedSingleton<IScraper, PlaywrightScraper>(DataSource.Punchup.GetEnumDescription(),
+            services.AddKeyedSingleton<IScraper, PlaywrightScraper>(DataSourceKeys.Punchup,
                 (provider, _) =>
                 {
                     var options = provider.GetRequiredService<IOptions<ScrapeOptions>>();

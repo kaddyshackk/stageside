@@ -40,7 +40,7 @@ namespace ComedyPull.Data.Extensions
             // Configure DbContext's
             // TODO: Move database configuration to dedicated place
             
-            services.AddDbContext<ComedyContext>((serviceProvider, options) =>
+            services.AddDbContextFactory<ComedyContext>((serviceProvider, options) =>
             {
                 var connectionString = configuration.GetConnectionString("DefaultConnection");
                 if (string.IsNullOrEmpty(connectionString))
@@ -77,7 +77,7 @@ namespace ComedyPull.Data.Extensions
             
             // Configure Repositories
             
-            services.AddScoped<IBronzeRecordRepository, BronzeRecordRepository>();
+            services.AddSingleton<IBronzeRecordRepository, BronzeRecordRepository>();
         }
 
         /// <summary>
