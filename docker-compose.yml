@@ -13,18 +13,15 @@ services:
       - ./Api:/app/Api
       - ./Application:/app/Application
     depends_on:
-      - redis
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - comedypull-dev
     # Playwright-specific configuration
-    init: true  # Equivalent to --init flag - prevents zombie processes
-    ipc: host   # Equivalent to --ipc=host flag - prevents Chromium memory issues
-    # Uncomment the following if you encounter Chrome sandbox issues:
-    # cap_add:
-    #   - SYS_ADMIN
-    # security_opt:
-    #   - seccomp:unconfined
+    init: true
+    ipc: host
 
   postgres:
     image: postgres:15-alpine

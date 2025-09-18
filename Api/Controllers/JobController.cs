@@ -1,11 +1,15 @@
 using ComedyPull.Application.Features.DataSync.Punchup;
 using Microsoft.AspNetCore.Mvc;
+using Quartz;
 
 namespace ComedyPull.Api.Controllers
 {
     [ApiController]
-    [Route("api/data-sync")]
-    public class DataSyncController(ILogger<DataSyncController> logger)
+    [Route("api/jobs")]
+    public class JobController(
+        ISchedulerFactory schedulerFactory,
+        ILogger<JobController> logger
+    )
         : ControllerBase
     {
         [HttpPost("punchup")]
@@ -15,7 +19,13 @@ namespace ComedyPull.Api.Controllers
         {
             try
             {
-                await job.ExecuteAsync();
+                var scheduler = await schedulerFactory.GetScheduler();
+                
+                if (!await scheduler.CheckExists(PunchupScrapeJob.Key))
+                    return NotFound($"Job {PunchupScrapeJob.Key} not found.");
+                
+                await scheduler.TriggerJob(PunchupScrapeJob.Key);
+                
                 return Ok(new { message = "Punchup scrape job completed successfully" });
             }
             catch (Exception ex)

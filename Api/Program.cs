@@ -5,6 +5,8 @@ using Microsoft.Playwright;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// -- [ Configure Services ] ----
+
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("Settings/appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"Settings/appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
@@ -14,9 +16,10 @@ builder.Services.AddApiServices(builder.Configuration);
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddDataServices(builder.Configuration);
 
+// -- [ Configure Application ] ----
+
 var app = builder.Build();
 
-// Verify Playwright is working
 await VerifyPlaywrightAsync();
 
 if (app.Environment.IsDevelopment())
@@ -30,6 +33,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+return 0;
+
+// -- [ Static Helper Methods ] ----
 
 static async Task VerifyPlaywrightAsync()
 {

@@ -3,6 +3,7 @@ using ComedyPull.Application.Features.DataSync.Punchup;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Quartz;
 
 namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
 {
@@ -32,7 +33,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
                 .Returns(new List<string>());
 
-            await _job.ExecuteAsync();
+            await _job.Execute(A.Fake<IJobExecutionContext>());
 
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(expectedSitemapUrl))
                 .MustHaveHappenedOnceExactly();
@@ -54,7 +55,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
                 .Returns(sitemapUrls);
 
-            await _job.ExecuteAsync();
+            await _job.Execute(A.Fake<IJobExecutionContext>());
 
             object?[] expectedUrls =
             [
@@ -76,7 +77,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
                 .Returns(["https://www.punchup.live/comedian1/tickets"]);
 
-            await _job.ExecuteAsync();
+            await _job.Execute(A.Fake<IJobExecutionContext>());
 
             A.CallTo(() => _mockScraper.InitializeAsync(null))
                 .MustHaveHappenedOnceExactly()
@@ -91,7 +92,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
                 .Returns(matchedUrls);
 
-            await _job.ExecuteAsync();
+            await _job.Execute(A.Fake<IJobExecutionContext>());
 
             A.CallTo(() => _mockScraper.RunAsync(
                 A<IEnumerable<string>>.That.Contains("https://www.punchup.live/comedian1/tickets"),
@@ -106,7 +107,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
                 .Returns(["https://www.punchup.live/comedian1/tickets"]);
 
-            await _job.ExecuteAsync();
+            await _job.Execute(A.Fake<IJobExecutionContext>());
 
             A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageProcessor>>._, A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly()
@@ -120,7 +121,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
                 .Returns([]);
 
-            await _job.ExecuteAsync();
+            await _job.Execute(A.Fake<IJobExecutionContext>());
 
             A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageProcessor>>._, A<CancellationToken>._))
                 .MustNotHaveHappened();
@@ -142,7 +143,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
                 .Returns(sitemapUrls);
 
-            await _job.ExecuteAsync();
+            await _job.Execute(A.Fake<IJobExecutionContext>());
 
             A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageProcessor>>._, A<CancellationToken>._))
                 .MustNotHaveHappened();
@@ -155,7 +156,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
                 .Throws(expectedException);
 
-            await _job.ExecuteAsync();
+            await _job.Execute(A.Fake<IJobExecutionContext>());
 
             A.CallTo(_logger)
                 .Where(call => call.Method.Name == "Log" &&
@@ -173,7 +174,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             A.CallTo(() => _mockScraper.InitializeAsync(A<Microsoft.Playwright.BrowserTypeLaunchOptions>._))
                 .Throws(expectedException);
 
-            await _job.ExecuteAsync();
+            await _job.Execute(A.Fake<IJobExecutionContext>());
 
             A.CallTo(() => _mockScraper.Dispose())
                 .MustHaveHappenedOnceExactly();
@@ -194,7 +195,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageProcessor>>._, A<CancellationToken>._))
                 .Throws(expectedException);
 
-            await _job.ExecuteAsync();
+            await _job.Execute(A.Fake<IJobExecutionContext>());
 
             A.CallTo(_logger)
                 .Where(call => call.Method.Name == "Log" &&
@@ -212,7 +213,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageProcessor>>._, A<CancellationToken>._))
                 .Throws(expectedException);
 
-            await _job.ExecuteAsync();
+            await _job.Execute(A.Fake<IJobExecutionContext>());
 
             A.CallTo(() => _mockScraper.Dispose()).MustHaveHappenedOnceExactly();
             A.CallTo(_logger)
@@ -229,9 +230,9 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             {
                 "https://www.punchup.live/comedian-name/tickets",
                 "https://www.punchup.live/comedian-name/tickets/",
-                "http://www.punchup.live/comedian-name/tickets",
+                "https://www.punchup.live/comedian-name/tickets",
                 "https://punchup.live/comedian-name/tickets",
-                "http://punchup.live/comedian-name/tickets/"
+                "https://punchup.live/comedian-name/tickets/"
             };
 
             foreach (var url in validUrls)

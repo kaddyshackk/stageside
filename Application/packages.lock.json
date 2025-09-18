@@ -49,6 +49,35 @@
           "System.Text.Json": "6.0.10"
         }
       },
+      "Quartz": {
+        "type": "Direct",
+        "requested": "[3.15.0, )",
+        "resolved": "3.15.0",
+        "contentHash": "seV76VI/OW9xdsEHJlfErciicfMmmU8lcGde2SJIYxVK+k4smAaBkm0FY8a4AiVb6MMpjTvH252438ol/OOUwQ==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "2.1.1"
+        }
+      },
+      "Quartz.Extensions.Hosting": {
+        "type": "Direct",
+        "requested": "[3.15.0, )",
+        "resolved": "3.15.0",
+        "contentHash": "p9Fy67yAXxwjL/FxfVtmxwXbVtMOVZX+hNnONKT11adugK6kqgdfYvb0IP5pBBHW1rJSq88MpNkQ0EkyMCUhWg==",
+        "dependencies": {
+          "Microsoft.Extensions.Hosting.Abstractions": "8.0.0",
+          "Quartz.Extensions.DependencyInjection": "3.15.0"
+        }
+      },
+      "Quartz.Serialization.Json": {
+        "type": "Direct",
+        "requested": "[3.15.0, )",
+        "resolved": "3.15.0",
+        "contentHash": "N9kS9GKo3mCPTkDRZ8yowBJiF9JgXRIgJHURYJmX7WQC0xrq2n0pBs6aK84kClZzuUWY6hpQLuIk8VXx96Mdpw==",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3",
+          "Quartz": "3.15.0"
+        }
+      },
       "StackExchange.Redis": {
         "type": "Direct",
         "requested": "[2.9.17, )",
@@ -165,12 +194,27 @@
         "resolved": "8.0.0",
         "contentHash": "bXJEZrW9ny8vjMF1JV253WeLhpEVzFo1lyaZu1vQ4ZxWUlVvknZ/+ftFgVheLubb4eZPSwwxBeqS1JkCOjxd8g=="
       },
+      "Newtonsoft.Json": {
+        "type": "Transitive",
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+      },
       "Pipelines.Sockets.Unofficial": {
         "type": "Transitive",
         "resolved": "2.2.8",
         "contentHash": "zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ==",
         "dependencies": {
           "System.IO.Pipelines": "5.0.1"
+        }
+      },
+      "Quartz.Extensions.DependencyInjection": {
+        "type": "Transitive",
+        "resolved": "3.15.0",
+        "contentHash": "4g+QSG84cHlffLXoiHC7I/zkw223GUtdj0ZYrY+sxYq45Dd3Rti4uKIn0dWeotyEiJZNpn028bspf8njSJdnUg==",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Options": "8.0.0",
+          "Quartz": "3.15.0"
         }
       },
       "System.ComponentModel.Annotations": {

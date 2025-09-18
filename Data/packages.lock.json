@@ -274,6 +274,11 @@
           "System.CodeDom": "4.4.0"
         }
       },
+      "Newtonsoft.Json": {
+        "type": "Transitive",
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+      },
       "Npgsql": {
         "type": "Transitive",
         "resolved": "8.0.2",
@@ -288,6 +293,16 @@
         "contentHash": "zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ==",
         "dependencies": {
           "System.IO.Pipelines": "5.0.1"
+        }
+      },
+      "Quartz.Extensions.DependencyInjection": {
+        "type": "Transitive",
+        "resolved": "3.15.0",
+        "contentHash": "4g+QSG84cHlffLXoiHC7I/zkw223GUtdj0ZYrY+sxYq45Dd3Rti4uKIn0dWeotyEiJZNpn028bspf8njSJdnUg==",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Options": "8.0.0",
+          "Quartz": "3.15.0"
         }
       },
       "System.CodeDom": {
@@ -408,6 +423,9 @@
           "Microsoft.Extensions.Hosting.Abstractions": "[8.0.0, )",
           "Microsoft.Extensions.Http": "[8.0.1, )",
           "Microsoft.Playwright": "[1.54.0, )",
+          "Quartz": "[3.15.0, )",
+          "Quartz.Extensions.Hosting": "[3.15.0, )",
+          "Quartz.Serialization.Json": "[3.15.0, )",
           "StackExchange.Redis": "[2.9.17, )"
         }
       },
@@ -459,6 +477,35 @@
           "Microsoft.Bcl.AsyncInterfaces": "6.0.0",
           "System.ComponentModel.Annotations": "5.0.0",
           "System.Text.Json": "6.0.10"
+        }
+      },
+      "Quartz": {
+        "type": "CentralTransitive",
+        "requested": "[3.15.0, )",
+        "resolved": "3.15.0",
+        "contentHash": "seV76VI/OW9xdsEHJlfErciicfMmmU8lcGde2SJIYxVK+k4smAaBkm0FY8a4AiVb6MMpjTvH252438ol/OOUwQ==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "2.1.1"
+        }
+      },
+      "Quartz.Extensions.Hosting": {
+        "type": "CentralTransitive",
+        "requested": "[3.15.0, )",
+        "resolved": "3.15.0",
+        "contentHash": "p9Fy67yAXxwjL/FxfVtmxwXbVtMOVZX+hNnONKT11adugK6kqgdfYvb0IP5pBBHW1rJSq88MpNkQ0EkyMCUhWg==",
+        "dependencies": {
+          "Microsoft.Extensions.Hosting.Abstractions": "8.0.0",
+          "Quartz.Extensions.DependencyInjection": "3.15.0"
+        }
+      },
+      "Quartz.Serialization.Json": {
+        "type": "CentralTransitive",
+        "requested": "[3.15.0, )",
+        "resolved": "3.15.0",
+        "contentHash": "N9kS9GKo3mCPTkDRZ8yowBJiF9JgXRIgJHURYJmX7WQC0xrq2n0pBs6aK84kClZzuUWY6hpQLuIk8VXx96Mdpw==",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3",
+          "Quartz": "3.15.0"
         }
       }
     }
