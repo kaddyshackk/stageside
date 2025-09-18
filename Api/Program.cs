@@ -1,6 +1,7 @@
 using ComedyPull.Api.Extensions;
 using ComedyPull.Application.Extensions;
 using ComedyPull.Data.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Playwright;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,13 @@ var app = builder.Build();
 
 await VerifyPlaywrightAsync();
 
+if (app.Environment.IsEnvironment("Local"))
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<ComedyPull.Data.Database.Contexts.ComedyContext>();
+    await context.Database.MigrateAsync();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -42,18 +50,16 @@ static async Task VerifyPlaywrightAsync()
 {
     try
     {
-        Console.WriteLine("Verifying Playwright is ready...");
         using var playwright = await Playwright.CreateAsync();
         var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
             Headless = true
         });
         await browser.CloseAsync();
-        Console.WriteLine("✅ Playwright is ready for web scraping.");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌ Playwright verification failed: {ex.Message}");
-        Console.WriteLine("⚠️  Web scraping functionality may not work.");
+        Console.WriteLine($"Playwright verification failed: {ex.Message}");
+        Environment.Exit(789);
     }
 }
