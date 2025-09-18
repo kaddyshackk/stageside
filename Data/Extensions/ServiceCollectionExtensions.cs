@@ -40,14 +40,14 @@ namespace ComedyPull.Data.Extensions
             // Configure DbContext's
             // TODO: Move database configuration to dedicated place
             
-            services.AddDbContextFactory<ComedyContext>((serviceProvider, options) =>
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            if (string.IsNullOrEmpty(connectionString))
             {
-                var connectionString = configuration.GetConnectionString("DefaultConnection");
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    throw new InvalidOperationException("DefaultConnection string is not configured.");
-                }
-
+                throw new InvalidOperationException("DefaultConnection string is not configured.");
+            }
+            
+            services.AddDbContextFactory<ComedyContext>((_, options) =>
+            {
                 options.UseNpgsql(connectionString, npgsqlOptions =>
                 {
                     npgsqlOptions.EnableRetryOnFailure(
@@ -61,11 +61,13 @@ namespace ComedyPull.Data.Extensions
                 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
                 switch (environment)
                 {
+                    case "Local":
                     case "Development":
                         options.EnableSensitiveDataLogging();
                         options.EnableDetailedErrors();
                         options.LogTo(Console.WriteLine, LogLevel.Information);
                         break;
+                    case "Staging":
                     case "Production":
                         options.EnableServiceProviderCaching();
                         options.EnableSensitiveDataLogging(false);
@@ -87,7 +89,7 @@ namespace ComedyPull.Data.Extensions
         /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
         private static void AddQueueServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IConnectionMultiplexer>(provider =>
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
             {
                 var connectionString = configuration.GetConnectionString("Redis");
                 if (string.IsNullOrEmpty(connectionString))

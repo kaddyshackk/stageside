@@ -7,24 +7,21 @@ services:
     ports:
       - "5281:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Local
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=comedypull;Username=postgres;Password=postgres
     volumes:
       - ./Api:/app/Api
       - ./Application:/app/Application
     depends_on:
-      - redis
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - comedypull-dev
     # Playwright-specific configuration
-    init: true  # Equivalent to --init flag - prevents zombie processes
-    ipc: host   # Equivalent to --ipc=host flag - prevents Chromium memory issues
-    # Uncomment the following if you encounter Chrome sandbox issues:
-    # cap_add:
-    #   - SYS_ADMIN
-    # security_opt:
-    #   - seccomp:unconfined
+    init: true
+    ipc: host
 
   postgres:
     image: postgres:15-alpine
@@ -36,6 +33,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init/postgres:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s

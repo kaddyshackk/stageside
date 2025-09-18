@@ -3,11 +3,14 @@ using System.Text.RegularExpressions;
 using ComedyPull.Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Quartz;
 
 namespace ComedyPull.Application.Features.DataSync.Punchup
 {
-    public partial class PunchupScrapeJob
+    public partial class PunchupScrapeJob : IJob
     {
+        public static JobKey Key { get; } = new (nameof(PunchupScrapeJob));
+        
         private readonly ISitemapLoader _sitemapLoader;
         private readonly IScraper _scraper;
         private readonly IServiceProvider _serviceProvider;
@@ -25,7 +28,7 @@ namespace ComedyPull.Application.Features.DataSync.Punchup
             _logger = logger;
         }
 
-        public async Task ExecuteAsync()
+        public async Task Execute(IJobExecutionContext context)
         {
             _logger.LogInformation("DataSync - Job started - {JobName}", nameof(PunchupScrapeJob));
             const string sitemapUrl = "https://www.punchup.live/sitemap.xml";
