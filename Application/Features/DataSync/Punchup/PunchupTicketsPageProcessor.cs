@@ -39,7 +39,8 @@ namespace ComedyPull.Application.Features.DataSync.Punchup
             var shows = new List<PunchupEvent>();
             if (!noShows)
             {
-                await pom.SeeAllButton.WaitForAsync();
+                if (await pom.SeeAllButton.IsVisibleAsync())
+                    await pom.SeeAllButton.WaitForAsync();
                 var showLocators = await pom.Show.AllAsync();
                 var tasks = showLocators.Select(ProcessShowAsync);
                 var results = await Task.WhenAll(tasks);
