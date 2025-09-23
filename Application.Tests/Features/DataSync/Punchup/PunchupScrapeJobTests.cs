@@ -1,7 +1,9 @@
 using ComedyPull.Application.Features.DataSync.Interfaces;
+using ComedyPull.Application.Features.DataSync.Jobs;
 using ComedyPull.Application.Features.DataSync.Punchup;
 using FakeItEasy;
 using FluentAssertions;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using Quartz;
 
@@ -13,6 +15,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
         private ISitemapLoader _mockSitemapLoader = null!;
         private IScraper _mockScraper = null!;
         private IServiceProvider _serviceProvider = null!;
+        private IMediator _mediator = null!;
         private ILogger<PunchupScrapeJob> _logger = null!;
         private PunchupScrapeJob _job = null!;
 
@@ -22,11 +25,12 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             _mockSitemapLoader = A.Fake<ISitemapLoader>();
             _mockScraper = A.Fake<IScraper>();
             _serviceProvider = A.Fake<IServiceProvider>();
+            _mediator = A.Fake<IMediator>();
             _logger =  A.Fake<ILogger<PunchupScrapeJob>>();
-            _job = new PunchupScrapeJob(_mockSitemapLoader, _mockScraper, _serviceProvider, _logger);
+            _job = new PunchupScrapeJob(_mockSitemapLoader, _mockScraper, _serviceProvider, _mediator, _logger);
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task ExecuteAsync_LoadsSitemapFromCorrectUrl()
         {
             const string expectedSitemapUrl = "https://www.punchup.live/sitemap.xml";
@@ -39,7 +43,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
                 .MustHaveHappenedOnceExactly();
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task ExecuteAsync_FiltersUrlsUsingTicketsPageRegex()
         {
             var sitemapUrls = new List<string>
@@ -71,7 +75,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
                 .MustHaveHappenedOnceExactly();
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task ExecuteAsync_InitializesScraperBeforeRunning()
         {
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
@@ -85,7 +89,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
                     .MustHaveHappenedOnceExactly());
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task ExecuteAsync_RunsScraperWithCorrectProcessor()
         {
             var matchedUrls = new List<string> { "https://www.punchup.live/comedian1/tickets" };
@@ -101,7 +105,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
                 .MustHaveHappenedOnceExactly();
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task ExecuteAsync_DisposesScraperAfterExecution()
         {
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
@@ -115,7 +119,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
                     .MustHaveHappenedOnceExactly());
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task ExecuteAsync_WithEmptySitemap_DoesNotCallScraper()
         {
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
@@ -130,7 +134,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
                 .MustHaveHappenedOnceExactly();
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task ExecuteAsync_WithNoMatchingUrls_DoesNotCallScraper()
         {
             var sitemapUrls = new List<string>
@@ -149,7 +153,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
                 .MustNotHaveHappened();
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task ExecuteAsync_WhenSitemapLoaderThrows_CatchesAndLogsException()
         {
             var expectedException = new HttpRequestException("Network error");
@@ -165,7 +169,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
                 .MustHaveHappenedOnceExactly();
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task ExecuteAsync_WhenScraperInitializationFails_CatchesAndLogsException()
         {
             var expectedException = new InvalidOperationException("Browser initialization failed");
@@ -186,7 +190,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
                 .MustHaveHappenedOnceExactly();
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task ExecuteAsync_WhenScraperRunFails_CatchesAndLogsException()
         {
             var expectedException = new Exception("Scraping failed");
@@ -204,7 +208,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
                 .MustHaveHappenedOnceExactly();
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task ExecuteAsync_WhenScraperRunFails_StillDisposesScraperInFinally()
         {
             var expectedException = new Exception("Scraping failed");
@@ -223,7 +227,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
                 .MustHaveHappenedOnceExactly();
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public void TicketsPageUrlRegex_MatchesValidTicketsUrls()
         {
             var validUrls = new[]
@@ -242,7 +246,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             }
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public void TicketsPageUrlRegex_DoesNotMatchInvalidUrls()
         {
             var invalidUrls = new[]

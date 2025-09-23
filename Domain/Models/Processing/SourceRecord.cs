@@ -31,7 +31,7 @@ namespace ComedyPull.Domain.Models.Processing
         /// <summary>
         /// Gets or sets the current processing stage.
         /// </summary>
-        public ProcessingStage Stage { get; set; } = ProcessingStage.Ingested;
+        public ProcessingState State { get; set; } = ProcessingState.Ingested;
         
         /// <summary>
         /// Gets the raw scraped data.

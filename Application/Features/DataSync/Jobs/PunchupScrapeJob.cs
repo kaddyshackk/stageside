@@ -1,61 +1,59 @@
 ﻿using ComedyPull.Application.Features.DataSync.Interfaces;
 using System.Text.RegularExpressions;
+using ComedyPull.Application.Features.DataProcessing.Events;
+using ComedyPull.Application.Features.DataSync.Punchup;
 using ComedyPull.Domain.Enums;
+using ComedyPull.Domain.Models.Processing;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Quartz;
 
-namespace ComedyPull.Application.Features.DataSync.Punchup
+namespace ComedyPull.Application.Features.DataSync.Jobs
 {
-    public partial class PunchupScrapeJob : IJob
+    public partial class PunchupScrapeJob(
+        ISitemapLoader sitemapLoader,
+        [FromKeyedServices(DataSourceKeys.Punchup)]
+        IScraper scraper,
+        IServiceProvider serviceProvider,
+        IMediator mediator,
+        ILogger<PunchupScrapeJob> logger)
+        : IJob
     {
         public static JobKey Key { get; } = new (nameof(PunchupScrapeJob));
-        
-        private readonly ISitemapLoader _sitemapLoader;
-        private readonly IScraper _scraper;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<PunchupScrapeJob> _logger;
-
-        public PunchupScrapeJob(
-            ISitemapLoader sitemapLoader,
-            [FromKeyedServices(DataSourceKeys.Punchup)] IScraper scraper,
-            IServiceProvider serviceProvider,
-            ILogger<PunchupScrapeJob> logger)
-        {
-            _sitemapLoader = sitemapLoader;
-            _scraper = scraper;
-            _serviceProvider = serviceProvider;
-            _logger = logger;
-        }
 
         public async Task Execute(IJobExecutionContext context)
         {
-            _logger.LogInformation("DataSync - Job started - {JobName}", nameof(PunchupScrapeJob));
+            var batchId = Guid.NewGuid();
+            logger.LogInformation("DataSync - Job started: {JobName} - {BatchId}", nameof(PunchupScrapeJob), batchId);
             const string sitemapUrl = "https://www.punchup.live/sitemap.xml";
             try
             {
-                var urls = await _sitemapLoader.LoadSitemapAsync(sitemapUrl);
+                var urls = await sitemapLoader.LoadSitemapAsync(sitemapUrl);
 
                 // Filter Urls
                 var regex = TicketsPageUrlRegex();
                 var matched = urls.Where(url => regex.IsMatch(url)).ToList();
 
                 // Perform Job
-                await _scraper.InitializeAsync();
+                await scraper.InitializeAsync();
                 if (matched.Any())
                 {
-                    await _scraper.RunAsync(matched,
-                        () => _serviceProvider.GetRequiredService<PunchupTicketsPageCollector>());
+                    await scraper.RunAsync(matched,
+                        () => serviceProvider.GetRequiredService<PunchupTicketsPageCollector>());
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "DataSync - Job failed - {JobName}", nameof(PunchupScrapeJob));
+                logger.LogError(ex, "DataSync - Job failed - {JobName}", nameof(PunchupScrapeJob));
             }
             finally
             {
-                _scraper.Dispose();
-                _logger.LogInformation("DataSync - Job finished - {JobName}", nameof(PunchupScrapeJob));
+                scraper.Dispose();
+                
+                await mediator.Publish(new StateCompletedEvent(batchId, ProcessingState.Ingested));
+                
+                logger.LogInformation("DataSync - Job finished - {JobName}", nameof(PunchupScrapeJob));
             }
         }
 

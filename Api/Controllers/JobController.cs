@@ -1,3 +1,4 @@
+using ComedyPull.Application.Features.DataSync.Jobs;
 using ComedyPull.Application.Features.DataSync.Punchup;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
@@ -13,9 +14,7 @@ namespace ComedyPull.Api.Controllers
         : ControllerBase
     {
         [HttpPost("punchup")]
-        public async Task<IActionResult> TriggerPunchupScrape(
-            [FromServices] PunchupScrapeJob job
-        )
+        public async Task<IActionResult> TriggerPunchupScrape()
         {
             try
             {

@@ -1,8 +1,13 @@
+using ComedyPull.Application.Features.DataProcessing.Events;
+using ComedyPull.Application.Features.DataProcessing.Handlers;
+using ComedyPull.Application.Features.DataProcessing.Processors;
 using ComedyPull.Application.Features.DataSync.Interfaces;
+using ComedyPull.Application.Features.DataSync.Jobs;
 using ComedyPull.Application.Features.DataSync.Punchup;
 using ComedyPull.Application.Features.DataSync.Services;
 using ComedyPull.Application.Options;
 using ComedyPull.Domain.Enums;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -37,9 +42,6 @@ namespace ComedyPull.Application.Extensions
             // Processors
             services.AddTransient<PunchupTicketsPageCollector>();
 
-            // Jobs
-            services.AddScoped<PunchupScrapeJob>();
-
             // Scrapers
             services.AddKeyedSingleton<IScraper, PlaywrightScraper>(DataSourceKeys.Punchup,
                 (provider, _) =>
@@ -49,6 +51,9 @@ namespace ComedyPull.Application.Extensions
                         concurrency: options.Value.Punchup.Concurrency
                     );
                 });
+            
+            // Services
+            services.AddHostedService<SourceRecordIngestionService>();
         }
 
         /// <summary>
@@ -60,9 +65,12 @@ namespace ComedyPull.Application.Extensions
         {
             // Options
             services.Configure<DataProcessingOptions>(configuration.GetSection("DataProcessingOptions"));
-
-            // Services
-            services.AddHostedService<SourceRecordIngestionService>();
+            
+            // Handlers
+            services.AddScoped<INotificationHandler<StateCompletedEvent>, StateCompletedHandler>();
+            
+            // Processors
+            services.AddScoped<TransformProcessor>();
         }
         
         /// <summary>

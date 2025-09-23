@@ -43,7 +43,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             await _page.CloseAsync();
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Playwright")]
         public async Task ProcessPage_ReturnsData()
         {
             // Arrange

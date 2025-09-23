@@ -30,7 +30,7 @@ namespace ComedyPull.Data.Database.Configurations
                 .HasColumnType("varchar(50)")
                 .IsRequired();
             
-            builder.Property(r => r.Stage)
+            builder.Property(r => r.State)
                 .HasMaxLength(50)
                 .HasColumnType("varchar(50)")
                 .IsRequired();

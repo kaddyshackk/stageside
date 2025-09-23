@@ -54,7 +54,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Services
             _mockHandler.Dispose();
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task LoadSitemapAsync_ShouldFetchAndParseSitemap()
         {
             // Arrange
@@ -76,7 +76,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Services
             response.Should().Contain("https://example.com/products");
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task LoadSitemapAsync_CreatesHttpClientFromFactory()
         {
             // Arrange
@@ -95,7 +95,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Services
                 .MustHaveHappenedOnceExactly();
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task LoadSitemapAsync_WithInvalidXml_ThrowsException()
         {
             // Arrange
@@ -111,7 +111,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Services
             await act.Should().ThrowAsync<System.Xml.XmlException>();
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public async Task LoadSitemapAsync_WithHttpError_ThrowsHttpRequestException()
         {
             // Arrange

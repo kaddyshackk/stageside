@@ -3,9 +3,9 @@
 namespace ComedyPull.Domain.Models.Processing
 {
     /// <summary>
-    /// Represents the stage of a <see cref="SourceRecord"/> in the data pipeline.
+    /// Represents the state of a <see cref="SourceRecord"/> in the data pipeline.
     /// </summary>
-    public enum ProcessingStage
+    public enum ProcessingState
     {
         [Description("Ingested")]
         Ingested,
@@ -23,6 +23,9 @@ namespace ComedyPull.Domain.Models.Processing
         Linked,
         
         [Description("Completed")]
-        Completed
+        Completed,
+        
+        [Description("Failed")]
+        Failed
     }
 }
