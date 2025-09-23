@@ -1,13 +1,14 @@
 using ComedyPull.Application.Features.DataSync.Punchup;
 using ComedyPull.Application.Interfaces;
 using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Models.Processing;
 using FakeItEasy;
 using Microsoft.Playwright;
 
 namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
 {
     [TestClass]
-    public class PunchupTicketsPageProcessorTests
+    public class PunchupTicketsPageCollectorTests
     {
         private static IPlaywright _playwright = null!;
         private static IBrowser _browser = null!;
@@ -47,14 +48,14 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
         {
             // Arrange
             var url = "https://punchup.live/joe-list/tickets";
-            var queue = A.Fake<IQueue<BronzeRecord>>();
-            var processor = new PunchupTicketsPageProcessor(queue);
+            var queue = A.Fake<IQueue<SourceRecord>>();
+            var processor = new PunchupTicketsPageCollector(queue);
             
             // Act
-            await processor.ProcessPageAsync(url, _page, CancellationToken.None);
+            await processor.CollectPageAsync(url, _page, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => queue.EnqueueAsync(A<BronzeRecord>._, A<CancellationToken>._))
+            A.CallTo(() => queue.EnqueueAsync(A<SourceRecord>._, A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }
     }

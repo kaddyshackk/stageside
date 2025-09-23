@@ -67,7 +67,7 @@ namespace ComedyPull.Application.Features.DataSync.Services
         /// <exception cref="InvalidOperationException">Thrown if the <see cref="PlaywrightScraper"/> was not properly initialized.</exception>
         public async Task RunAsync<TProcessor>(IEnumerable<string> urls, Func<TProcessor> processorFactory,
             CancellationToken cancellationToken = default)
-            where TProcessor : IPageProcessor
+            where TProcessor : IPageCollector
         {
             if (_browser == null)
                 throw new InvalidOperationException("Scraper not initialized. Call InitializeAsync first.");
@@ -91,7 +91,7 @@ namespace ComedyPull.Application.Features.DataSync.Services
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> that completes when no more URLs are available in the queue.</returns>
         private async Task WorkAsync<TProcessor>(TProcessor processor, CancellationToken cancellationToken)
-            where TProcessor : IPageProcessor
+            where TProcessor : IPageCollector
         {
             while (await _urlReader.WaitToReadAsync(cancellationToken))
             {
@@ -102,7 +102,7 @@ namespace ComedyPull.Application.Features.DataSync.Services
                 try
                 {
                     page = await _context!.NewPageAsync();
-                    await processor.ProcessPageAsync(url, page, cancellationToken);
+                    await processor.CollectPageAsync(url, page, cancellationToken);
                 }
                 catch (Exception ex)
                 {

@@ -13,7 +13,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Services
         private IBrowser _mockBrowser = null!;
         private IBrowserContext _mockContext = null!;
         private IPage _mockPage = null!;
-        private IPageProcessor _mockProcessor = null!;
+        private IPageCollector _mockCollector = null!;
 
         [TestInitialize]
         public void Setup()
@@ -22,7 +22,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Services
             _mockBrowser = A.Fake<IBrowser>();
             _mockContext = A.Fake<IBrowserContext>();
             _mockPage = A.Fake<IPage>();
-            _mockProcessor = A.Fake<IPageProcessor>();
+            _mockCollector = A.Fake<IPageCollector>();
 
             A.CallTo(() => _mockPlaywright.Chromium.LaunchAsync(A<BrowserTypeLaunchOptions>._))
                 .Returns(Task.FromResult(_mockBrowser));
@@ -85,9 +85,9 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Services
             var scraper = new PlaywrightScraper(concurrency: 2, playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
             var urls = new[] { "https://example1.com", "https://example2.com", "https://example3.com" };
 
-            await scraper.RunAsync(urls, () => _mockProcessor);
+            await scraper.RunAsync(urls, () => _mockCollector);
 
-            A.CallTo(() => _mockProcessor.ProcessPageAsync(A<string>._, _mockPage, A<CancellationToken>._))
+            A.CallTo(() => _mockCollector.CollectPageAsync(A<string>._, _mockPage, A<CancellationToken>._))
                 .MustHaveHappened(3, Times.Exactly);
             
             A.CallTo(() => _mockContext.NewPageAsync())
@@ -103,7 +103,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Services
             var scraper = new PlaywrightScraper();
             var urls = new[] { "https://example.com" };
 
-            var act = async () => await scraper.RunAsync(urls, () => _mockProcessor);
+            var act = async () => await scraper.RunAsync(urls, () => _mockCollector);
 
             await act.Should().ThrowAsync<InvalidOperationException>()
                 .WithMessage("Scraper not initialized. Call InitializeAsync first.");
@@ -119,7 +119,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Services
             await scraper.InitializeAsync();
             var urls = new[] { "https://example.com" };
 
-            var act = async () => await scraper.RunAsync(urls, () => _mockProcessor);
+            var act = async () => await scraper.RunAsync(urls, () => _mockCollector);
 
             await act.Should().ThrowAsync<InvalidOperationException>()
                 .WithMessage("Scraper failed to initialize a new context.");
@@ -131,12 +131,12 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Services
             var scraper = new PlaywrightScraper(concurrency: 1, playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
             var urls = new[] { "https://error.com", "https://success.com" };
             
-            A.CallTo(() => _mockProcessor.ProcessPageAsync("https://error.com", A<IPage>._, A<CancellationToken>._))
+            A.CallTo(() => _mockCollector.CollectPageAsync("https://error.com", A<IPage>._, A<CancellationToken>._))
                 .Throws<Exception>();
 
-            await scraper.RunAsync(urls, () => _mockProcessor, CancellationToken.None);
+            await scraper.RunAsync(urls, () => _mockCollector, CancellationToken.None);
 
-            A.CallTo(() => _mockProcessor.ProcessPageAsync(A<string>._, _mockPage, A<CancellationToken>._))
+            A.CallTo(() => _mockCollector.CollectPageAsync(A<string>._, _mockPage, A<CancellationToken>._))
                 .MustHaveHappened(2, Times.Exactly);
             
             A.CallTo(() => _mockPage.CloseAsync(null))
@@ -151,7 +151,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Services
             var cts = new CancellationTokenSource();
             await cts.CancelAsync();
 
-            var act = async () => await scraper.RunAsync(urls, () => _mockProcessor, cts.Token);
+            var act = async () => await scraper.RunAsync(urls, () => _mockCollector, cts.Token);
 
             await act.Should().ThrowAsync<OperationCanceledException>();
         }

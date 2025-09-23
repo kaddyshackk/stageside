@@ -1,4 +1,3 @@
-using ComedyPull.Application.Features.DataProcessing.Services;
 using ComedyPull.Application.Features.DataSync.Interfaces;
 using ComedyPull.Application.Features.DataSync.Punchup;
 using ComedyPull.Application.Features.DataSync.Services;
@@ -36,7 +35,7 @@ namespace ComedyPull.Application.Extensions
             services.AddScoped<ISitemapLoader, SitemapLoader>();
 
             // Processors
-            services.AddTransient<PunchupTicketsPageProcessor>();
+            services.AddTransient<PunchupTicketsPageCollector>();
 
             // Jobs
             services.AddScoped<PunchupScrapeJob>();
@@ -63,7 +62,7 @@ namespace ComedyPull.Application.Extensions
             services.Configure<DataProcessingOptions>(configuration.GetSection("DataProcessingOptions"));
 
             // Services
-            services.AddHostedService<BronzeProcessingService>();
+            services.AddHostedService<SourceRecordIngestionService>();
         }
         
         /// <summary>

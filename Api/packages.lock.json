@@ -257,11 +257,6 @@
           "System.CodeDom": "4.4.0"
         }
       },
-      "Newtonsoft.Json": {
-        "type": "Transitive",
-        "resolved": "13.0.3",
-        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
-      },
       "Npgsql": {
         "type": "Transitive",
         "resolved": "8.0.2",
@@ -446,7 +441,10 @@
         }
       },
       "domain": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Newtonsoft.Json": "[13.0.4, )"
+        }
       },
       "Microsoft.EntityFrameworkCore": {
         "type": "CentralTransitive",
@@ -517,6 +515,12 @@
           "Microsoft.Extensions.Logging.Abstractions": "8.0.2",
           "Microsoft.Extensions.Options": "8.0.2"
         }
+      },
+      "Newtonsoft.Json": {
+        "type": "CentralTransitive",
+        "requested": "[13.0.4, )",
+        "resolved": "13.0.4",
+        "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL": {
         "type": "CentralTransitive",

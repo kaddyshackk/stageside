@@ -6,6 +6,7 @@ namespace ComedyPull.Data.Database.Contexts
     /// <summary>
     /// Default DbContext configuration.
     /// </summary>
+    /// <param name="options">Injected <see cref="DbContextOptions"/> instance.</param>
     public class ComedyContext(DbContextOptions<ComedyContext> options) : DbContext(options)
     {
         /// <summary>
@@ -27,11 +28,6 @@ namespace ComedyPull.Data.Database.Contexts
         /// Gets or sets the Venues DbSet.
         /// </summary>
         public DbSet<Venue> Venues { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the BronzeRecords (Raw Data)
-        /// </summary>
-        public DbSet<BronzeRecord> BronzeRecords { get; set; }
 
         /// <summary>
         /// Performs additional setup on table creation.

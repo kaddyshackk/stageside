@@ -254,11 +254,6 @@
         "resolved": "3.10.2",
         "contentHash": "WS9GHohjOzf653bqCSxplq3T25LAwFVeVrgLuotTiPDu+bO5bD7RgvXbkLqRqZGE2Qyuk/dbQpqa18PYAMXjMg=="
       },
-      "Newtonsoft.Json": {
-        "type": "Transitive",
-        "resolved": "13.0.3",
-        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
-      },
       "Pipelines.Sockets.Unofficial": {
         "type": "Transitive",
         "resolved": "2.2.8",
@@ -347,7 +342,10 @@
         }
       },
       "domain": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Newtonsoft.Json": "[13.0.4, )"
+        }
       },
       "Microsoft.Extensions.DependencyInjection": {
         "type": "CentralTransitive",
@@ -395,6 +393,12 @@
           "System.ComponentModel.Annotations": "5.0.0",
           "System.Text.Json": "6.0.10"
         }
+      },
+      "Newtonsoft.Json": {
+        "type": "CentralTransitive",
+        "requested": "[13.0.4, )",
+        "resolved": "13.0.4",
+        "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
       },
       "Quartz": {
         "type": "CentralTransitive",

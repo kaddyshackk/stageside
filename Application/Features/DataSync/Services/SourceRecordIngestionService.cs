@@ -1,26 +1,25 @@
-﻿using ComedyPull.Application.Features.DataProcessing.Interfaces;
+﻿using ComedyPull.Application.Features.DataSync.Interfaces;
 using ComedyPull.Application.Interfaces;
 using ComedyPull.Application.Options;
-using ComedyPull.Domain.Models;
-using Microsoft.Extensions.DependencyInjection;
+using ComedyPull.Domain.Models.Processing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
 
-namespace ComedyPull.Application.Features.DataProcessing.Services
+namespace ComedyPull.Application.Features.DataSync.Services
 {
     /// <summary>
     /// Background service that processes bronze records from Redis queue in batches.
     /// </summary>
-    public class BronzeProcessingService(
-        IQueue<BronzeRecord> queue,
-        IBronzeRecordRepository repository,
-        ILogger<BronzeProcessingService> logger,
+    public class SourceRecordIngestionService(
+        IQueue<SourceRecord> queue,
+        ISourceRecordWriteRepository writeRepository,
+        ILogger<SourceRecordIngestionService> logger,
         IOptions<BronzeProcessingOptions> options
     ) : BackgroundService
     {
         private readonly BronzeProcessingOptions _options = options.Value;
-        private readonly List<BronzeRecord> _currentBatch = [];
+        private readonly List<SourceRecord> _currentBatch = [];
         private DateTime _lastFlushTime = DateTime.UtcNow;
 
         /// <summary>
@@ -92,7 +91,7 @@ namespace ComedyPull.Application.Features.DataProcessing.Services
                 logger.LogInformation("Flushing batch of {Count} bronze records to database", _currentBatch.Count);
 
                 var batchSize = _currentBatch.Count;
-                await repository.BatchInsertAsync(_currentBatch, cancellationToken);
+                await writeRepository.BatchInsertAsync(_currentBatch, cancellationToken);
 
                 logger.LogInformation("Successfully processed {Count} bronze records", batchSize);
 

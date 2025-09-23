@@ -1,10 +1,10 @@
 using ComedyPull.Application.Enums;
-using ComedyPull.Application.Features.DataProcessing.Interfaces;
+using ComedyPull.Application.Features.DataSync.Interfaces;
 using ComedyPull.Application.Interfaces;
 using ComedyPull.Data.Database.Contexts;
 using ComedyPull.Data.Database.Repositories;
 using ComedyPull.Data.Queue;
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Models.Processing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,8 +37,14 @@ namespace ComedyPull.Data.Extensions
         /// <exception cref="InvalidOperationException">If the DefaultConnection or ASPNETCORE_EXCEPTION is misconfigured.</exception>
         private static void AddDatabaseServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // Configure DbContext's
-            // TODO: Move database configuration to dedicated place
+            // Configure Contexts
+            
+            // TODO: Move environment checks to Program.cs
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            if (string.IsNullOrEmpty(environment))
+            {
+                throw new InvalidOperationException("ASPNETCORE_ENVIRONMENT is not set");
+            }
             
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             if (string.IsNullOrEmpty(connectionString))
@@ -58,7 +64,36 @@ namespace ComedyPull.Data.Extensions
                     npgsqlOptions.CommandTimeout(30);
                 });
                 
-                var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                switch (environment)
+                {
+                    case "Local":
+                    case "Development":
+                        options.EnableSensitiveDataLogging();
+                        options.EnableDetailedErrors();
+                        options.LogTo(Console.WriteLine, LogLevel.Information);
+                        break;
+                    case "Staging":
+                    case "Production":
+                        options.EnableServiceProviderCaching();
+                        options.EnableSensitiveDataLogging(false);
+                        break;
+                    default:
+                        throw new InvalidOperationException("Unknown environment: " + environment);
+                }
+            });
+
+            services.AddDbContextFactory<ProcessingContext>((_, options) =>
+            {
+                options.UseNpgsql(connectionString, npgsqlOptions =>
+                {
+                    npgsqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 3,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorCodesToAdd: null);
+                    
+                    npgsqlOptions.CommandTimeout(30);
+                });
+                
                 switch (environment)
                 {
                     case "Local":
@@ -79,7 +114,7 @@ namespace ComedyPull.Data.Extensions
             
             // Configure Repositories
             
-            services.AddSingleton<IBronzeRecordRepository, BronzeRecordRepository>();
+            services.AddSingleton<ISourceRecordWriteRepository, SourceRecordWriteRepository>();
         }
 
         /// <summary>
@@ -97,13 +132,13 @@ namespace ComedyPull.Data.Extensions
                 return ConnectionMultiplexer.Connect(connectionString);
             });
 
-            services.AddSingleton<IQueue<BronzeRecord>>(provider =>
+            services.AddSingleton<IQueue<SourceRecord>>(provider =>
             {
                 var redis = provider.GetService<IConnectionMultiplexer>();
                 if (redis is null)
                     throw new Exception("IConnectionMultiplexer is not configured.");
-                var logger = provider.GetRequiredService<ILogger<RedisQueue<BronzeRecord>>>();
-                return new RedisQueue<BronzeRecord>(redis, logger, QueueKey.BronzeRecord);
+                var logger = provider.GetRequiredService<ILogger<RedisQueue<SourceRecord>>>();
+                return new RedisQueue<SourceRecord>(redis, logger, QueueKey.BronzeRecord);
             });
         }
     }

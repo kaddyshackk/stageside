@@ -6,6 +6,7 @@ using ComedyPull.Application.Interfaces;
 using ComedyPull.Application.Utils;
 using ComedyPull.Domain.Enums;
 using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Models.Processing;
 using Microsoft.Playwright;
 
 namespace ComedyPull.Application.Features.DataSync.Punchup
@@ -13,7 +14,7 @@ namespace ComedyPull.Application.Features.DataSync.Punchup
     /// <summary>
     /// IPageProcessor implementation that scrapes and stores the result data.
     /// </summary>
-    public class PunchupTicketsPageProcessor(IQueue<BronzeRecord> queue) : IPageProcessor
+    public class PunchupTicketsPageCollector(IQueue<SourceRecord> queue) : IPageCollector
     {
         /// <summary>
         /// Processes a page at the given URL.
@@ -22,7 +23,7 @@ namespace ComedyPull.Application.Features.DataSync.Punchup
         /// <param name="page">The page to use in processing.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> that completes when processing is completed.</returns>
-        public async Task ProcessPageAsync(string url, IPage page, CancellationToken cancellationToken)
+        public async Task CollectPageAsync(string url, IPage page, CancellationToken cancellationToken)
         {
             var pom = new TicketsPage(page);
 
@@ -47,13 +48,13 @@ namespace ComedyPull.Application.Features.DataSync.Punchup
                 shows = results.Where(show => show != null).ToList()!;
             }
 
-            var record = new BronzeRecord
+            var record = new SourceRecord
             {
+                BatchId = Guid.NewGuid().ToString(),
                 Source = DataSource.Punchup,
                 IngestedAt = DateTimeOffset.UtcNow,
-                EntityType = "TicketsPage",
-                // TODO: Implement consistent external Id generation
-                ExternalId = $"test-{Guid.NewGuid()}",
+                EntityType = EntityType.Act,
+                RecordType = RecordType.PunchupTicketsPage,
                 RawData = JsonSerializer.Serialize(new PunchupRecord
                 {
                     Name = name,

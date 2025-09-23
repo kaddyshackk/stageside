@@ -22,6 +22,6 @@ namespace ComedyPull.Application.Features.DataSync.Interfaces
         /// <exception cref="InvalidOperationException">Thrown if the <see cref="IScraper"/> was not properly initialized.</exception>
         public Task RunAsync<TProcessor>(IEnumerable<string> urls, Func<TProcessor> processorFactory,
             CancellationToken cancellationToken = default)
-            where TProcessor : IPageProcessor;
+            where TProcessor : IPageCollector;
     }
 }

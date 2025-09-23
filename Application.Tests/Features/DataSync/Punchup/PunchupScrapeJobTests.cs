@@ -66,7 +66,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
 
             A.CallTo(() => _mockScraper.RunAsync(
                 A<IEnumerable<string>>.That.IsSameSequenceAs(expectedUrls),
-                A<Func<PunchupTicketsPageProcessor>>._,
+                A<Func<PunchupTicketsPageCollector>>._,
                 A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }
@@ -81,7 +81,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
 
             A.CallTo(() => _mockScraper.InitializeAsync(null))
                 .MustHaveHappenedOnceExactly()
-                .Then(A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageProcessor>>._, A<CancellationToken>._))
+                .Then(A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageCollector>>._, A<CancellationToken>._))
                     .MustHaveHappenedOnceExactly());
         }
 
@@ -96,7 +96,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
 
             A.CallTo(() => _mockScraper.RunAsync(
                 A<IEnumerable<string>>.That.Contains("https://www.punchup.live/comedian1/tickets"),
-                A<Func<PunchupTicketsPageProcessor>>.That.Not.IsNull(),
+                A<Func<PunchupTicketsPageCollector>>.That.Not.IsNull(),
                 A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }
@@ -109,7 +109,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
 
             await _job.Execute(A.Fake<IJobExecutionContext>());
 
-            A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageProcessor>>._, A<CancellationToken>._))
+            A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageCollector>>._, A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly()
                 .Then(A.CallTo(() => _mockScraper.Dispose())
                     .MustHaveHappenedOnceExactly());
@@ -123,7 +123,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
 
             await _job.Execute(A.Fake<IJobExecutionContext>());
 
-            A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageProcessor>>._, A<CancellationToken>._))
+            A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageCollector>>._, A<CancellationToken>._))
                 .MustNotHaveHappened();
 
             A.CallTo(() => _mockScraper.Dispose())
@@ -145,7 +145,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
 
             await _job.Execute(A.Fake<IJobExecutionContext>());
 
-            A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageProcessor>>._, A<CancellationToken>._))
+            A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageCollector>>._, A<CancellationToken>._))
                 .MustNotHaveHappened();
         }
 
@@ -192,7 +192,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             var expectedException = new Exception("Scraping failed");
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
                 .Returns(["https://www.punchup.live/comedian1/tickets"]);
-            A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageProcessor>>._, A<CancellationToken>._))
+            A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageCollector>>._, A<CancellationToken>._))
                 .Throws(expectedException);
 
             await _job.Execute(A.Fake<IJobExecutionContext>());
@@ -210,7 +210,7 @@ namespace ComedyPull.Application.Tests.Features.DataSync.Punchup
             var expectedException = new Exception("Scraping failed");
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
                 .Returns(["https://www.punchup.live/comedian1/tickets"]);
-            A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageProcessor>>._, A<CancellationToken>._))
+            A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageCollector>>._, A<CancellationToken>._))
                 .Throws(expectedException);
 
             await _job.Execute(A.Fake<IJobExecutionContext>());

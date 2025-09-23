@@ -45,7 +45,7 @@ namespace ComedyPull.Application.Features.DataSync.Punchup
                 if (matched.Any())
                 {
                     await _scraper.RunAsync(matched,
-                        () => _serviceProvider.GetRequiredService<PunchupTicketsPageProcessor>());
+                        () => _serviceProvider.GetRequiredService<PunchupTicketsPageCollector>());
                 }
             }
             catch (Exception ex)

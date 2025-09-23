@@ -1,28 +1,28 @@
-﻿using ComedyPull.Application.Features.DataProcessing.Interfaces;
+﻿using ComedyPull.Application.Features.DataSync.Interfaces;
 using ComedyPull.Data.Database.Contexts;
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Models.Processing;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComedyPull.Data.Database.Repositories
 {
     /// <summary>
-    /// A repository for interacting with BronzeRecord's.
+    /// A repository for interacting with SourceRecord's.
     /// </summary>
     /// <param name="contextFactory">Injected <see cref="IDbContextFactory{ComedyContext}"/> instance.</param>
-    public class BronzeRecordRepository(IDbContextFactory<ComedyContext> contextFactory) : IBronzeRecordRepository
+    public class SourceRecordWriteRepository(IDbContextFactory<ProcessingContext> contextFactory) : ISourceRecordWriteRepository
     {
         /// <summary>
-        /// Batch inserts a list of <see cref="BronzeRecord"/>.
+        /// Batch inserts a list of <see cref="SourceRecord"/>.
         /// </summary>
-        /// <param name="records">List of <see cref="BronzeRecord"/> entities to insert.</param>
+        /// <param name="records">List of <see cref="SourceRecord"/> entities to insert.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task BatchInsertAsync(IEnumerable<BronzeRecord> records, CancellationToken cancellationToken)
+        public async Task BatchInsertAsync(IEnumerable<SourceRecord> records, CancellationToken cancellationToken)
         {
-            using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
             context.ChangeTracker.AutoDetectChangesEnabled = false;
             try
             {
-                await context.BronzeRecords.AddRangeAsync(records, cancellationToken);
+                await context.SourceRecords.AddRangeAsync(records, cancellationToken);
                 await context.SaveChangesAsync(cancellationToken);
             }
             finally

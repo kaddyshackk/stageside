@@ -21,4 +21,9 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\DataProcessing\Interfaces\" />
+    <Folder Include="Features\DataProcessing\Services\" />
+  </ItemGroup>
+
 </Project>
