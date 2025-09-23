@@ -265,14 +265,6 @@
           "Microsoft.Extensions.Logging.Abstractions": "8.0.0"
         }
       },
-      "Pipelines.Sockets.Unofficial": {
-        "type": "Transitive",
-        "resolved": "2.2.8",
-        "contentHash": "zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ==",
-        "dependencies": {
-          "System.IO.Pipelines": "5.0.1"
-        }
-      },
       "Quartz.Extensions.DependencyInjection": {
         "type": "Transitive",
         "resolved": "3.15.0",
@@ -424,8 +416,7 @@
           "Microsoft.Playwright": "[1.54.0, )",
           "Quartz": "[3.15.0, )",
           "Quartz.Extensions.Hosting": "[3.15.0, )",
-          "Quartz.Serialization.Json": "[3.15.0, )",
-          "StackExchange.Redis": "[2.9.17, )"
+          "Quartz.Serialization.Json": "[3.15.0, )"
         }
       },
       "data": {
@@ -436,8 +427,7 @@
           "Microsoft.EntityFrameworkCore": "[8.0.2, )",
           "Microsoft.EntityFrameworkCore.Design": "[8.0.2, )",
           "Microsoft.EntityFrameworkCore.Tools": "[8.0.2, )",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "[8.0.2, )",
-          "StackExchange.Redis": "[2.9.17, )"
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "[8.0.2, )"
         }
       },
       "domain": {
@@ -561,16 +551,6 @@
         "dependencies": {
           "Newtonsoft.Json": "13.0.3",
           "Quartz": "3.15.0"
-        }
-      },
-      "StackExchange.Redis": {
-        "type": "CentralTransitive",
-        "requested": "[2.9.17, )",
-        "resolved": "2.9.17",
-        "contentHash": "Enpv0bfMP6SRownWx1CmaHantT9626Z6QSdHOidKlm0zLrBaPe7ueQf5phJH6Zkf3lDe5rr6JvXAgEP1ogijug==",
-        "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
-          "Pipelines.Sockets.Unofficial": "2.2.8"
         }
       }
     }

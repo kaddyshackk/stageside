@@ -1,4 +1,3 @@
-using ComedyPull.Application.Enums;
 using ComedyPull.Application.Features.DataSync.Interfaces;
 using ComedyPull.Application.Interfaces;
 using ComedyPull.Data.Database.Contexts;
@@ -9,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
 
 namespace ComedyPull.Data.Extensions
 {
@@ -124,21 +122,10 @@ namespace ComedyPull.Data.Extensions
         /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
         private static void AddQueueServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IConnectionMultiplexer>(_ =>
-            {
-                var connectionString = configuration.GetConnectionString("Redis");
-                if (string.IsNullOrEmpty(connectionString))
-                    throw new Exception("ConnectionStrings:Redis is not configured.");
-                return ConnectionMultiplexer.Connect(connectionString);
-            });
-
             services.AddSingleton<IQueue<SourceRecord>>(provider =>
             {
-                var redis = provider.GetService<IConnectionMultiplexer>();
-                if (redis is null)
-                    throw new Exception("IConnectionMultiplexer is not configured.");
-                var logger = provider.GetRequiredService<ILogger<RedisQueue<SourceRecord>>>();
-                return new RedisQueue<SourceRecord>(redis, logger, QueueKey.BronzeRecord);
+                var logger = provider.GetRequiredService<ILogger<InMemoryQueue<SourceRecord>>>();
+                return new InMemoryQueue<SourceRecord>(logger);
             });
         }
     }

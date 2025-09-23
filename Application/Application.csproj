@@ -13,7 +13,6 @@
     <PackageReference Include="Quartz" />
     <PackageReference Include="Quartz.Extensions.Hosting" />
     <PackageReference Include="Quartz.Serialization.Json" />
-    <PackageReference Include="StackExchange.Redis" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
   </ItemGroup>
 
