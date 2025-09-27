@@ -87,12 +87,12 @@ namespace ComedyPull.Application.Modules.DataSync.Services
                 return;
             try
             {
-                logger.LogInformation("Flushing batch of {Count} bronze records to database", _currentBatch.Count);
+                logger.LogInformation("Flushing batch of {Count} source records to database", _currentBatch.Count);
 
                 var batchSize = _currentBatch.Count;
                 await writeRepository.BatchInsertAsync(_currentBatch, cancellationToken);
 
-                logger.LogInformation("Successfully processed {Count} bronze records", batchSize);
+                logger.LogInformation("Successfully processed {Count} source records", batchSize);
 
                 // Clear the batch and update flush time
                 _currentBatch.Clear();
@@ -100,7 +100,7 @@ namespace ComedyPull.Application.Modules.DataSync.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to flush bronze records batch of size {Count}", _currentBatch.Count);
+                logger.LogError(ex, "Failed to flush source records batch of size {Count}", _currentBatch.Count);
 
                 // TODO: Replace with better error handling
                 _currentBatch.Clear();

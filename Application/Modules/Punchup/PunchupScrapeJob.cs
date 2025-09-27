@@ -37,9 +37,9 @@ namespace ComedyPull.Application.Modules.Punchup
 
                 // Perform Job
                 await scraper.InitializeAsync();
-                if (matched.Any())
+                if (matched.Count != 0)
                 {
-                    await scraper.RunAsync(matched, () => collectorFactory.CreateCollector());
+                    await scraper.RunAsync(matched, collectorFactory.CreateCollector);
                 }
             }
             catch (Exception ex)
