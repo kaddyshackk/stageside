@@ -1,4 +1,4 @@
-﻿using ComedyPull.Application.Features.DataSync.Interfaces;
+﻿using ComedyPull.Application.Modules.DataSync;
 using ComedyPull.Data.Database.Contexts;
 using ComedyPull.Domain.Models.Processing;
 using Microsoft.EntityFrameworkCore;

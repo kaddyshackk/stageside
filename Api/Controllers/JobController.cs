@@ -1,5 +1,4 @@
-using ComedyPull.Application.Features.DataSync.Jobs;
-using ComedyPull.Application.Features.DataSync.Punchup;
+using ComedyPull.Application.Modules.Punchup;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
 
