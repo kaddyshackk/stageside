@@ -1,6 +1,7 @@
 using ComedyPull.Application.Modules.DataSync.Services.Interfaces;
 using ComedyPull.Application.Modules.Punchup;
 using ComedyPull.Application.Modules.Punchup.Collectors;
+using ComedyPull.Application.Modules.Punchup.Factories;
 using FakeItEasy;
 using FluentAssertions;
 using MediatR;
@@ -13,8 +14,9 @@ namespace ComedyPull.Application.Tests.Modules.Punchup
     public class PunchupScrapeJobTests
     {
         private ISitemapLoader _mockSitemapLoader = null!;
+        private IPlaywrightScraperFactory _mockScraperFactory = null!;
+        private IPunchupTicketsPageCollectorFactory _mockCollectorFactory = null!;
         private IScraper _mockScraper = null!;
-        private IServiceProvider _serviceProvider = null!;
         private IMediator _mediator = null!;
         private ILogger<PunchupScrapeJob> _logger = null!;
         private PunchupScrapeJob _job = null!;
@@ -24,10 +26,14 @@ namespace ComedyPull.Application.Tests.Modules.Punchup
         {
             _mockSitemapLoader = A.Fake<ISitemapLoader>();
             _mockScraper = A.Fake<IScraper>();
-            _serviceProvider = A.Fake<IServiceProvider>();
+            _mockScraperFactory = A.Fake<IPlaywrightScraperFactory>();
+            _mockCollectorFactory = A.Fake<IPunchupTicketsPageCollectorFactory>();
             _mediator = A.Fake<IMediator>();
             _logger =  A.Fake<ILogger<PunchupScrapeJob>>();
-            _job = new PunchupScrapeJob(_mockSitemapLoader, _mockScraper, _serviceProvider, _mediator, _logger);
+
+            A.CallTo(() => _mockScraperFactory.CreateScraper()).Returns(_mockScraper);
+
+            _job = new PunchupScrapeJob(_mockSitemapLoader, _mockScraperFactory, _mockCollectorFactory, _mediator, _logger);
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -76,6 +82,18 @@ namespace ComedyPull.Application.Tests.Modules.Punchup
         }
 
         [TestMethod, TestCategory("Unit")]
+        public async Task ExecuteAsync_CreatesScraper()
+        {
+            A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
+                .Returns(["https://www.punchup.live/comedian1/tickets"]);
+
+            await _job.Execute(A.Fake<IJobExecutionContext>());
+
+            A.CallTo(() => _mockScraperFactory.CreateScraper())
+                .MustHaveHappenedOnceExactly();
+        }
+
+        [TestMethod, TestCategory("Unit")]
         public async Task ExecuteAsync_InitializesScraperBeforeRunning()
         {
             A.CallTo(() => _mockSitemapLoader.LoadSitemapAsync(A<string>._))
@@ -83,8 +101,10 @@ namespace ComedyPull.Application.Tests.Modules.Punchup
 
             await _job.Execute(A.Fake<IJobExecutionContext>());
 
-            A.CallTo(() => _mockScraper.InitializeAsync(null))
+            A.CallTo(() => _mockScraperFactory.CreateScraper())
                 .MustHaveHappenedOnceExactly()
+                .Then(A.CallTo(() => _mockScraper.InitializeAsync(null))
+                    .MustHaveHappenedOnceExactly())
                 .Then(A.CallTo(() => _mockScraper.RunAsync(A<IEnumerable<string>>._, A<Func<PunchupTicketsPageCollector>>._, A<CancellationToken>._))
                     .MustHaveHappenedOnceExactly());
         }

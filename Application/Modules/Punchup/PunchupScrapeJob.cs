@@ -1,11 +1,10 @@
 ﻿using System.Text.RegularExpressions;
 using ComedyPull.Application.Modules.DataProcessing;
 using ComedyPull.Application.Modules.DataSync.Services.Interfaces;
-using ComedyPull.Application.Modules.Punchup.Collectors;
+using ComedyPull.Application.Modules.Punchup.Factories;
 using ComedyPull.Domain.Enums;
 using ComedyPull.Domain.Models.Processing;
 using MediatR;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Quartz;
 
@@ -13,9 +12,8 @@ namespace ComedyPull.Application.Modules.Punchup
 {
     public partial class PunchupScrapeJob(
         ISitemapLoader sitemapLoader,
-        [FromKeyedServices(DataSourceKeys.Punchup)]
-        IScraper scraper,
-        IServiceProvider serviceProvider,
+        IPlaywrightScraperFactory scraperFactory,
+        IPunchupTicketsPageCollectorFactory collectorFactory,
         IMediator mediator,
         ILogger<PunchupScrapeJob> logger)
         : IJob
@@ -27,6 +25,8 @@ namespace ComedyPull.Application.Modules.Punchup
             var batchId = Guid.NewGuid();
             logger.LogInformation("DataSync - Job started: {JobName} - {BatchId}", nameof(PunchupScrapeJob), batchId);
             const string sitemapUrl = "https://www.punchup.live/sitemap.xml";
+
+            var scraper = scraperFactory.CreateScraper();
             try
             {
                 var urls = await sitemapLoader.LoadSitemapAsync(sitemapUrl);
@@ -39,8 +39,7 @@ namespace ComedyPull.Application.Modules.Punchup
                 await scraper.InitializeAsync();
                 if (matched.Any())
                 {
-                    await scraper.RunAsync(matched,
-                        () => serviceProvider.GetRequiredService<PunchupTicketsPageCollector>());
+                    await scraper.RunAsync(matched, () => collectorFactory.CreateCollector());
                 }
             }
             catch (Exception ex)

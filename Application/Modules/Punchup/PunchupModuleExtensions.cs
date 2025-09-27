@@ -1,4 +1,4 @@
-﻿using ComedyPull.Application.Modules.Punchup.Collectors;
+﻿using ComedyPull.Application.Modules.Punchup.Factories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ComedyPull.Application.Modules.Punchup;
@@ -7,6 +7,6 @@ public static class PunchupModuleExtensions
 {
     public static void AddPunchupModule(this IServiceCollection services)
     {
-        services.AddTransient<PunchupTicketsPageCollector>();
+        services.AddScoped<IPunchupTicketsPageCollectorFactory, PunchupTicketsPageCollectorFactory>();
     }
 }
