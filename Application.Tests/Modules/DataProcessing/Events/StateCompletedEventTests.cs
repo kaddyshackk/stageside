@@ -1,8 +1,8 @@
-using ComedyPull.Application.Modules.DataProcessing;
+using ComedyPull.Application.Modules.DataProcessing.Events;
 using ComedyPull.Domain.Models.Processing;
 using FluentAssertions;
 
-namespace ComedyPull.Application.Tests.Modules.DataProcessing
+namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
 {
     [TestClass]
     public class StateCompletedEventTests

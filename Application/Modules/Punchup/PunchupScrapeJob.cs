@@ -1,8 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using ComedyPull.Application.Modules.DataProcessing;
+using ComedyPull.Application.Modules.DataProcessing.Events;
 using ComedyPull.Application.Modules.DataSync.Services.Interfaces;
 using ComedyPull.Application.Modules.Punchup.Factories;
-using ComedyPull.Domain.Enums;
 using ComedyPull.Domain.Models.Processing;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -34,6 +33,14 @@ namespace ComedyPull.Application.Modules.Punchup
                 // Filter Urls
                 var regex = TicketsPageUrlRegex();
                 var matched = urls.Where(url => regex.IsMatch(url)).ToList();
+
+                // Limit records for testing if specified
+                var maxRecords = context.MergedJobDataMap.GetInt("maxRecords");
+                if (maxRecords > 0)
+                {
+                    matched = matched.Take(maxRecords).ToList();
+                    logger.LogInformation("Limited to {MaxRecords} records for testing", maxRecords);
+                }
 
                 // Perform Job
                 await scraper.InitializeAsync();

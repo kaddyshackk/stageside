@@ -1,12 +1,11 @@
-
-using ComedyPull.Application.Modules.DataProcessing;
+using ComedyPull.Application.Modules.DataProcessing.Events;
 using ComedyPull.Application.Modules.DataProcessing.Processors.Interfaces;
 using ComedyPull.Domain.Models.Processing;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 
-namespace ComedyPull.Application.Tests.Modules.DataProcessing
+namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
 {
     [TestClass]
     public class StateCompletedHandlerTests

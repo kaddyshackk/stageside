@@ -3,7 +3,7 @@ using ComedyPull.Domain.Models.Processing;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace ComedyPull.Application.Modules.DataProcessing
+namespace ComedyPull.Application.Modules.DataProcessing.Events
 {
     /// <summary>
     /// Event handler for StateCompletedEvent. Starts the next stage in the data pipeline.
