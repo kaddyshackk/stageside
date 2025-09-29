@@ -1,4 +1,5 @@
-﻿using ComedyPull.Domain.Models.Processing;
+﻿using ComedyPull.Data.Database.Configurations;
+using ComedyPull.Domain.Models.Processing;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComedyPull.Data.Database.Contexts
@@ -22,7 +23,8 @@ namespace ComedyPull.Data.Database.Contexts
         {
             base.OnModelCreating(modelBuilder);
             
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ComedyContext).Assembly);
+            // Only apply configuration for SourceRecord
+            modelBuilder.ApplyConfiguration(new SourceRecordConfiguration());
         }
     }
 }

@@ -22,72 +22,6 @@ namespace ComedyPull.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ComedianEvent", b =>
-                {
-                    b.Property<string>("ComediansId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("EventsId")
-                        .HasColumnType("text");
-
-                    b.HasKey("ComediansId", "EventsId");
-
-                    b.HasIndex("EventsId");
-
-                    b.ToTable("ComedianEvent");
-                });
-
-            modelBuilder.Entity("ComedyPull.Domain.Models.BronzeRecord", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 17, 23, 19, 22, 577, DateTimeKind.Unspecified).AddTicks(6870), new TimeSpan(0, 0, 0, 0, 0)));
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("EntityType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ExternalId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("IngestedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Processed")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset>("ProcessedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("RawData")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Source")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 17, 23, 19, 22, 577, DateTimeKind.Unspecified).AddTicks(7080), new TimeSpan(0, 0, 0, 0, 0)));
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BronzeRecords");
-                });
 
             modelBuilder.Entity("ComedyPull.Domain.Models.Comedian", b =>
                 {
@@ -101,7 +35,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 17, 23, 19, 22, 578, DateTimeKind.Unspecified).AddTicks(3730), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 29, 2, 34, 19, 678, DateTimeKind.Unspecified).AddTicks(4660), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -124,7 +58,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 17, 23, 19, 22, 578, DateTimeKind.Unspecified).AddTicks(3900), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 29, 2, 34, 19, 678, DateTimeKind.Unspecified).AddTicks(4870), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -158,7 +92,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 17, 23, 19, 22, 579, DateTimeKind.Unspecified).AddTicks(3040), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 29, 2, 34, 19, 679, DateTimeKind.Unspecified).AddTicks(3950), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -186,7 +120,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 17, 23, 19, 22, 579, DateTimeKind.Unspecified).AddTicks(3240), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 29, 2, 34, 19, 679, DateTimeKind.Unspecified).AddTicks(4130), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -211,7 +145,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 17, 23, 19, 22, 579, DateTimeKind.Unspecified).AddTicks(6360), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 29, 2, 34, 19, 680, DateTimeKind.Unspecified).AddTicks(4240), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -234,7 +168,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 17, 23, 19, 22, 579, DateTimeKind.Unspecified).AddTicks(6530), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 9, 29, 2, 34, 19, 680, DateTimeKind.Unspecified).AddTicks(4400), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -245,20 +179,6 @@ namespace ComedyPull.Data.Migrations
                     b.ToTable("Venues");
                 });
 
-            modelBuilder.Entity("ComedianEvent", b =>
-                {
-                    b.HasOne("ComedyPull.Domain.Models.Comedian", null)
-                        .WithMany()
-                        .HasForeignKey("ComediansId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ComedyPull.Domain.Models.Event", null)
-                        .WithMany()
-                        .HasForeignKey("EventsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
 
             modelBuilder.Entity("ComedyPull.Domain.Models.ComedianEvent", b =>
                 {

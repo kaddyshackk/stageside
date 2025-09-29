@@ -23,12 +23,6 @@ var app = builder.Build();
 
 await VerifyPlaywrightAsync();
 
-if (app.Environment.IsEnvironment("Local"))
-{
-    using var scope = app.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<ComedyPull.Data.Database.Contexts.ComedyContext>();
-    await context.Database.MigrateAsync();
-}
 
 if (app.Environment.IsDevelopment())
 {

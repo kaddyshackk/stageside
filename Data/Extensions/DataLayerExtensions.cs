@@ -24,7 +24,7 @@ namespace ComedyPull.Data.Extensions
         public static void AddDataServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDatabaseServices(configuration);
-            services.AddQueueServices(configuration);
+            services.AddQueueServices();
         }
 
         /// <summary>
@@ -119,8 +119,7 @@ namespace ComedyPull.Data.Extensions
         /// Configures queue services.
         /// </summary>
         /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
-        /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
-        private static void AddQueueServices(this IServiceCollection services, IConfiguration configuration)
+        private static void AddQueueServices(this IServiceCollection services)
         {
             services.AddSingleton<IQueue<SourceRecord>>(provider =>
             {

@@ -1,16 +1,9 @@
 using ComedyPull.Application.Modules.DataProcessing;
 using ComedyPull.Application.Modules.Punchup;
-using ComedyPull.Application.Modules.Punchup.Collectors;
-using ComedyPull.Application.Modules.DataProcessing.Processors;
 using ComedyPull.Application.Modules.DataSync;
-using ComedyPull.Application.Modules.DataSync.Configuration;
-using ComedyPull.Application.Modules.DataSync.Services;
-using ComedyPull.Application.Modules.DataSync.Services.Interfaces;
-using ComedyPull.Domain.Enums;
-using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using Microsoft.Playwright;
 using Quartz;
 
 namespace ComedyPull.Application.Extensions
@@ -25,6 +18,9 @@ namespace ComedyPull.Application.Extensions
         public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddQuartzServices(configuration);
+            
+            services.AddMediatR(cfg => 
+                cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
             // Modules
             services.AddPunchupModule();
