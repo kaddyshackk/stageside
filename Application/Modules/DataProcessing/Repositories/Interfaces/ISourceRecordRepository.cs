@@ -7,5 +7,6 @@ namespace ComedyPull.Application.Modules.DataProcessing.Repositories.Interfaces
     {
         Task<DataSource> GetBatchSourceAsync(string batchId, CancellationToken cancellationToken = default);
         Task<IEnumerable<SourceRecord>> GetRecordsByBatchAsync(string batchId, CancellationToken cancellationToken = default);
+        Task SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

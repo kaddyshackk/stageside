@@ -29,5 +29,10 @@ namespace ComedyPull.Data.Database.Repositories
                 .Where(r => r.BatchId == batchId)
                 .ToListAsync(cancellationToken);
         }
+
+        public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            await context.SaveChangesAsync(cancellationToken);
+        }
     }
 }
