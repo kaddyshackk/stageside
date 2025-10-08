@@ -18,12 +18,13 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing
         }
 
         [TestMethod, TestCategory("Unit")]
-        public void GetNextState_WithTransformedState_ThrowsInvalidOperationException()
+        public void GetNextState_WithTransformedState_ReturnsCompleted()
         {
-            // Act & Assert
-            var act = () => ProcessingStateMachine.GetNextState(ProcessingState.Transformed);
-            act.Should().Throw<InvalidOperationException>()
-                .WithMessage("No valid transition from state Transformed");
+            // Act
+            var nextState = ProcessingStateMachine.GetNextState(ProcessingState.Transformed);
+
+            // Assert
+            nextState.Should().Be(ProcessingState.Completed);
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -92,7 +93,17 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing
         }
 
         [TestMethod, TestCategory("Unit")]
-        public void CanTransition_FromTransformedToAnyState_ReturnsFalse()
+        public void CanTransition_FromTransformedToCompleted_ReturnsTrue()
+        {
+            // Act
+            var canTransition = ProcessingStateMachine.CanTransition(ProcessingState.Transformed, ProcessingState.Completed);
+
+            // Assert
+            canTransition.Should().BeTrue();
+        }
+
+        [TestMethod, TestCategory("Unit")]
+        public void CanTransition_FromTransformedToInvalidStates_ReturnsFalse()
         {
             // Arrange
             var targetStates = new[]
@@ -101,7 +112,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing
                 ProcessingState.DeDuped,
                 ProcessingState.Enriched,
                 ProcessingState.Linked,
-                ProcessingState.Completed,
                 ProcessingState.Failed
             };
 

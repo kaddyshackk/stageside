@@ -115,6 +115,7 @@ namespace ComedyPull.Data.Extensions
 
             services.AddSingleton<ISourceRecordWriteRepository, SourceRecordWriteRepository>();
             services.AddScoped<ISourceRecordRepository, SourceRecordRepository>();
+            services.AddScoped<IComedyRepository, ComedyRepository>();
         }
 
         /// <summary>

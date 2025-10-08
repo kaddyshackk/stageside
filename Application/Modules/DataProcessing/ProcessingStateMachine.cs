@@ -7,6 +7,7 @@ namespace ComedyPull.Application.Modules.DataProcessing
         private static readonly Dictionary<ProcessingState, ProcessingState> ValidTransitions = new()
         {
             { ProcessingState.Ingested, ProcessingState.Transformed },
+            { ProcessingState.Transformed, ProcessingState.Completed },
         };
 
         public static ProcessingState GetNextState(ProcessingState currentStage)

@@ -32,12 +32,12 @@ namespace ComedyPull.Api.Controllers
                 
                 await scheduler.TriggerJob(PunchupScrapeJob.Key, jobDataMap);
                 
-                return Ok(new { message = "Punchup scrape job completed successfully" });
+                return Ok(new { message = "Scrape job queued successfully" });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Punchup scrape job failed");
-                return StatusCode(500, new { error = "Scrape job failed", details = ex.Message });
+                logger.LogError(ex, "Failed to queue scrape job: Punchup");
+                return StatusCode(500, new { error = "Failed to queue scrape job: Punchup", details = ex.Message });
             }
         }
 
