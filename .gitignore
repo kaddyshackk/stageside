@@ -15,4 +15,4 @@
 **/appsettings.Local.json
 *.DotSettings.user
 *.csproj.user
-.claude/
+*.local.json
