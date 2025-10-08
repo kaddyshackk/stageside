@@ -4,9 +4,12 @@ Welcome to the ComedyPull API documentation. This wiki provides comprehensive do
 
 ## Table of Contents
 
+### Core Documentation
 - [Architecture Overview](./Architecture-Overview.md)
-- [Data Processing Module](./DataProcessing-Module.md)
-- [Module Structure](./Module-Structure.md)
+
+### Application Layer
+- [Data Processing Module](./Application/DataProcessing-Module.md)
+- [Punchup Module](./Application/Punchup-Module.md)
 
 ## Quick Links
 
@@ -36,11 +39,27 @@ ComedyPull.Api/
 └── Wiki/                   # Documentation
 ```
 
+## Documentation Organization
+
+The wiki is organized to mirror the .NET project structure:
+
+```
+wiki/
+├── Architecture-Overview.md     # System-wide architecture
+├── Application/                 # Application layer documentation
+│   ├── DataProcessing-Module.md # Pipeline orchestration
+│   └── Punchup-Module.md        # Punchup source module
+├── Api/                         # API layer documentation (future)
+├── Data/                        # Data layer documentation (future)
+└── Domain/                      # Domain layer documentation (future)
+```
+
 ## Getting Started
 
 1. Review the [Architecture Overview](./Architecture-Overview.md) to understand the system design
-2. Read the [Data Processing Module](./DataProcessing-Module.md) documentation to understand the pipeline
-3. Explore specific module documentation as needed
+2. Read the [Data Processing Module](./Application/DataProcessing-Module.md) to understand the pipeline
+3. Explore the [Punchup Module](./Application/Punchup-Module.md) as an example of source-specific implementation
+4. Use module documentation as templates when adding new features
 
 ## Contributing
 
