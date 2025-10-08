@@ -2,10 +2,11 @@ using ComedyPull.Domain.Models.Processing;
 
 namespace ComedyPull.Application.Modules.DataProcessing.Processors.Interfaces
 {
-    public interface ITransformProcessor
+    public interface ISubProcessor<TKey> where TKey : struct
     {
+        TKey? Key { get; }
         ProcessingState FromState { get; }
         ProcessingState ToState { get; }
-        Task ProcessBatchAsync(Guid batchId, CancellationToken cancellationToken);
+        Task ProcessAsync(IEnumerable<SourceRecord> records, CancellationToken cancellationToken);
     }
 }

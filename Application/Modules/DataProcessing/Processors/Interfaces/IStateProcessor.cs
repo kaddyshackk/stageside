@@ -1,9 +1,11 @@
-﻿namespace ComedyPull.Application.Modules.DataProcessing.Processors.Interfaces
+﻿using ComedyPull.Domain.Models.Processing;
+
+namespace ComedyPull.Application.Modules.DataProcessing.Processors.Interfaces
 {
-    public interface IStateProcessor<out TState> where TState : Enum
+    public interface IStateProcessor
     {
-        public TState FromState { get; }
-        public TState ToState { get; }
-        public Task ProcessBatchAsync(Guid batchId, CancellationToken cancellationToken);
+        ProcessingState FromState { get; }
+        ProcessingState ToState { get; }
+        Task ProcessBatchAsync(Guid batchId, CancellationToken cancellationToken);
     }
 }

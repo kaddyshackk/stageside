@@ -1,0 +1,10 @@
+using ComedyPull.Application.Modules.DataProcessing.Processors.Interfaces;
+using ComedyPull.Domain.Models.Processing;
+
+namespace ComedyPull.Application.Modules.DataProcessing.Services.Interfaces
+{
+    public interface ISubProcessorResolver
+    {
+        ISubProcessor<TKey> Resolve<TKey>(TKey key, ProcessingState fromState, ProcessingState toState) where TKey : struct;
+    }
+}

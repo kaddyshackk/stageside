@@ -1,4 +1,5 @@
 using ComedyPull.Application.Interfaces;
+using ComedyPull.Application.Modules.DataProcessing.Repositories.Interfaces;
 using ComedyPull.Application.Modules.DataSync;
 using ComedyPull.Data.Database.Contexts;
 using ComedyPull.Data.Database.Repositories;
@@ -111,8 +112,9 @@ namespace ComedyPull.Data.Extensions
             });
             
             // Configure Repositories
-            
+
             services.AddSingleton<ISourceRecordWriteRepository, SourceRecordWriteRepository>();
+            services.AddScoped<ISourceRecordRepository, SourceRecordRepository>();
         }
 
         /// <summary>

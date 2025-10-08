@@ -10,22 +10,23 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
     [TestClass]
     public class StateCompletedHandlerTests
     {
-        private IServiceProvider _mockServiceProvider = null!;
+        private List<IStateProcessor> _mockStateProcessors = null!;
         private ILogger<StateCompletedHandler> _mockLogger = null!;
         private StateCompletedHandler _handler = null!;
-        private ITransformProcessor _mockTransformProcessor = null!;
+        private IStateProcessor _mockStateProcessor = null!;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockServiceProvider = A.Fake<IServiceProvider>();
             _mockLogger = A.Fake<ILogger<StateCompletedHandler>>();
-            _mockTransformProcessor = A.Fake<ITransformProcessor>();
-            _handler = new StateCompletedHandler(_mockServiceProvider, _mockLogger);
+            _mockStateProcessor = A.Fake<IStateProcessor>();
 
-            // Configure the service provider to return the mock processor
-            A.CallTo(() => _mockServiceProvider.GetService(typeof(ITransformProcessor)))
-                .Returns(_mockTransformProcessor);
+            // Configure mock state processor
+            A.CallTo(() => _mockStateProcessor.FromState).Returns(ProcessingState.Ingested);
+            A.CallTo(() => _mockStateProcessor.ToState).Returns(ProcessingState.Transformed);
+
+            _mockStateProcessors = new List<IStateProcessor> { _mockStateProcessor };
+            _handler = new StateCompletedHandler(_mockStateProcessors, _mockLogger);
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -40,9 +41,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
             await _handler.Handle(stateCompletedEvent, cancellationToken);
 
             // Assert
-            A.CallTo(() => _mockServiceProvider.GetService(typeof(ITransformProcessor)))
-                .MustHaveHappenedOnceExactly();
-            A.CallTo(() => _mockTransformProcessor.ProcessBatchAsync(batchId, cancellationToken))
+            A.CallTo(() => _mockStateProcessor.ProcessBatchAsync(batchId, cancellationToken))
                 .MustHaveHappenedOnceExactly();
         }
 
@@ -81,7 +80,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
                               call.Arguments.Get<LogLevel>(0) == LogLevel.Information)
                 .MustHaveHappenedOnceExactly();
 
-            A.CallTo(() => _mockServiceProvider.GetService(typeof(ITransformProcessor)))
+            A.CallTo(() => _mockStateProcessor.ProcessBatchAsync(A<Guid>._, A<CancellationToken>._))
                 .MustNotHaveHappened();
         }
 
@@ -184,7 +183,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
             var cancellationToken = CancellationToken.None;
             var expectedException = new Exception("Processing failed");
 
-            A.CallTo(() => _mockTransformProcessor.ProcessBatchAsync(batchId, cancellationToken))
+            A.CallTo(() => _mockStateProcessor.ProcessBatchAsync(batchId, cancellationToken))
                 .Throws(expectedException);
 
             // Act & Assert
@@ -196,9 +195,9 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
         public async Task Handle_WithUnsupportedState_CatchesInvalidOperationExceptionAndLogsCompletion()
         {
             // Arrange
-            var serviceProvider = A.Fake<IServiceProvider>();
+            var stateProcessors = new List<IStateProcessor>();
             var logger = A.Fake<ILogger<StateCompletedHandler>>();
-            var handler = new StateCompletedHandler(serviceProvider, logger);
+            var handler = new StateCompletedHandler(stateProcessors, logger);
 
             var batchId = Guid.NewGuid();
             // Use a state that doesn't have a transition in the state machine - DeDuped
