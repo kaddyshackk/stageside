@@ -2,7 +2,7 @@ using ComedyPull.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ComedyPull.Data.Database.Configurations
+namespace ComedyPull.Data.Configurations
 {
     /// <summary>
     /// Configuration class for the ComedianEvents table.

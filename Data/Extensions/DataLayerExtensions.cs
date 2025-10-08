@@ -1,10 +1,9 @@
-using ComedyPull.Application.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Repositories.Interfaces;
 using ComedyPull.Application.Modules.DataSync;
-using ComedyPull.Data.Database.Contexts;
-using ComedyPull.Data.Database.Repositories;
-using ComedyPull.Data.Queue;
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Data.Modules.DataSync.Contexts;
+using ComedyPull.Data.Modules.DataSync.Repositories;
+using ComedyPull.Data.Modules.DataProcessing.Contexts;
+using ComedyPull.Data.Modules.DataProcessing.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +24,6 @@ namespace ComedyPull.Data.Extensions
         public static void AddDataServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDatabaseServices(configuration);
-            services.AddQueueServices();
         }
 
         /// <summary>
@@ -116,19 +114,6 @@ namespace ComedyPull.Data.Extensions
             services.AddSingleton<ISourceRecordWriteRepository, SourceRecordWriteRepository>();
             services.AddScoped<ISourceRecordRepository, SourceRecordRepository>();
             services.AddScoped<IComedyRepository, ComedyRepository>();
-        }
-
-        /// <summary>
-        /// Configures queue services.
-        /// </summary>
-        /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
-        private static void AddQueueServices(this IServiceCollection services)
-        {
-            services.AddSingleton<IQueue<SourceRecord>>(provider =>
-            {
-                var logger = provider.GetRequiredService<ILogger<InMemoryQueue<SourceRecord>>>();
-                return new InMemoryQueue<SourceRecord>(logger);
-            });
         }
     }
 }

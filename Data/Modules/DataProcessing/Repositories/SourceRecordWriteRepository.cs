@@ -1,9 +1,9 @@
 ﻿using ComedyPull.Application.Modules.DataSync;
-using ComedyPull.Data.Database.Contexts;
+using ComedyPull.Data.Modules.DataProcessing.Contexts;
 using ComedyPull.Domain.Models.Processing;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Database.Repositories
+namespace ComedyPull.Data.Modules.DataProcessing.Repositories
 {
     /// <summary>
     /// A repository for interacting with SourceRecord's.

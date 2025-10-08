@@ -2,7 +2,7 @@ using ComedyPull.Domain.Models.Processing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ComedyPull.Data.Database.Configurations
+namespace ComedyPull.Data.Configurations
 {
     public class SourceRecordConfiguration : TraceableEntityConfiguration<SourceRecord>
     {

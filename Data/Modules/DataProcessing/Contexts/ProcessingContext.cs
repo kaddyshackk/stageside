@@ -1,8 +1,8 @@
-﻿using ComedyPull.Data.Database.Configurations;
+﻿using ComedyPull.Data.Configurations;
 using ComedyPull.Domain.Models.Processing;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Database.Contexts
+namespace ComedyPull.Data.Modules.DataProcessing.Contexts
 {
     /// <summary>
     /// Data processing context.

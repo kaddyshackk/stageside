@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using ComedyPull.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace ComedyPull.Data.Queue
+namespace ComedyPull.Application.Modules.Queue
 {
     /// <summary>
     /// In-memory implementation of queue for processing records.

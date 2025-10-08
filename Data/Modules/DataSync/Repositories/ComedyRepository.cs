@@ -1,9 +1,9 @@
 using ComedyPull.Application.Modules.DataProcessing.Repositories.Interfaces;
-using ComedyPull.Data.Database.Contexts;
+using ComedyPull.Data.Modules.DataSync.Contexts;
 using ComedyPull.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Database.Repositories
+namespace ComedyPull.Data.Modules.DataSync.Repositories
 {
     public class ComedyRepository(ComedyContext context) : IComedyRepository
     {

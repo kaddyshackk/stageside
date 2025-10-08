@@ -1,10 +1,10 @@
 using ComedyPull.Application.Modules.DataProcessing.Repositories.Interfaces;
-using ComedyPull.Data.Database.Contexts;
+using ComedyPull.Data.Modules.DataProcessing.Contexts;
 using ComedyPull.Domain.Enums;
 using ComedyPull.Domain.Models.Processing;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Database.Repositories
+namespace ComedyPull.Data.Modules.DataProcessing.Repositories
 {
     public class SourceRecordRepository(ProcessingContext context) : ISourceRecordRepository
     {

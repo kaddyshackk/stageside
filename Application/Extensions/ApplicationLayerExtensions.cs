@@ -1,8 +1,12 @@
+using ComedyPull.Application.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing;
 using ComedyPull.Application.Modules.Punchup;
 using ComedyPull.Application.Modules.DataSync;
+using ComedyPull.Application.Modules.Queue;
+using ComedyPull.Domain.Models.Processing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 using Quartz;
 
@@ -18,14 +22,15 @@ namespace ComedyPull.Application.Extensions
         public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddQuartzServices(configuration);
-            
-            services.AddMediatR(cfg => 
+
+            services.AddMediatR(cfg =>
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
             // Modules
             services.AddPunchupModule();
             services.AddDataSyncModule(configuration);
             services.AddDataProcessingModule();
+            services.AddQueueModule();
         }
         
         /// <summary>
@@ -69,6 +74,19 @@ namespace ComedyPull.Application.Extensions
                 {
                     p.MaxConcurrency = 10;
                 });
+            });
+        }
+
+        /// <summary>
+        /// Configures queue services.
+        /// </summary>
+        /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
+        private static void AddQueueModule(this IServiceCollection services)
+        {
+            services.AddSingleton<IQueue<SourceRecord>>(provider =>
+            {
+                var logger = provider.GetRequiredService<ILogger<InMemoryQueue<SourceRecord>>>();
+                return new InMemoryQueue<SourceRecord>(logger);
             });
         }
     }

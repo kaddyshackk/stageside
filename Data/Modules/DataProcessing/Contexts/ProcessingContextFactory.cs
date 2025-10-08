@@ -2,19 +2,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace ComedyPull.Data.Database.Contexts
+namespace ComedyPull.Data.Modules.DataProcessing.Contexts
 {
     /// <summary>
-    /// Design-time factory for ComedyContext to support EF migrations.
+    /// Design-time factory for ProcessingContext to support EF migrations.
     /// </summary>
-    public class ComedyContextFactory : IDesignTimeDbContextFactory<ComedyContext>
+    public class ProcessingContextFactory : IDesignTimeDbContextFactory<ProcessingContext>
     {
         /// <summary>
-        /// Creates a new instance of ComedyContext for design-time operations.
+        /// Creates a new instance of ProcessingContext for design-time operations.
         /// </summary>
         /// <param name="args">Command line arguments.</param>
-        /// <returns>A new ComedyContext instance.</returns>
-        public ComedyContext CreateDbContext(string[] args)
+        /// <returns>A new ProcessingContext instance.</returns>
+        public ProcessingContext CreateDbContext(string[] args)
         {
             // Build configuration from the API project settings
             var configuration = new ConfigurationBuilder()
@@ -29,10 +29,10 @@ namespace ComedyPull.Data.Database.Contexts
                 throw new InvalidOperationException("DefaultConnection string is not configured.");
             }
 
-            var optionsBuilder = new DbContextOptionsBuilder<ComedyContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<ProcessingContext>();
             optionsBuilder.UseNpgsql(connectionString);
 
-            return new ComedyContext(optionsBuilder.Options);
+            return new ProcessingContext(optionsBuilder.Options);
         }
     }
 }
