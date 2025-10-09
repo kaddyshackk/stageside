@@ -1,4 +1,4 @@
-﻿using ComedyPull.Application.Modules.DataProcessing.Processors.Interfaces;
+﻿using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
 using ComedyPull.Application.Modules.Punchup.Factories;
 using ComedyPull.Application.Modules.Punchup.Processors.SubProcessors;
 using ComedyPull.Domain.Enums;

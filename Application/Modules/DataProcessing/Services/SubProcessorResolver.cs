@@ -1,5 +1,5 @@
-using ComedyPull.Application.Modules.DataProcessing.Processors.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Services.Interfaces;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
 using ComedyPull.Domain.Models.Processing;
 
 namespace ComedyPull.Application.Modules.DataProcessing.Services

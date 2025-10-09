@@ -1,12 +1,24 @@
-using ComedyPull.Application.Modules.DataProcessing.Repositories.Interfaces;
-using ComedyPull.Data.Modules.DataSync.Contexts;
+﻿using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
 using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Models.Processing;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Modules.DataSync.Repositories
+namespace ComedyPull.Data.Modules.DataProcessing.Complete
 {
-    public class ComedyRepository(ComedyContext context) : IComedyRepository
+    public class CompleteStateRepository(CompleteStateContext context) : ICompleteStateRepository
     {
+        public async Task<IEnumerable<SourceRecord>> GetRecordsByBatchAsync(string batchId, CancellationToken cancellationToken = default)
+        {
+            return await context.SourceRecords
+                .Where(r => r.BatchId == batchId)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            await context.SaveChangesAsync(cancellationToken);
+        }
+        
         public async Task<Comedian?> GetComedianBySlugAsync(string slug, CancellationToken cancellationToken)
         {
             return await context.Comedians
@@ -38,10 +50,5 @@ namespace ComedyPull.Data.Modules.DataSync.Repositories
         {
             context.ComedianEvents.Add(comedianEvent);
         }
-
-        public async Task SaveChangesAsync(CancellationToken cancellationToken)
-        {
-            await context.SaveChangesAsync(cancellationToken);
-        }
-    }
+    }    
 }

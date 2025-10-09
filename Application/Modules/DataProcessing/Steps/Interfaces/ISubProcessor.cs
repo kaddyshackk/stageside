@@ -1,6 +1,6 @@
 using ComedyPull.Domain.Models.Processing;
 
-namespace ComedyPull.Application.Modules.DataProcessing.Processors.Interfaces
+namespace ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces
 {
     public interface ISubProcessor<TKey> where TKey : struct
     {

@@ -1,8 +1,8 @@
 using ComedyPull.Application.Modules.DataProcessing.Events;
-using ComedyPull.Application.Modules.DataProcessing.Processors;
-using ComedyPull.Application.Modules.DataProcessing.Processors.Interfaces;
-using ComedyPull.Application.Modules.DataProcessing.Repositories.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Services.Interfaces;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Complete;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
 using ComedyPull.Domain.Enums;
 using ComedyPull.Domain.Models.Processing;
 using FakeItEasy;
@@ -13,24 +13,24 @@ using Microsoft.Extensions.Logging;
 namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
 {
     [TestClass]
-    public class CompletionStateProcessorTests
+    public class CompleteStateProcessorTests
     {
-        private ISourceRecordRepository _mockRecordRepository = null!;
+        private ICompleteStateRepository _mockRepository = null!;
         private ISubProcessorResolver _mockSubProcessorResolver = null!;
         private IMediator _mockMediator = null!;
-        private ILogger<CompletionStateProcessor> _mockLogger = null!;
-        private CompletionStateProcessor _processor = null!;
+        private ILogger<CompleteStateProcessor> _mockLogger = null!;
+        private CompleteStateProcessor _processor = null!;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockRecordRepository = A.Fake<ISourceRecordRepository>();
+            _mockRepository = A.Fake<ICompleteStateRepository>();
             _mockSubProcessorResolver = A.Fake<ISubProcessorResolver>();
             _mockMediator = A.Fake<IMediator>();
-            _mockLogger = A.Fake<ILogger<CompletionStateProcessor>>();
+            _mockLogger = A.Fake<ILogger<CompleteStateProcessor>>();
 
-            _processor = new CompletionStateProcessor(
-                _mockRecordRepository,
+            _processor = new CompleteStateProcessor(
+                _mockRepository,
                 _mockSubProcessorResolver,
                 _mockMediator,
                 _mockLogger);
@@ -60,7 +60,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
                 CreateSourceRecord(DataSource.Punchup)
             };
 
-            A.CallTo(() => _mockRecordRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
                 .Returns(records);
 
             var mockSubProcessor = A.Fake<ISubProcessor<DataSource>>();
@@ -71,7 +71,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
             await _processor.ProcessBatchAsync(batchId, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => _mockRecordRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }
 
@@ -86,7 +86,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
                 CreateSourceRecord(DataSource.Punchup)
             };
 
-            A.CallTo(() => _mockRecordRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
                 .Returns(records);
 
             var mockSubProcessor = A.Fake<ISubProcessor<DataSource>>();
@@ -116,7 +116,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
                 CreateSourceRecord(DataSource.Punchup)
             };
 
-            A.CallTo(() => _mockRecordRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
                 .Returns(records);
 
             var mockSubProcessor = A.Fake<ISubProcessor<DataSource>>();
@@ -141,7 +141,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
                 CreateSourceRecord(DataSource.Punchup)
             };
 
-            A.CallTo(() => _mockRecordRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
                 .Returns(records);
 
             var mockSubProcessor = A.Fake<ISubProcessor<DataSource>>();
@@ -166,7 +166,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
                 CreateSourceRecord(DataSource.Punchup)
             };
 
-            A.CallTo(() => _mockRecordRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
                 .Returns(records);
 
             var mockSubProcessor = A.Fake<ISubProcessor<DataSource>>();
@@ -177,7 +177,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
             await _processor.ProcessBatchAsync(batchId, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => _mockRecordRepository.SaveChangesAsync(A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.SaveChangesAsync(A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }
 
@@ -191,7 +191,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
                 CreateSourceRecord(DataSource.Punchup)
             };
 
-            A.CallTo(() => _mockRecordRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
                 .Returns(records);
 
             var mockSubProcessor = A.Fake<ISubProcessor<DataSource>>();
@@ -220,7 +220,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
                 CreateSourceRecord(DataSource.Punchup)
             };
 
-            A.CallTo(() => _mockRecordRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
                 .Returns(records);
 
             var mockSubProcessor = A.Fake<ISubProcessor<DataSource>>();
@@ -244,7 +244,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
             var batchId = Guid.NewGuid();
             var expectedException = new Exception("Test exception");
 
-            A.CallTo(() => _mockRecordRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
                 .Throws(expectedException);
 
             // Act & Assert
@@ -264,14 +264,14 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
             var batchId = Guid.NewGuid();
             var records = new List<SourceRecord>();
 
-            A.CallTo(() => _mockRecordRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetRecordsByBatchAsync(batchId.ToString(), A<CancellationToken>._))
                 .Returns(records);
 
             // Act
             await _processor.ProcessBatchAsync(batchId, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => _mockRecordRepository.SaveChangesAsync(A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.SaveChangesAsync(A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
 
             A.CallTo(() => _mockMediator.Publish(

@@ -12,7 +12,7 @@ namespace ComedyPull.Application.Modules.DataSync.Services
     /// </summary>
     public class SourceRecordIngestionService(
         IQueue<SourceRecord> queue,
-        ISourceRecordWriteRepository writeRepository,
+        IDataSyncRepository writeRepository,
         ILogger<SourceRecordIngestionService> logger,
         IOptions<SourceRecordIngestionOptions> options
     ) : BackgroundService

@@ -1,18 +1,18 @@
 using ComedyPull.Application.Modules.DataProcessing.Events;
-using ComedyPull.Application.Modules.DataProcessing.Processors.Interfaces;
-using ComedyPull.Application.Modules.DataProcessing.Repositories.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Services.Interfaces;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
 using ComedyPull.Domain.Models.Processing;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace ComedyPull.Application.Modules.DataProcessing.Processors
+namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
 {
-    public class CompletionStateProcessor(
-        ISourceRecordRepository recordRepository,
+    public class CompleteStateProcessor(
+        ICompleteStateRepository repository,
         ISubProcessorResolver subProcessorResolver,
         IMediator mediator,
-        ILogger<CompletionStateProcessor> logger) : IStateProcessor
+        ILogger<CompleteStateProcessor> logger) : IStateProcessor
     {
         public ProcessingState FromState => ProcessingState.Transformed;
         public ProcessingState ToState => ProcessingState.Completed;
@@ -22,7 +22,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Processors
             logger.LogInformation("Starting {Stage} processing for batch {BatchId}", ToState, batchId);
             try
             {
-                var records = await recordRepository.GetRecordsByBatchAsync(batchId.ToString(), cancellationToken);
+                var records = await repository.GetRecordsByBatchAsync(batchId.ToString(), cancellationToken);
                 var recordsBySource = records.GroupBy(r => r.Source);
 
                 foreach (var group in recordsBySource)
@@ -34,7 +34,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Processors
                     var subProcessor = subProcessorResolver.Resolve(group.Key, FromState, ToState);
                     await subProcessor.ProcessAsync(group, cancellationToken);
                 }
-                await recordRepository.SaveChangesAsync(cancellationToken);
+                await repository.SaveChangesAsync(cancellationToken);
                 logger.LogInformation("Saved changes for {RecordCount} records in batch {BatchId}", records.Count(), batchId);
 
                 await mediator.Publish(new StateCompletedEvent(batchId, ToState), cancellationToken);

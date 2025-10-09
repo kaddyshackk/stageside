@@ -1,17 +1,17 @@
-using ComedyPull.Application.Modules.DataProcessing.Processors.Interfaces;
-using ComedyPull.Application.Modules.DataProcessing.Repositories.Interfaces;
 using ComedyPull.Application.Modules.Punchup.Models;
 using ComedyPull.Domain.Enums;
 using ComedyPull.Domain.Models;
 using ComedyPull.Domain.Models.Processing;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
 
-namespace ComedyPull.Application.Modules.DataProcessing.Processors.SubProcessors
+namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
 {
-    public class GenericCompletionSubProcessor(
-        IComedyRepository comedyRepository,
-        ILogger<GenericCompletionSubProcessor> logger) : ISubProcessor<DataSource>
+    public class CompleteStateGenericSubProcessor(
+        ICompleteStateRepository repository,
+        ILogger<CompleteStateGenericSubProcessor> logger) : ISubProcessor<DataSource>
     {
         public DataSource? Key => null;
         public ProcessingState FromState => ProcessingState.Transformed;
@@ -77,7 +77,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Processors.SubProcessors
             }
 
             // Check if comedian already exists by slug
-            var existingComedian = await comedyRepository.GetComedianBySlugAsync(processedComedian.Slug!, cancellationToken);
+            var existingComedian = await repository.GetComedianBySlugAsync(processedComedian.Slug!, cancellationToken);
 
             Comedian comedian;
             if (existingComedian != null)
@@ -99,7 +99,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Processors.SubProcessors
                     UpdatedBy = "System"
                 };
 
-                comedyRepository.AddComedian(comedian);
+                repository.AddComedian(comedian);
                 logger.LogDebug("Created new Comedian {Name} with slug {Slug}", comedian.Name, comedian.Slug);
             }
 
@@ -135,7 +135,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Processors.SubProcessors
 
             // Find or create venue
             var venueSlug = GenerateSlug(processedEvent.Venue);
-            var venue = await comedyRepository.GetVenueBySlugAsync(venueSlug, cancellationToken);
+            var venue = await repository.GetVenueBySlugAsync(venueSlug, cancellationToken);
 
             if (venue == null)
             {
@@ -149,7 +149,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Processors.SubProcessors
                     UpdatedBy = "System"
                 };
 
-                comedyRepository.AddVenue(venue);
+                repository.AddVenue(venue);
                 logger.LogDebug("Created new Venue {Name} with slug {Slug}", venue.Name, venue.Slug);
             }
 
@@ -168,7 +168,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Processors.SubProcessors
                 UpdatedBy = "System"
             };
 
-            comedyRepository.AddEvent(eventEntity);
+            repository.AddEvent(eventEntity);
             logger.LogDebug("Created new Event {Title} at {Venue}", eventEntity.Title, venue.Name);
 
             var comedianEvent = new ComedianEvent
@@ -179,7 +179,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Processors.SubProcessors
                 Event = eventEntity
             };
 
-            comedyRepository.AddComedianEvent(comedianEvent);
+            repository.AddComedianEvent(comedianEvent);
         }
 
         /// <summary>

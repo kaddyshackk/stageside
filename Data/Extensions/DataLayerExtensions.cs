@@ -1,9 +1,9 @@
-using ComedyPull.Application.Modules.DataProcessing.Repositories.Interfaces;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Transform.Interfaces;
 using ComedyPull.Application.Modules.DataSync;
-using ComedyPull.Data.Modules.DataSync.Contexts;
-using ComedyPull.Data.Modules.DataSync.Repositories;
-using ComedyPull.Data.Modules.DataProcessing.Contexts;
-using ComedyPull.Data.Modules.DataProcessing.Repositories;
+using ComedyPull.Data.Modules.DataProcessing.Complete;
+using ComedyPull.Data.Modules.DataProcessing.Transform;
+using ComedyPull.Data.Modules.DataSync;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,20 +23,38 @@ namespace ComedyPull.Data.Extensions
         /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
         public static void AddDataServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDatabaseServices(configuration);
+            services.AddDataProcessingServices(configuration);
+            services.AddDataSyncServices(configuration);
         }
 
-        /// <summary>
-        /// Configures database services.
-        /// </summary>
-        /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
-        /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
-        /// <exception cref="InvalidOperationException">If the DefaultConnection or ASPNETCORE_EXCEPTION is misconfigured.</exception>
-        private static void AddDatabaseServices(this IServiceCollection services, IConfiguration configuration)
+        private static void AddDataProcessingServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // Configure Contexts
+            // Transform State
+            services.AddDbContextFactory<TransformStateContext>((_, options) =>
+            {
+                ConfigureDbContextOptionsBuilder(options, configuration);
+            });
+            services.AddSingleton<ITransformStateRepository, TransformStateRepository>();
             
-            // TODO: Move environment checks to Program.cs
+            // Complete State
+            services.AddDbContextFactory<CompleteStateContext>((_, options) =>
+            {
+                ConfigureDbContextOptionsBuilder(options, configuration);
+            });
+            services.AddSingleton<ICompleteStateRepository, CompleteStateRepository>();
+        }
+
+        private static void AddDataSyncServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDbContextFactory<DataSyncContext>((_, options) =>
+            {
+                ConfigureDbContextOptionsBuilder(options, configuration);
+            });
+            services.AddSingleton<IDataSyncRepository, DataSyncRepository>();
+        }
+
+        private static void ConfigureDbContextOptionsBuilder(DbContextOptionsBuilder options, IConfiguration configuration)
+        {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             if (string.IsNullOrEmpty(environment))
             {
@@ -49,71 +67,32 @@ namespace ComedyPull.Data.Extensions
                 throw new InvalidOperationException("DefaultConnection string is not configured.");
             }
             
-            services.AddDbContextFactory<ComedyContext>((_, options) =>
+            options.UseNpgsql(connectionString, npgsqlOptions =>
             {
-                options.UseNpgsql(connectionString, npgsqlOptions =>
-                {
-                    npgsqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 3,
-                        maxRetryDelay: TimeSpan.FromSeconds(30),
-                        errorCodesToAdd: null);
+                npgsqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 3,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorCodesToAdd: null);
                     
-                    npgsqlOptions.CommandTimeout(30);
-                });
-                
-                switch (environment)
-                {
-                    case "Local":
-                    case "Development":
-                        options.EnableSensitiveDataLogging();
-                        options.EnableDetailedErrors();
-                        options.LogTo(Console.WriteLine, LogLevel.Information);
-                        break;
-                    case "Staging":
-                    case "Production":
-                        options.EnableServiceProviderCaching();
-                        options.EnableSensitiveDataLogging(false);
-                        break;
-                    default:
-                        throw new InvalidOperationException("Unknown environment: " + environment);
-                }
-            });
-
-            services.AddDbContextFactory<ProcessingContext>((_, options) =>
-            {
-                options.UseNpgsql(connectionString, npgsqlOptions =>
-                {
-                    npgsqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 3,
-                        maxRetryDelay: TimeSpan.FromSeconds(30),
-                        errorCodesToAdd: null);
-                    
-                    npgsqlOptions.CommandTimeout(30);
-                });
-                
-                switch (environment)
-                {
-                    case "Local":
-                    case "Development":
-                        options.EnableSensitiveDataLogging();
-                        options.EnableDetailedErrors();
-                        options.LogTo(Console.WriteLine, LogLevel.Information);
-                        break;
-                    case "Staging":
-                    case "Production":
-                        options.EnableServiceProviderCaching();
-                        options.EnableSensitiveDataLogging(false);
-                        break;
-                    default:
-                        throw new InvalidOperationException("Unknown environment: " + environment);
-                }
+                npgsqlOptions.CommandTimeout(30);
             });
             
-            // Configure Repositories
-
-            services.AddSingleton<ISourceRecordWriteRepository, SourceRecordWriteRepository>();
-            services.AddScoped<ISourceRecordRepository, SourceRecordRepository>();
-            services.AddScoped<IComedyRepository, ComedyRepository>();
+            switch (environment)
+            {
+                case "Local":
+                case "Development":
+                    options.EnableSensitiveDataLogging();
+                    options.EnableDetailedErrors();
+                    options.LogTo(Console.WriteLine, LogLevel.Information);
+                    break;
+                case "Staging":
+                case "Production":
+                    options.EnableServiceProviderCaching();
+                    options.EnableSensitiveDataLogging(false);
+                    break;
+                default:
+                    throw new InvalidOperationException("Unknown environment: " + environment);
+            }
         }
     }
 }

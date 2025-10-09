@@ -2,13 +2,13 @@
 using ComedyPull.Domain.Models.Processing;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Modules.DataProcessing.Contexts
+namespace ComedyPull.Data.Modules.DataProcessing.Transform
 {
     /// <summary>
-    /// Data processing context.
+    /// Transform state context - handles transformation of source records into application DTOs.
     /// </summary>
     /// <param name="options">Injected <see cref="DbContextOptions"/> instance.</param>
-    public class ProcessingContext(DbContextOptions<ProcessingContext> options) : DbContext(options)
+    public class TransformStateContext(DbContextOptions<TransformStateContext> options) : DbContext(options)
     {
         /// <summary>
         /// Gets or sets the SourceRecords DbSet.
@@ -22,8 +22,7 @@ namespace ComedyPull.Data.Modules.DataProcessing.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
-            // Only apply configuration for SourceRecord
+
             modelBuilder.ApplyConfiguration(new SourceRecordConfiguration());
         }
     }

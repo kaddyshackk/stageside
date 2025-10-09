@@ -1,5 +1,4 @@
-﻿using ComedyPull.Application.Modules.DataProcessing.Processors.Interfaces;
-using ComedyPull.Domain.Models.Processing;
+﻿using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

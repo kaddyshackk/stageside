@@ -1,15 +1,14 @@
 ﻿using ComedyPull.Application.Modules.DataSync;
-using ComedyPull.Data.Modules.DataProcessing.Contexts;
 using ComedyPull.Domain.Models.Processing;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Modules.DataProcessing.Repositories
+namespace ComedyPull.Data.Modules.DataSync
 {
     /// <summary>
     /// A repository for interacting with SourceRecord's.
     /// </summary>
     /// <param name="contextFactory">Injected <see cref="IDbContextFactory{ComedyContext}"/> instance.</param>
-    public class SourceRecordWriteRepository(IDbContextFactory<ProcessingContext> contextFactory) : ISourceRecordWriteRepository
+    public class DataSyncRepository(IDbContextFactory<DataSyncContext> contextFactory) : IDataSyncRepository
     {
         /// <summary>
         /// Batch inserts a list of <see cref="SourceRecord"/>.

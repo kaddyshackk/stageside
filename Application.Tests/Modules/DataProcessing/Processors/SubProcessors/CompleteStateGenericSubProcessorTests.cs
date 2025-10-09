@@ -1,5 +1,3 @@
-using ComedyPull.Application.Modules.DataProcessing.Processors.SubProcessors;
-using ComedyPull.Application.Modules.DataProcessing.Repositories.Interfaces;
 using ComedyPull.Domain.Enums;
 using ComedyPull.Domain.Models;
 using ComedyPull.Domain.Models.Processing;
@@ -7,23 +5,25 @@ using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Complete;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
 
 namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors.SubProcessors
 {
     [TestClass]
-    public class GenericCompletionSubProcessorTests
+    public class CompleteStateGenericSubProcessorTests
     {
-        private IComedyRepository _mockComedyRepository = null!;
-        private ILogger<GenericCompletionSubProcessor> _mockLogger = null!;
-        private GenericCompletionSubProcessor _subProcessor = null!;
+        private ICompleteStateRepository _mockRepository = null!;
+        private ILogger<CompleteStateGenericSubProcessor> _mockLogger = null!;
+        private CompleteStateGenericSubProcessor _subProcessor = null!;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockComedyRepository = A.Fake<IComedyRepository>();
-            _mockLogger = A.Fake<ILogger<GenericCompletionSubProcessor>>();
+            _mockRepository = A.Fake<ICompleteStateRepository>();
+            _mockLogger = A.Fake<ILogger<CompleteStateGenericSubProcessor>>();
 
-            _subProcessor = new GenericCompletionSubProcessor(_mockComedyRepository, _mockLogger);
+            _subProcessor = new CompleteStateGenericSubProcessor(_mockRepository, _mockLogger);
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -72,33 +72,33 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors.SubProc
 
             var record = CreateSourceRecord(EntityType.Act, JsonSerializer.Serialize(processedData));
 
-            A.CallTo(() => _mockComedyRepository.GetComedianBySlugAsync("john-doe", A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetComedianBySlugAsync("john-doe", A<CancellationToken>._))
                 .Returns(Task.FromResult<Comedian?>(null));
 
-            A.CallTo(() => _mockComedyRepository.GetVenueBySlugAsync("comedy-club", A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetVenueBySlugAsync("comedy-club", A<CancellationToken>._))
                 .Returns(Task.FromResult<Venue?>(null));
 
             // Act
             await _subProcessor.ProcessAsync(new[] { record }, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => _mockComedyRepository.AddComedian(A<Comedian>.That.Matches(c =>
+            A.CallTo(() => _mockRepository.AddComedian(A<Comedian>.That.Matches(c =>
                 c.Name == "John Doe" &&
                 c.Slug == "john-doe" &&
                 c.Bio == "Comedian bio")))
                 .MustHaveHappenedOnceExactly();
 
-            A.CallTo(() => _mockComedyRepository.AddVenue(A<Venue>.That.Matches(v =>
+            A.CallTo(() => _mockRepository.AddVenue(A<Venue>.That.Matches(v =>
                 v.Name == "Comedy Club" &&
                 v.Slug == "comedy-club")))
                 .MustHaveHappenedOnceExactly();
 
-            A.CallTo(() => _mockComedyRepository.AddEvent(A<Event>.That.Matches(e =>
+            A.CallTo(() => _mockRepository.AddEvent(A<Event>.That.Matches(e =>
                 e.Title == "Comedy Night" &&
                 e.Status == EventStatus.Scheduled)))
                 .MustHaveHappenedOnceExactly();
 
-            A.CallTo(() => _mockComedyRepository.AddComedianEvent(A<ComedianEvent>._))
+            A.CallTo(() => _mockRepository.AddComedianEvent(A<ComedianEvent>._))
                 .MustHaveHappenedOnceExactly();
 
             record.State.Should().Be(ProcessingState.Completed);
@@ -130,14 +130,14 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors.SubProc
 
             var record = CreateSourceRecord(EntityType.Act, JsonSerializer.Serialize(processedData));
 
-            A.CallTo(() => _mockComedyRepository.GetComedianBySlugAsync("john-doe", A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetComedianBySlugAsync("john-doe", A<CancellationToken>._))
                 .Returns(Task.FromResult<Comedian?>(existingComedian));
 
             // Act
             await _subProcessor.ProcessAsync(new[] { record }, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => _mockComedyRepository.AddComedian(A<Comedian>._))
+            A.CallTo(() => _mockRepository.AddComedian(A<Comedian>._))
                 .MustNotHaveHappened();
 
             record.State.Should().Be(ProcessingState.Completed);
@@ -179,20 +179,20 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors.SubProc
 
             var record = CreateSourceRecord(EntityType.Act, JsonSerializer.Serialize(processedData));
 
-            A.CallTo(() => _mockComedyRepository.GetComedianBySlugAsync("john-doe", A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetComedianBySlugAsync("john-doe", A<CancellationToken>._))
                 .Returns(Task.FromResult<Comedian?>(null));
 
-            A.CallTo(() => _mockComedyRepository.GetVenueBySlugAsync("comedy-club", A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetVenueBySlugAsync("comedy-club", A<CancellationToken>._))
                 .Returns(Task.FromResult<Venue?>(existingVenue));
 
             // Act
             await _subProcessor.ProcessAsync(new[] { record }, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => _mockComedyRepository.AddVenue(A<Venue>._))
+            A.CallTo(() => _mockRepository.AddVenue(A<Venue>._))
                 .MustNotHaveHappened();
 
-            A.CallTo(() => _mockComedyRepository.AddEvent(A<Event>._))
+            A.CallTo(() => _mockRepository.AddEvent(A<Event>._))
                 .MustHaveHappenedOnceExactly();
         }
 
@@ -230,20 +230,20 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors.SubProc
 
             var record = CreateSourceRecord(EntityType.Act, JsonSerializer.Serialize(processedData));
 
-            A.CallTo(() => _mockComedyRepository.GetComedianBySlugAsync(A<string>._, A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetComedianBySlugAsync(A<string>._, A<CancellationToken>._))
                 .Returns(Task.FromResult<Comedian?>(null));
 
-            A.CallTo(() => _mockComedyRepository.GetVenueBySlugAsync(A<string>._, A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetVenueBySlugAsync(A<string>._, A<CancellationToken>._))
                 .Returns(Task.FromResult<Venue?>(null));
 
             // Act
             await _subProcessor.ProcessAsync(new[] { record }, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => _mockComedyRepository.AddEvent(A<Event>._))
+            A.CallTo(() => _mockRepository.AddEvent(A<Event>._))
                 .MustHaveHappened(2, Times.Exactly);
 
-            A.CallTo(() => _mockComedyRepository.AddComedianEvent(A<ComedianEvent>._))
+            A.CallTo(() => _mockRepository.AddComedianEvent(A<ComedianEvent>._))
                 .MustHaveHappened(2, Times.Exactly);
         }
 
@@ -376,14 +376,14 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors.SubProc
 
             var record = CreateSourceRecord(EntityType.Act, JsonSerializer.Serialize(processedData));
 
-            A.CallTo(() => _mockComedyRepository.GetComedianBySlugAsync("john-doe", A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetComedianBySlugAsync("john-doe", A<CancellationToken>._))
                 .Returns(Task.FromResult<Comedian?>(null));
 
             // Act
             await _subProcessor.ProcessAsync(new[] { record }, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => _mockComedyRepository.AddEvent(A<Event>._))
+            A.CallTo(() => _mockRepository.AddEvent(A<Event>._))
                 .MustNotHaveHappened();
 
             A.CallTo(_mockLogger)
@@ -392,7 +392,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors.SubProc
                 .MustHaveHappened();
 
             // Comedian should still be created
-            A.CallTo(() => _mockComedyRepository.AddComedian(A<Comedian>._))
+            A.CallTo(() => _mockRepository.AddComedian(A<Comedian>._))
                 .MustHaveHappenedOnceExactly();
 
             record.State.Should().Be(ProcessingState.Completed);
@@ -421,14 +421,14 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors.SubProc
             var record1 = CreateSourceRecord(EntityType.Act, JsonSerializer.Serialize(processedData1));
             var record2 = CreateSourceRecord(EntityType.Act, JsonSerializer.Serialize(processedData2));
 
-            A.CallTo(() => _mockComedyRepository.GetComedianBySlugAsync(A<string>._, A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetComedianBySlugAsync(A<string>._, A<CancellationToken>._))
                 .Returns(Task.FromResult<Comedian?>(null));
 
             // Act
             await _subProcessor.ProcessAsync(new[] { record1, record2 }, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => _mockComedyRepository.AddComedian(A<Comedian>._))
+            A.CallTo(() => _mockRepository.AddComedian(A<Comedian>._))
                 .MustHaveHappened(2, Times.Exactly);
 
             record1.State.Should().Be(ProcessingState.Completed);
@@ -449,7 +449,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors.SubProc
 
             var record = CreateSourceRecord(EntityType.Act, JsonSerializer.Serialize(processedData));
 
-            A.CallTo(() => _mockComedyRepository.GetComedianBySlugAsync("john-doe", A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetComedianBySlugAsync("john-doe", A<CancellationToken>._))
                 .Throws<Exception>();
 
             // Act

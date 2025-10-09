@@ -5,7 +5,7 @@ namespace ComedyPull.Application.Modules.DataSync
     /// <summary>
     /// A repository for interacting with BronzeRecord's.
     /// </summary>
-    public interface ISourceRecordWriteRepository
+    public interface IDataSyncRepository
     {
         /// <summary>
         /// Batch inserts a list of <see cref="SourceRecord"/>.
