@@ -99,7 +99,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
                     UpdatedBy = "System"
                 };
 
-                repository.AddComedian(comedian);
+                await repository.AddComedian(comedian);
                 logger.LogDebug("Created new Comedian {Name} with slug {Slug}", comedian.Name, comedian.Slug);
             }
 
@@ -149,7 +149,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
                     UpdatedBy = "System"
                 };
 
-                repository.AddVenue(venue);
+                await repository.AddVenue(venue);
                 logger.LogDebug("Created new Venue {Name} with slug {Slug}", venue.Name, venue.Slug);
             }
 
@@ -168,7 +168,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
                 UpdatedBy = "System"
             };
 
-            repository.AddEvent(eventEntity);
+            await repository.AddEvent(eventEntity);
             logger.LogDebug("Created new Event {Title} at {Venue}", eventEntity.Title, venue.Name);
 
             var comedianEvent = new ComedianEvent
@@ -179,7 +179,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
                 Event = eventEntity
             };
 
-            repository.AddComedianEvent(comedianEvent);
+            await repository.AddComedianEvent(comedianEvent);
         }
 
         /// <summary>

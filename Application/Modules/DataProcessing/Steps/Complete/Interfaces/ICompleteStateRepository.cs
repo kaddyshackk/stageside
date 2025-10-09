@@ -10,9 +10,9 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interface
         public Task SaveChangesAsync(CancellationToken cancellationToken = default);
         public Task<Comedian?> GetComedianBySlugAsync(string slug, CancellationToken cancellationToken);
         public Task<Venue?> GetVenueBySlugAsync(string slug, CancellationToken cancellationToken);
-        public void AddComedian(Comedian comedian);
-        public void AddVenue(Venue venue);
-        public void AddEvent(Event eventEntity);
-        public void AddComedianEvent(ComedianEvent comedianEvent);
+        public Task AddComedian(Comedian comedian);
+        public Task AddVenue(Venue venue);
+        public Task AddEvent(Event eventEntity);
+        public Task AddComedianEvent(ComedianEvent comedianEvent);
     }
 }

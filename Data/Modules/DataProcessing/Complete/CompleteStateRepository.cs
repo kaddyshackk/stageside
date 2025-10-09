@@ -5,10 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ComedyPull.Data.Modules.DataProcessing.Complete
 {
-    public class CompleteStateRepository(CompleteStateContext context) : ICompleteStateRepository
+    public class CompleteStateRepository(IDbContextFactory<CompleteStateContext> contextFactory) : ICompleteStateRepository
     {
+        private CompleteStateContext? _context;
+
         public async Task<IEnumerable<SourceRecord>> GetRecordsByBatchAsync(string batchId, CancellationToken cancellationToken = default)
         {
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
             return await context.SourceRecords
                 .Where(r => r.BatchId == batchId)
                 .ToListAsync(cancellationToken);
@@ -16,39 +19,50 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
 
         public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            await context.SaveChangesAsync(cancellationToken);
+            if (_context != null)
+            {
+                await _context.SaveChangesAsync(cancellationToken);
+                await _context.DisposeAsync();
+                _context = null;
+            }
         }
         
         public async Task<Comedian?> GetComedianBySlugAsync(string slug, CancellationToken cancellationToken)
         {
-            return await context.Comedians
+            _context ??= await contextFactory.CreateDbContextAsync(cancellationToken);
+            return await _context.Comedians
                 .FirstOrDefaultAsync(c => c.Slug == slug, cancellationToken);
         }
 
         public async Task<Venue?> GetVenueBySlugAsync(string slug, CancellationToken cancellationToken)
         {
-            return await context.Venues
+            _context ??= await contextFactory.CreateDbContextAsync(cancellationToken);
+            return await _context.Venues
                 .FirstOrDefaultAsync(v => v.Slug == slug, cancellationToken);
         }
 
-        public void AddComedian(Comedian comedian)
+        public async Task AddComedian(Comedian comedian)
         {
-            context.Comedians.Add(comedian);
+            _context ??= await contextFactory.CreateDbContextAsync();
+            _context.Comedians.Add(comedian);
         }
 
-        public void AddVenue(Venue venue)
+        public async Task AddVenue(Venue venue)
         {
-            context.Venues.Add(venue);
+            _context ??= await contextFactory.CreateDbContextAsync();
+            _context.Venues.Add(venue);
         }
 
-        public void AddEvent(Event eventEntity)
+        public async Task AddEvent(Event eventEntity)
         {
-            context.Events.Add(eventEntity);
+            _context ??= await contextFactory.CreateDbContextAsync();
+            _context.Events.Add(eventEntity);
         }
 
-        public void AddComedianEvent(ComedianEvent comedianEvent)
+        public async Task AddComedianEvent(ComedianEvent comedianEvent)
         {
-            context.ComedianEvents.Add(comedianEvent);
+            _context ??= await contextFactory.CreateDbContextAsync();
+            _context.ComedianEvents.Add(comedianEvent);
         }
     }    
 }
