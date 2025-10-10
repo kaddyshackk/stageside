@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Modules.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ComedyPull.Data.Configurations
@@ -12,7 +12,7 @@ namespace ComedyPull.Data.Configurations
         /// Configures the TraceableEntity fields of a table.
         /// </summary>
         /// <param name="builder">The EntityTypeBuilder instance.</param>
-        public new void Configure(EntityTypeBuilder<T> builder)
+        protected new void Configure(EntityTypeBuilder<T> builder)
         {
             base.Configure(builder);
             

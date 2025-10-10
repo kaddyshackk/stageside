@@ -1,6 +1,3 @@
-using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
-using ComedyPull.Application.Modules.DataProcessing.Steps.Transform.Interfaces;
-using ComedyPull.Application.Modules.DataSync;
 using ComedyPull.Data.Modules.DataProcessing.Complete;
 using ComedyPull.Data.Modules.DataProcessing.Transform;
 using ComedyPull.Data.Modules.DataSync;
@@ -34,14 +31,12 @@ namespace ComedyPull.Data.Extensions
             {
                 ConfigureDbContextOptionsBuilder(options, configuration);
             });
-            services.AddSingleton<ITransformStateRepository, TransformStateRepository>();
             
             // Complete State
             services.AddDbContextFactory<CompleteStateContext>((_, options) =>
             {
                 ConfigureDbContextOptionsBuilder(options, configuration);
             });
-            services.AddSingleton<ICompleteStateRepository, CompleteStateRepository>();
         }
 
         private static void AddDataSyncServices(this IServiceCollection services, IConfiguration configuration)
@@ -50,7 +45,6 @@ namespace ComedyPull.Data.Extensions
             {
                 ConfigureDbContextOptionsBuilder(options, configuration);
             });
-            services.AddSingleton<IDataSyncRepository, DataSyncRepository>();
         }
 
         private static void ConfigureDbContextOptionsBuilder(DbContextOptionsBuilder options, IConfiguration configuration)

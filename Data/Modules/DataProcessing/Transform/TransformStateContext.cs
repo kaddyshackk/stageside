@@ -1,5 +1,5 @@
 ﻿using ComedyPull.Data.Configurations;
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Domain.Modules.DataProcessing;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComedyPull.Data.Modules.DataProcessing.Transform
@@ -11,9 +11,14 @@ namespace ComedyPull.Data.Modules.DataProcessing.Transform
     public class TransformStateContext(DbContextOptions<TransformStateContext> options) : DbContext(options)
     {
         /// <summary>
-        /// Gets or sets the SourceRecords DbSet.
+        /// Gets or sets the BronzeRecords DbSet.
         /// </summary>
-        public DbSet<SourceRecord> SourceRecords { get; set; }
+        public DbSet<BronzeRecord> BronzeRecords { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the SilverRecords DbSet.
+        /// </summary>
+        public DbSet<SilverRecord> SilverRecords { get; set; }
         
         /// <summary>
         /// Performs additional setup on table creation.
@@ -23,7 +28,8 @@ namespace ComedyPull.Data.Modules.DataProcessing.Transform
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new SourceRecordConfiguration());
+            modelBuilder.ApplyConfiguration(new BronzeRecordConfiguration());
+            modelBuilder.ApplyConfiguration(new SilverRecordConfiguration());
         }
     }
 }

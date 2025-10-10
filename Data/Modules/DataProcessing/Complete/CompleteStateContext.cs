@@ -1,6 +1,6 @@
 ﻿using ComedyPull.Data.Configurations;
-using ComedyPull.Domain.Models;
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Domain.Modules.Common;
+using ComedyPull.Domain.Modules.DataProcessing;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComedyPull.Data.Modules.DataProcessing.Complete
@@ -8,9 +8,9 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
     public class CompleteStateContext(DbContextOptions<CompleteStateContext> options) : DbContext(options)
     {
         /// <summary>
-        /// Gets or sets the SourceRecords DbSet.
+        /// Gets or sets the SilverRecords DbSet.
         /// </summary>
-        public DbSet<SourceRecord> SourceRecords { get; set; }
+        public DbSet<SilverRecord> SilverRecords { get; set; }
         
         /// <summary>
         /// Gets or sets the Comedians DbSet.
@@ -40,7 +40,7 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new SourceRecordConfiguration());
+            modelBuilder.ApplyConfiguration(new SilverRecordConfiguration());
             modelBuilder.ApplyConfiguration(new ComedianConfiguration());
             modelBuilder.ApplyConfiguration(new EventConfiguration());
             modelBuilder.ApplyConfiguration(new VenueConfiguration());

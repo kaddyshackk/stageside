@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Modules.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

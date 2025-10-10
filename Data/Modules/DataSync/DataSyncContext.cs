@@ -1,5 +1,5 @@
 ﻿using ComedyPull.Data.Configurations;
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Domain.Modules.DataProcessing;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComedyPull.Data.Modules.DataSync
@@ -13,7 +13,7 @@ namespace ComedyPull.Data.Modules.DataSync
         /// <summary>
         /// Gets or sets the SourceRecords DbSet.
         /// </summary>
-        public DbSet<SourceRecord> SourceRecords { get; set; }
+        public DbSet<BronzeRecord> BronzeRecords { get; set; }
 
         /// <summary>
         /// Performs additional setup on table creation.
@@ -23,7 +23,7 @@ namespace ComedyPull.Data.Modules.DataSync
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new SourceRecordConfiguration());
+            modelBuilder.ApplyConfiguration(new BronzeRecordConfiguration());
         }
     }
 }
