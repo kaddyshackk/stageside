@@ -1,4 +1,4 @@
-namespace ComedyPull.Domain.Models
+namespace ComedyPull.Domain.Modules.Common
 {
     /// <summary>
     /// Defines a venue for comedy events.

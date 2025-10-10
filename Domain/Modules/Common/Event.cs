@@ -1,6 +1,6 @@
 ﻿using ComedyPull.Domain.Enums;
 
-namespace ComedyPull.Domain.Models
+namespace ComedyPull.Domain.Modules.Common
 {
     /// <summary>
     /// Defines a comedy event.

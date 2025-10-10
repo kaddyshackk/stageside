@@ -1,4 +1,4 @@
-﻿namespace ComedyPull.Domain.Models
+﻿namespace ComedyPull.Domain.Modules.Common
 {
     /// <summary>
     /// Defined a comedian.

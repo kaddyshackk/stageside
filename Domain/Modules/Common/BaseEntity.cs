@@ -1,4 +1,6 @@
-namespace ComedyPull.Domain.Models
+using ComedyPull.Domain.Modules.Common.Interfaces;
+
+namespace ComedyPull.Domain.Modules.Common
 {
     /// <summary>
     /// Defines a base entity.

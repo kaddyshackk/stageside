@@ -1,6 +1,6 @@
 using ComedyPull.Domain.Enums;
 
-namespace ComedyPull.Domain.Models
+namespace ComedyPull.Domain.Modules.Common.Interfaces
 {
     /// <summary>
     /// Represents an entity that can be traced to an external source.

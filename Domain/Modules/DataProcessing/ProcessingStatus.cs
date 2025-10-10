@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 
-namespace ComedyPull.Domain.Models.Processing
+namespace ComedyPull.Domain.Modules.DataProcessing
 {
     /// <summary>
-    /// Represents the status of a <see cref="SourceRecord"/> in the data pipeline.
+    /// Represents the status of a <see cref="BronzeRecord"/> in the data pipeline.
     /// </summary>
     public enum ProcessingStatus
     {
