@@ -1,6 +1,4 @@
-using ComedyPull.Application.Modules.Punchup.Collectors;
-
-namespace ComedyPull.Application.Modules.Punchup.Factories
+namespace ComedyPull.Application.Modules.Punchup.Collectors.Interfaces
 {
     public interface IPunchupTicketsPageCollectorFactory
     {

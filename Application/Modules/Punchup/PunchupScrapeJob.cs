@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using ComedyPull.Application.Modules.DataProcessing.Events;
-using ComedyPull.Application.Modules.DataSync.Services.Interfaces;
-using ComedyPull.Application.Modules.Punchup.Factories;
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Application.Modules.DataSync.Interfaces;
+using ComedyPull.Application.Modules.Punchup.Collectors.Interfaces;
+using ComedyPull.Domain.Modules.DataProcessing;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Quartz;

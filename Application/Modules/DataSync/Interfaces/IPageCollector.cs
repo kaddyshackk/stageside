@@ -1,6 +1,6 @@
 ﻿using Microsoft.Playwright;
 
-namespace ComedyPull.Application.Modules.DataSync
+namespace ComedyPull.Application.Modules.DataSync.Interfaces
 {
     /// <summary>
     /// Represents a service that collects from a specific page using playwright.

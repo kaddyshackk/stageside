@@ -1,4 +1,4 @@
-﻿using ComedyPull.Domain.Models.Processing;
+﻿using ComedyPull.Domain.Modules.DataProcessing;
 using MediatR;
 
 namespace ComedyPull.Application.Modules.DataProcessing.Events

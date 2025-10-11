@@ -1,7 +1,7 @@
 ﻿using System.Xml.Linq;
-using ComedyPull.Application.Modules.DataSync.Services.Interfaces;
+using ComedyPull.Application.Modules.DataSync.Interfaces;
 
-namespace ComedyPull.Application.Modules.DataSync.Services
+namespace ComedyPull.Application.Modules.DataSync
 {
     public class SitemapLoader(IHttpClientFactory httpClientFactory) : ISitemapLoader
     {

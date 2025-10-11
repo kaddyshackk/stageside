@@ -8,18 +8,18 @@
         /// <summary>
         /// Gets or sets the comedian name.
         /// </summary>
-        public required string Name { get; init; }
-        
+        public required string Name { get; set; }
+
         /// <summary>
         /// Gets or sets the slug identifier.
         /// </summary>
-        public required string Slug { get; init; }
-        
+        public required string Slug { get; set; }
+
         /// <summary>
         /// Gets or sets the comedian bio.
         /// </summary>
-        public required string Bio { get; init; }
-        
+        public required string Bio { get; set; }
+
         /// <summary>
         /// Navigation property to ComedianEvent relationship table.
         /// </summary>

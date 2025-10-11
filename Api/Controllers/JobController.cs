@@ -1,6 +1,6 @@
 using ComedyPull.Application.Modules.DataProcessing.Events;
 using ComedyPull.Application.Modules.Punchup;
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Domain.Modules.DataProcessing;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
@@ -42,13 +42,13 @@ namespace ComedyPull.Api.Controllers
         }
 
         [HttpPost("replay-stage/{batchId:guid}")]
-        public async Task<IActionResult> ReplayStage(Guid batchId, [FromQuery] string stage)
+        public async Task<IActionResult> ReplayStage(Guid batchId, [FromQuery] string state)
         {
             try
             {
-                if (!Enum.TryParse<ProcessingState>(stage, true, out var processingState))
+                if (!Enum.TryParse<ProcessingState>(state, true, out var processingState))
                 {
-                    return BadRequest(new { error = $"Invalid stage '{stage}'. Valid stages: {string.Join(", ", Enum.GetNames<ProcessingState>())}" });
+                    return BadRequest(new { error = $"Invalid stage '{state}'. Valid stages: {string.Join(", ", Enum.GetNames<ProcessingState>())}" });
                 }
 
                 await mediator.Publish(new StateCompletedEvent(batchId, processingState));
@@ -58,7 +58,7 @@ namespace ComedyPull.Api.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to replay stage {Stage} for batch {BatchId}", stage, batchId);
+                logger.LogError(ex, "Failed to replay stage {Stage} for batch {BatchId}", state, batchId);
                 return StatusCode(500, new { error = "Stage replay failed", details = ex.Message });
             }
         }

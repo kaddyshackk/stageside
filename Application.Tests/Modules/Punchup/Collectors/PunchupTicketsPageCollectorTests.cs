@@ -1,6 +1,6 @@
 using ComedyPull.Application.Interfaces;
 using ComedyPull.Application.Modules.Punchup.Collectors;
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Domain.Modules.DataProcessing;
 using FakeItEasy;
 using Microsoft.Playwright;
 
@@ -47,14 +47,14 @@ namespace ComedyPull.Application.Tests.Modules.Punchup.Collectors
         {
             // Arrange
             var url = "https://punchup.live/joe-list/tickets";
-            var queue = A.Fake<IQueue<SourceRecord>>();
+            var queue = A.Fake<IQueue<BronzeRecord>>();
             var processor = new PunchupTicketsPageCollector(queue);
 
             // Act
             await processor.CollectPageAsync(url, _page, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => queue.EnqueueAsync(A<SourceRecord>._, A<CancellationToken>._))
+            A.CallTo(() => queue.EnqueueAsync(A<BronzeRecord>._, A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }
     }

@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Domain.Modules.DataProcessing;
 
 namespace ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces
 {
@@ -7,6 +7,6 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces
         TKey? Key { get; }
         ProcessingState FromState { get; }
         ProcessingState ToState { get; }
-        Task ProcessAsync(IEnumerable<SourceRecord> records, CancellationToken cancellationToken);
+        Task ProcessAsync(IEnumerable<BronzeRecord> records, CancellationToken cancellationToken);
     }
 }

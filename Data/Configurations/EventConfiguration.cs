@@ -18,16 +18,20 @@ namespace ComedyPull.Data.Configurations
             base.Configure(builder);
 
             // Properties
-            
+
             builder.Property(e => e.Title)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            builder.Property(e => e.Slug)
                 .HasMaxLength(255)
                 .IsRequired();
 
             builder.Property(e => e.StartDateTime)
                 .IsRequired();
-            
+
             builder.Property(e => e.EndDateTime)
-                .IsRequired();
+                .IsRequired(false);
 
             // Relationships
             
@@ -38,6 +42,7 @@ namespace ComedyPull.Data.Configurations
             
             // Indices
 
+            builder.HasIndex(e => e.Slug).IsUnique();
             builder.HasIndex(e => e.Status);
             builder.HasIndex(e => e.StartDateTime);
             builder.HasIndex(e => e.VenueId);

@@ -1,27 +1,80 @@
 # Data Processing Module
 
-The Data Processing module orchestrates the movement of source records through a multi-stage data pipeline using a state machine pattern.
+The Data Processing module orchestrates the movement of records through a multi-stage data pipeline using a state machine pattern and **medallion architecture** (Bronze → Silver → Gold).
 
 ## Overview
 
-The module uses a **two-tier processor architecture**:
-- **Tier 1**: State Processors - Event-driven orchestrators that move batches between processing states
-- **Tier 2**: Sub-Processors - Source-specific business logic implementations
+The module implements a **medallion architecture** with a **two-tier processor pattern**:
 
-This design eliminates circular dependencies while allowing source-specific modules (like Punchup) to extend the pipeline without modifying core processing logic.
+### Medallion Architecture
+- **Bronze Layer**: Raw data from sources (`BronzeRecord`) - immutable source of truth
+- **Silver Layer**: Transformed, flattened data (`SilverRecord`) - one entity per record
+- **Gold Layer**: Production-ready data (`Comedian`, `Event`, `Venue`) - deduplicated, enriched entities
+
+### Two-Tier Processor Pattern
+- **Tier 1**: State Processors - Event-driven orchestrators that move batches between processing states
+- **Tier 2**: Sub-Processors - Source-specific transformation logic (Transform stage only)
+
+This design:
+- Separates raw data from processed data
+- Enables independent scaling of pipeline stages
+- Supports batch processing and deduplication
+- Eliminates circular dependencies between modules
 
 ## Table of Contents
 
 - [Architecture](#architecture)
+- [Medallion Layers](#medallion-layers)
 - [State Machine](#state-machine)
 - [Processing Flow](#processing-flow)
 - [Key Components](#key-components)
+- [Correlation Strategy](#correlation-strategy)
 - [Adding New Processors](#adding-new-processors)
-- [Replay Support](#replay-support)
 
 ---
 
 ## Architecture
+
+### Medallion Data Flow
+
+```
+┌──────────────────┐
+│  Data Collection │
+│   (Scrapers)     │
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────────────────────────────────────────┐
+│                   BRONZE LAYER                        │
+│  BronzeRecord - Raw, immutable source data           │
+│  • One record per scraped page/API response          │
+│  • Nested structures preserved                       │
+│  • Content hash for deduplication                    │
+└────────┬─────────────────────────────────────────────┘
+         │
+         │ Transform Stage
+         │ (Flattens nested data)
+         ▼
+┌──────────────────────────────────────────────────────┐
+│                   SILVER LAYER                        │
+│  SilverRecord - Transformed, structured data         │
+│  • One entity per record (Comedian OR Event OR Venue)│
+│  • Flat structure with correlation slugs             │
+│  • Enriched with computed fields                     │
+└────────┬─────────────────────────────────────────────┘
+         │
+         │ Complete Stage
+         │ (Deduplicates & persists)
+         ▼
+┌──────────────────────────────────────────────────────┐
+│                    GOLD LAYER                         │
+│  Comedian, Event, Venue, ComedianEvent               │
+│  • Production-ready entities                         │
+│  • Deduplicated by slug                              │
+│  • Relationships established                         │
+│  • Auditable (CreatedAt, UpdatedBy, etc.)           │
+└──────────────────────────────────────────────────────┘
+```
 
 ### Two-Tier Processor Pattern
 
@@ -40,43 +93,107 @@ This design eliminates circular dependencies while allowing source-specific modu
                        ▼
 ┌─────────────────────────────────────────────────────────────┐
 │            IStateProcessor (Tier 1)                         │
-│          e.g., TransformStateProcessor                      │
 │                                                             │
-│  1. Loads batch records from DB                             │
-│  2. Groups by source (or other criteria)                    │
-│  3. Resolves ISubProcessor for each group                   │
-│  4. Delegates processing to sub-processors                  │
-│  5. Publishes StateCompletedEvent for next stage            │
+│  TransformStateProcessor:                                   │
+│    1. Loads Batch + validates state                         │
+│    2. Loads BronzeRecords by BatchId                        │
+│    3. Resolves SubProcessor by Batch.SourceType            │
+│    4. SubProcessor creates SilverRecords                    │
+│    5. Updates Batch state & publishes event                 │
+│                                                             │
+│  CompleteStateProcessor:                                    │
+│    1. Loads Batch + validates state                         │
+│    2. Loads SilverRecords by BatchId                        │
+│    3. Groups by EntityType                                  │
+│    4. Batch processes each entity type:                     │
+│       - Query existing Gold records by slug                 │
+│       - Identify new vs existing                            │
+│       - Bulk insert/update Gold records                     │
+│    5. Updates Batch state & publishes event                 │
 └──────────────────────┬──────────────────────────────────────┘
                        │
+                       │ (Transform stage only)
                        ▼
 ┌─────────────────────────────────────────────────────────────┐
-│           ISubProcessor<TKey> (Tier 2)                      │
+│           ISubProcessor<DataSourceType> (Tier 2)            │
 │                                                             │
-│  ┌──────────────────────────┐  ┌───────────────────────┐   │
-│  │ GenericTransformSub-     │  │ PunchupTransformSub-  │   │
-│  │ Processor (Key = null)   │  │ Processor             │   │
-│  │ Fallback for all sources │  │ (Key = DataSource.    │   │
-│  │                          │  │  Punchup)             │   │
-│  └──────────────────────────┘  └───────────────────────┘   │
+│  PunchupTransformSubProcessor                               │
+│  (Key = DataSourceType.PunchupTicketsPage)                  │
+│                                                             │
+│  1. Parses BronzeRecord.Data (nested JSON)                  │
+│  2. Generates slugs for correlation                         │
+│  3. Flattens into multiple SilverRecords:                   │
+│     - 1 SilverRecord per Comedian (EntityType.Act)          │
+│     - N SilverRecords per Venue (EntityType.Venue)          │
+│     - M SilverRecords per Event (EntityType.Event)          │
+│  4. Bulk creates SilverRecords                              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Why Two Tiers?
+---
 
-**Separation of Concerns:**
-- **State Processors**: Handle pipeline orchestration, DB access, event publishing
-- **Sub-Processors**: Contain only source-specific business logic
+## Medallion Layers
 
-**No Circular Dependencies:**
-- Core DataProcessing module registers state processors
-- Source modules (e.g., Punchup) only register their sub-processors
-- Modules never reference each other directly
+### Bronze Layer - Raw Data
 
-**Single Database Query:**
-- State processor loads batch once
-- Distributes records to appropriate sub-processors
-- Efficient and reduces DB load
+**Entity**: `BronzeRecord`
+
+**Purpose**: Immutable storage of raw source data
+
+**Fields**:
+- `BatchId` - Groups records from same collection run
+- `Data` - Raw JSON from source (nested structures preserved)
+- `ContentHash` - For detecting duplicate scrapes
+- `Status` - Processing status (Processing, Completed, Failed)
+
+**Characteristics**:
+- Immutable after creation
+- One record per scraped page/API response
+- Preserves original structure (nested objects)
+- Never deleted (audit trail)
+
+### Silver Layer - Transformed Data
+
+**Entity**: `SilverRecord`
+
+**Purpose**: Flattened, structured records ready for deduplication
+
+**Fields**:
+- `BatchId` - Links back to bronze layer
+- `BronzeRecordId` - Source bronze record
+- `EntityType` - Act, Event, or Venue
+- `Data` - JSON of `Processed*` model (ProcessedAct, ProcessedEvent, ProcessedVenue)
+- `Status` - Processing status
+- `ContentHash` - For deduplication
+
+**Characteristics**:
+- One entity per record (flattened from nested bronze data)
+- Includes correlation slugs for linking
+- Enriched with computed fields (slugs, processed timestamps)
+- Multiple silver records created from one bronze record
+
+**Example Transformation**:
+```
+1 BronzeRecord (Punchup comedian page with nested events)
+  ↓
+3+ SilverRecords:
+  - 1 SilverRecord { EntityType: Act, Data: ProcessedAct }
+  - 1 SilverRecord { EntityType: Venue, Data: ProcessedVenue }
+  - 1+ SilverRecord { EntityType: Event, Data: ProcessedEvent }
+```
+
+### Gold Layer - Production Data
+
+**Entities**: `Comedian`, `Event`, `Venue`, `ComedianEvent`
+
+**Purpose**: Deduplicated, production-ready entities with relationships
+
+**Characteristics**:
+- Unique by natural key (Slug)
+- Fully auditable (CreatedAt, UpdatedAt, CreatedBy, UpdatedBy)
+- Relationships established (many-to-many via `ComedianEvent`)
+- Traceable to source (Source, IngestedAt)
+- Updateable (new scrapes update existing records)
 
 ---
 
@@ -84,23 +201,22 @@ This design eliminates circular dependencies while allowing source-specific modu
 
 ### Processing States
 
-Records progress through the following states:
+Batches progress through the following states:
 
 ```
-Ingested → Transformed → DeDuped → Enriched → Linked → Completed
-                                                   ↓
-                                               Failed
+Ingested → Transformed → Completed
+               ↓
+            Failed
 ```
 
-| State | Description |
-|-------|-------------|
-| `Ingested` | Raw data scraped and stored in database |
-| `Transformed` | Data parsed and transformed into structured format |
-| `DeDuped` | Duplicate records identified and marked |
-| `Enriched` | Additional data added (external APIs, calculations) |
-| `Linked` | Relationships between entities established |
-| `Completed` | Processing pipeline complete |
-| `Failed` | Processing failed at some stage |
+| State | Description | Layer Transition |
+|-------|-------------|------------------|
+| `Ingested` | Raw data scraped and stored as BronzeRecords | → Bronze |
+| `Transformed` | Data flattened into SilverRecords with slugs | Bronze → Silver |
+| `Completed` | SilverRecords persisted to Gold layer | Silver → Gold |
+| `Failed` | Processing failed at some stage | - |
+
+**Note**: Future states (DeDuped, Enriched, Linked) can be added between Transformed and Completed.
 
 ### State Machine Configuration
 
@@ -110,11 +226,11 @@ Defined in `ProcessingStateMachine.cs`:
 private static readonly Dictionary<ProcessingState, ProcessingState> ValidTransitions = new()
 {
     { ProcessingState.Ingested, ProcessingState.Transformed },
-    // Add more transitions as pipeline grows
+    { ProcessingState.Transformed, ProcessingState.Completed }
 };
 ```
 
-**Key Methods:**
+**Key Methods**:
 - `GetNextState(ProcessingState current)` - Returns next state or throws if terminal
 - `CanTransition(ProcessingState from, ProcessingState to)` - Validates transition
 
@@ -124,271 +240,431 @@ private static readonly Dictionary<ProcessingState, ProcessingState> ValidTransi
 
 ### Complete Flow Example
 
-1. **Data Ingestion** (External to this module)
-   - Source data scraped and inserted into `SourceRecords` table
-   - Records have `State = Ingested`, grouped by `BatchId`
+#### 1. Data Ingestion (External to this module)
+```csharp
+// Scraper creates Batch
+var batch = new Batch
+{
+    Source = DataSource.Punchup,
+    SourceType = DataSourceType.PunchupTicketsPage,
+    State = ProcessingState.Ingested
+};
 
-2. **Manual Trigger** (or scheduled job)
-   - Initial `StateCompletedEvent(batchId, ProcessingState.Ingested)` published
+// Scraper creates BronzeRecords
+var bronzeRecord = new BronzeRecord
+{
+    BatchId = batch.Id,
+    Data = "{\"Name\":\"Joe List\",\"Events\":[...]}",  // Nested JSON
+    ContentHash = ComputeHash(data)
+};
+```
 
-3. **Event Handler Activation**
-   ```csharp
-   StateCompletedHandler receives event
-   → Calls ProcessingStateMachine.GetNextState(Ingested) → Transformed
-   → Finds IStateProcessor where FromState=Ingested, ToState=Transformed
-   → Invokes TransformStateProcessor.ProcessBatchAsync(batchId)
-   ```
+#### 2. Transform Stage (Ingested → Transformed)
 
-4. **State Processor Execution**
-   ```csharp
-   TransformStateProcessor:
-   → Loads records: SELECT * FROM SourceRecords WHERE BatchId = @batchId
-   → Groups by Source: records.GroupBy(r => r.Source)
-   → For each group:
-       → Resolve sub-processor: subProcessorResolver.Resolve(DataSource.Punchup, Ingested, Transformed)
-       → Returns PunchupTransformSubProcessor (or GenericTransformSubProcessor if no match)
-       → Calls subProcessor.ProcessAsync(records)
-   → Publishes StateCompletedEvent(batchId, Transformed)
-   ```
+**TransformStateProcessor** orchestrates:
 
-5. **Sub-Processor Execution**
-   ```csharp
-   PunchupTransformSubProcessor:
-   → Receives IEnumerable<SourceRecord> for Punchup source
-   → Parses RawData (JSON) into structured objects
-   → Updates SourceRecord.ProcessedData with transformed JSON
-   → Saves to database
-   ```
+```csharp
+public async Task ProcessBatchAsync(Guid batchId, CancellationToken cancellationToken)
+{
+    // 1. Load and validate batch
+    var batch = await repository.GetBatchById(batchId);
+    if (batch.State != ProcessingState.Ingested) throw new InvalidBatchStateException();
 
-6. **Next Stage Trigger**
-   - `StateCompletedEvent(batchId, Transformed)` published
-   - Cycle repeats for next transition (Transformed → DeDuped)
+    // 2. Load bronze records
+    var bronzeRecords = await repository.GetBronzeRecordsByBatchId(batchId);
+
+    // 3. Resolve SubProcessor by batch.SourceType
+    var subProcessor = subProcessorResolver.Resolve(
+        batch.SourceType,  // DataSourceType.PunchupTicketsPage
+        FromState,         // Ingested
+        ToState            // Transformed
+    );
+
+    // 4. SubProcessor creates SilverRecords
+    await subProcessor.ProcessAsync(bronzeRecords, cancellationToken);
+
+    // 5. Update batch state & publish event
+    await repository.UpdateBatchStateById(batchId, ToState, cancellationToken);
+    await mediator.Publish(new StateCompletedEvent(batchId, ToState), cancellationToken);
+}
+```
+
+**PunchupTransformSubProcessor** flattens data:
+
+```csharp
+public async Task ProcessAsync(IEnumerable<BronzeRecord> records, CancellationToken cancellationToken)
+{
+    var silverRecords = new List<SilverRecord>();
+
+    foreach (var bronzeRecord in records)
+    {
+        var punchupData = JsonSerializer.Deserialize<PunchupRecord>(bronzeRecord.Data);
+        var comedianSlug = GenerateSlug(punchupData.Name);  // "joe-list"
+
+        // 1. Create SilverRecord for Comedian
+        silverRecords.Add(new SilverRecord
+        {
+            BatchId = bronzeRecord.BatchId,
+            BronzeRecordId = bronzeRecord.Id,
+            EntityType = EntityType.Act,
+            Data = JsonSerializer.Serialize(new ProcessedAct
+            {
+                Name = punchupData.Name,
+                Slug = comedianSlug,
+                Bio = punchupData.Bio
+            })
+        });
+
+        // 2. Create SilverRecords for each unique Venue
+        foreach (var venue in punchupData.Events.Select(e => e.Venue).Distinct())
+        {
+            silverRecords.Add(new SilverRecord
+            {
+                BatchId = bronzeRecord.BatchId,
+                BronzeRecordId = bronzeRecord.Id,
+                EntityType = EntityType.Venue,
+                Data = JsonSerializer.Serialize(new ProcessedVenue
+                {
+                    Name = venue,
+                    Slug = GenerateSlug(venue)  // "comedy-store"
+                })
+            });
+        }
+
+        // 3. Create SilverRecords for each Event
+        foreach (var evt in punchupData.Events)
+        {
+            var venueSlug = GenerateSlug(evt.Venue);
+            var eventSlug = $"{comedianSlug}-{venueSlug}-{evt.StartDateTime:yyyy-MM-dd}";
+
+            silverRecords.Add(new SilverRecord
+            {
+                BatchId = bronzeRecord.BatchId,
+                BronzeRecordId = bronzeRecord.Id,
+                EntityType = EntityType.Event,
+                Data = JsonSerializer.Serialize(new ProcessedEvent
+                {
+                    Title = $"{punchupData.Name} at {evt.Venue}",
+                    Slug = eventSlug,
+                    ComedianSlug = comedianSlug,  // For correlation
+                    VenueSlug = venueSlug,        // For correlation
+                    StartDateTime = evt.StartDateTime
+                })
+            });
+        }
+    }
+
+    // Bulk create all SilverRecords
+    await repository.CreateSilverRecordsAsync(silverRecords, cancellationToken);
+}
+```
+
+#### 3. Complete Stage (Transformed → Completed)
+
+**CompleteStateProcessor** persists to Gold layer:
+
+```csharp
+public async Task ProcessBatchAsync(Guid batchId, CancellationToken cancellationToken)
+{
+    // 1. Load and validate batch
+    var batch = await repository.GetBatchById(batchId);
+    if (batch.State != ProcessingState.Transformed) throw new InvalidBatchStateException();
+
+    // 2. Load silver records
+    var records = await repository.GetSilverRecordsByBatchId(batchId);
+
+    // 3. Group by EntityType and process each
+    var groups = records.GroupBy(r => r.EntityType);
+    foreach (var group in groups)
+    {
+        switch (group.Key)
+        {
+            case EntityType.Act:
+                await ProcessActsAsync(group, cancellationToken);
+                break;
+            case EntityType.Venue:
+                await ProcessVenuesAsync(group, cancellationToken);
+                break;
+            case EntityType.Event:
+                await ProcessEventsAsync(group, cancellationToken);
+                break;
+        }
+    }
+
+    // 4. Update batch state & publish event
+    await repository.UpdateBatchStateById(batchId, ToState, cancellationToken);
+    await mediator.Publish(new StateCompletedEvent(batchId, ToState), cancellationToken);
+}
+
+private async Task ProcessActsAsync(IEnumerable<SilverRecord> silverRecords, CancellationToken cancellationToken)
+{
+    // 1. Parse all ProcessedAct data
+    var processedActs = silverRecords
+        .Select(r => new {
+            SilverRecord = r,
+            ProcessedAct = JsonSerializer.Deserialize<ProcessedAct>(r.Data)
+        })
+        .ToList();
+
+    // 2. Batch query for existing comedians by slug
+    var slugs = processedActs.Select(x => x.ProcessedAct.Slug).Distinct().ToList();
+    var existingComedians = await repository.GetComediansBySlugAsync(slugs);
+    var existingBySlug = existingComedians.ToDictionary(c => c.Slug);
+
+    // 3. Identify new vs existing
+    var newComedians = new List<Comedian>();
+    var updatedComedians = new List<Comedian>();
+
+    foreach (var item in processedActs)
+    {
+        if (existingBySlug.TryGetValue(item.ProcessedAct.Slug, out var existing))
+        {
+            // Update if data changed
+            if (existing.Bio != item.ProcessedAct.Bio)
+            {
+                existing.Bio = item.ProcessedAct.Bio;
+                existing.UpdatedAt = DateTimeOffset.UtcNow;
+                updatedComedians.Add(existing);
+            }
+        }
+        else if (!newComedians.Any(nc => nc.Slug == item.ProcessedAct.Slug))
+        {
+            // Create new
+            newComedians.Add(new Comedian
+            {
+                Name = item.ProcessedAct.Name,
+                Slug = item.ProcessedAct.Slug,
+                Bio = item.ProcessedAct.Bio ?? "",
+                Source = batch.Source,
+                CreatedAt = DateTimeOffset.UtcNow,
+                CreatedBy = "System",
+                UpdatedAt = DateTimeOffset.UtcNow,
+                UpdatedBy = "System"
+            });
+        }
+
+        item.SilverRecord.Status = ProcessingStatus.Completed;
+    }
+
+    // 4. Bulk insert new comedians
+    if (newComedians.Any())
+        await repository.AddComediansAsync(newComedians, cancellationToken);
+
+    // 5. Bulk update existing comedians
+    if (updatedComedians.Any())
+        await repository.UpdateComediansAsync(updatedComedians, cancellationToken);
+
+    // 6. Update SilverRecord statuses
+    await repository.UpdateSilverRecordsAsync(silverRecords, cancellationToken);
+}
+```
 
 ---
 
 ## Key Components
 
-### 1. Interfaces
+### 1. Batch Entity
 
-#### `IStateProcessor`
-```csharp
-public interface IStateProcessor
-{
-    ProcessingState FromState { get; }
-    ProcessingState ToState { get; }
-    Task ProcessBatchAsync(Guid batchId, CancellationToken cancellationToken);
-}
-```
+**Purpose**: Tracks a group of records through the pipeline
 
-**Purpose**: Defines contract for pipeline stage orchestrators
+**Key Fields**:
+- `Source` - DataSource enum (e.g., Punchup)
+- `SourceType` - DataSourceType enum (e.g., PunchupTicketsPage)
+- `State` - Current ProcessingState
+- `Status` - Current ProcessingStatus
 
-**Implementations**:
-- `TransformStateProcessor` (Ingested → Transformed)
+**Routing Logic**: SubProcessors are resolved by `Batch.SourceType`, not `DataSource`
 
-#### `ISubProcessor<TKey>`
-```csharp
-public interface ISubProcessor<TKey> where TKey : struct
-{
-    TKey? Key { get; }  // null = generic/fallback
-    ProcessingState FromState { get; }
-    ProcessingState ToState { get; }
-    Task ProcessAsync(IEnumerable<SourceRecord> records, CancellationToken cancellationToken);
-}
-```
+**Why?** A single DataSource (e.g., Punchup) may have multiple page types:
+- `PunchupTicketsPage` - Comedian pages with event listings
+- `PunchupSearchPage` - Search results
+- `PunchupVenuePage` - Venue-specific pages
 
-**Purpose**: Defines contract for source-specific business logic
-
-**Key Parameter**: `TKey` - The type used to key/identify the processor (e.g., `DataSource`, `EntityType`)
-
-**Implementations**:
-- `GenericTransformSubProcessor` - Key = null (fallback)
-- `PunchupTransformSubProcessor` - Key = DataSource.Punchup
-
----
+Each requires different transformation logic.
 
 ### 2. State Processors
 
-#### `TransformStateProcessor`
+#### TransformStateProcessor
 
-**Location**: `Application/Modules/DataProcessing/Processors/TransformStateProcessor.cs`
+**Location**: `Application/Modules/DataProcessing/Steps/Transform/TransformStateProcessor.cs`
 
 **Responsibilities**:
-1. Load all records for a batch from database
-2. Group records by source (DataSource enum)
-3. Resolve appropriate sub-processor for each source
-4. Delegate processing to sub-processors
-5. Publish completion event
+1. Load Batch and validate state
+2. Load BronzeRecords by BatchId
+3. Resolve SubProcessor by `Batch.SourceType`
+4. Delegate to SubProcessor to create SilverRecords
+5. Update Batch state and publish completion event
 
 **Key Code**:
 ```csharp
-public async Task ProcessBatchAsync(Guid batchId, CancellationToken cancellationToken)
-{
-    // 1. Load records
-    var records = await recordRepository.GetRecordsByBatchAsync(batchId.ToString());
+// Resolve by SourceType (not DataSource!)
+var subProcessor = subProcessorResolver.Resolve(
+    batch.SourceType,  // DataSourceType enum
+    FromState,
+    ToState
+);
 
-    // 2. Group by source
-    var recordsBySource = records.GroupBy(r => r.Source);
-
-    // 3. Process each group
-    foreach (var group in recordsBySource)
-    {
-        var subProcessor = subProcessorResolver.Resolve(group.Key, FromState, ToState);
-        await subProcessor.ProcessAsync(group, cancellationToken);
-    }
-
-    // 4. Trigger next stage
-    await mediator.Publish(new StateCompletedEvent(batchId, ToState), cancellationToken);
-}
+await subProcessor.ProcessAsync(bronzeRecords, cancellationToken);
 ```
 
----
+#### CompleteStateProcessor
 
-### 3. Sub-Processors
-
-#### `GenericTransformSubProcessor`
-
-**Location**: `Application/Modules/DataProcessing/Processors/SubProcessors/`
-
-**Purpose**: Fallback processor when no source-specific implementation exists
-
-**Key Property**: `Key => null`
-
-#### `PunchupTransformSubProcessor`
-
-**Location**: `Application/Modules/Punchup/Processors/SubProcessors/`
-
-**Purpose**: Punchup-specific transformation logic
-
-**Key Property**: `Key => DataSource.Punchup`
-
-**Example Implementation**:
-```csharp
-public async Task ProcessAsync(IEnumerable<SourceRecord> records, CancellationToken cancellationToken)
-{
-    foreach (var record in records)
-    {
-        // Parse Punchup-specific JSON structure
-        var rawData = JObject.Parse(record.RawData);
-
-        // Transform to standardized format
-        var transformed = new {
-            EventName = rawData["title"]?.ToString(),
-            VenueId = rawData["venue"]?["id"]?.ToString(),
-            // ... more transformations
-        };
-
-        // Update record
-        record.ProcessedData = JsonConvert.SerializeObject(transformed);
-        record.State = ProcessingState.Transformed;
-    }
-}
-```
-
----
-
-### 4. Events
-
-#### `StateCompletedEvent`
-
-**Location**: `Application/Modules/DataProcessing/Events/StateCompletedEvent.cs`
-
-```csharp
-public record StateCompletedEvent(Guid BatchId, ProcessingState CompletedState) : INotification;
-```
-
-**Purpose**: Signals completion of a processing stage, triggers next stage
-
-**Published By**: State processors after successful batch processing
-
-**Handled By**: `StateCompletedHandler`
-
----
-
-### 5. Event Handler
-
-#### `StateCompletedHandler`
-
-**Location**: `Application/Modules/DataProcessing/Events/StateCompletedHandler.cs`
+**Location**: `Application/Modules/DataProcessing/Steps/Complete/CompleteStateProcessor.cs`
 
 **Responsibilities**:
-1. Receive `StateCompletedEvent`
-2. Determine next state via `ProcessingStateMachine`
-3. Resolve appropriate `IStateProcessor` from DI
-4. Invoke processor for next stage
+1. Load Batch and validate state
+2. Load SilverRecords by BatchId
+3. Group by EntityType
+4. Process each entity type with batch operations:
+   - Query existing Gold records by slug
+   - Identify new vs existing
+   - Bulk insert/update Gold records
+5. Update Batch state and publish completion event
 
-**Key Logic**:
+**No SubProcessors**: Complete stage doesn't use SubProcessors because:
+- All SilverRecords follow the same schema regardless of source
+- Processing is domain-driven (by EntityType), not source-driven
+- Logic is generic: deserialize, deduplicate by slug, upsert
+
+### 3. Sub-Processors (Transform Stage Only)
+
+#### PunchupTransformSubProcessor
+
+**Location**: `Application/Modules/Punchup/Processors/PunchupTransformSubProcessor.cs`
+
+**Key**: `DataSourceType.PunchupTicketsPage`
+
+**Responsibilities**:
+1. Parse nested `PunchupRecord` JSON from BronzeRecord
+2. Generate slugs for all entities
+3. Flatten into separate SilverRecords:
+   - 1 ProcessedAct (EntityType.Act)
+   - N ProcessedVenue (EntityType.Venue) - deduplicated by venue name
+   - M ProcessedEvent (EntityType.Event) - one per event
+4. Populate correlation fields (ComedianSlug, VenueSlug)
+5. Bulk create SilverRecords via repository
+
+**Slug Generation**:
 ```csharp
-public async Task Handle(StateCompletedEvent notification, CancellationToken cancellationToken)
+// Comedian/Venue
+private static string GenerateSlug(string name)
+    => name.ToLowerInvariant()
+           .Replace(" ", "-")
+           .Replace("'", "")
+           .Replace(".", "")
+           .Replace(",", "")
+           .Replace("&", "and");
+
+// Event
+private static string GenerateEventSlug(string comedianSlug, string venueSlug, DateTimeOffset date)
+    => $"{comedianSlug}-{venueSlug}-{date:yyyy-MM-dd}";
+```
+
+### 4. Processed Models
+
+These models represent the structure of `SilverRecord.Data`:
+
+#### ProcessedAct
+```csharp
+public record ProcessedAct
 {
-    try
-    {
-        // Determine next state
-        var nextState = ProcessingStateMachine.GetNextState(notification.CompletedState);
+    public string? Name { get; init; }
+    public string? Slug { get; init; }           // For deduplication
+    public string? Bio { get; init; }
+    public DateTimeOffset? ProcessedAt { get; init; }
+}
+```
 
-        // Find processor for transition
-        var processor = stateProcessors.FirstOrDefault(p =>
-            p.FromState == notification.CompletedState &&
-            p.ToState == nextState);
+#### ProcessedVenue
+```csharp
+public record ProcessedVenue
+{
+    public string? Name { get; init; }
+    public string? Slug { get; init; }           // For deduplication
+    public string? Location { get; init; }
+    public DateTimeOffset? ProcessedAt { get; init; }
+}
+```
 
-        // Execute
-        await processor.ProcessBatchAsync(notification.BatchId, cancellationToken);
-    }
-    catch (InvalidOperationException)
-    {
-        // Terminal state reached - processing complete
-        logger.LogInformation("Batch {BatchId} processing completed", notification.BatchId);
-    }
+#### ProcessedEvent
+```csharp
+public record ProcessedEvent
+{
+    public string? Title { get; init; }
+    public string? Slug { get; init; }           // For deduplication
+    public string? ComedianSlug { get; init; }   // For correlation
+    public string? VenueSlug { get; init; }      // For correlation
+    public DateTimeOffset? StartDateTime { get; init; }
+    public DateTimeOffset? EndDateTime { get; init; }
+    public string? TicketLink { get; init; }
 }
 ```
 
 ---
 
-### 6. Sub-Processor Resolver
+## Correlation Strategy
 
-#### `ISubProcessorResolver` & `SubProcessorResolver`
+### Problem
+In the medallion architecture, each SilverRecord represents a single entity. How do we link Events to Comedians and Venues?
 
-**Location**: `Application/Modules/DataProcessing/Services/`
+### Solution: Slug-Based Correlation
 
-**Purpose**: Dynamically resolve the correct sub-processor based on key, state transition
+**1. Generate Slugs During Transform**
 
-**Resolution Logic**:
+All entities get a slug that serves as a natural key:
+- Comedian: Generated from name (`"Joe List"` → `"joe-list"`)
+- Venue: Generated from name (`"Comedy Store"` → `"comedy-store"`)
+- Event: Composite of comedian, venue, and date (`"joe-list-comedy-store-2024-10-15"`)
+
+**2. Store Correlation Slugs in ProcessedEvent**
+
 ```csharp
-public ISubProcessor<TKey> Resolve<TKey>(TKey key, ProcessingState fromState, ProcessingState toState)
-    where TKey : struct
+var processedEvent = new ProcessedEvent
 {
-    var subProcessors = serviceProvider.GetService<IEnumerable<ISubProcessor<TKey>>>();
+    Slug = "joe-list-comedy-store-2024-10-15",
+    ComedianSlug = "joe-list",      // References ProcessedAct
+    VenueSlug = "comedy-store",     // References ProcessedVenue
+    // ...
+};
+```
 
-    // Try specific match
-    var specific = subProcessors.FirstOrDefault(p =>
-        Equals(p.Key, key) &&
-        p.FromState == fromState &&
-        p.ToState == toState);
+**3. Lookup During Complete Stage**
 
-    if (specific != null) return specific;
+```csharp
+// In ProcessEventsAsync:
+var comedianSlugs = processedEvents.Select(e => e.ComedianSlug).Distinct();
+var venueSlugs = processedEvents.Select(e => e.VenueSlug).Distinct();
 
-    // Fallback to generic (Key = null)
-    var generic = subProcessors.FirstOrDefault(p =>
-        p.Key == null &&
-        p.FromState == fromState &&
-        p.ToState == toState);
+var comedians = await repository.GetComediansBySlugAsync(comedianSlugs);
+var venues = await repository.GetVenuesBySlugAsync(venueSlugs);
 
-    return generic ?? throw new InvalidOperationException("No processor found");
+// Map by slug for O(1) lookup
+var comediansBySlug = comedians.ToDictionary(c => c.Slug);
+var venuesBySlug = venues.ToDictionary(v => v.Slug);
+
+// Create relationships
+foreach (var eventData in processedEvents)
+{
+    var comedian = comediansBySlug[eventData.ComedianSlug];
+    var venue = venuesBySlug[eventData.VenueSlug];
+
+    var newEvent = new Event { /* ... */ VenueId = venue.Id };
+    await repository.AddEventsAsync(new[] { newEvent });
+
+    var comedianEvent = new ComedianEvent
+    {
+        ComedianId = comedian.Id,
+        EventId = newEvent.Id
+    };
+    await repository.AddComedianEventsAsync(new[] { comedianEvent });
 }
 ```
 
----
-
-### 7. Repository
-
-#### `ISourceRecordRepository`
-
-**Location**: `Application/Modules/DataProcessing/Repositories/Interfaces/`
-
-**Methods**:
-- `GetBatchSourceAsync(string batchId)` - Get the source for a batch
-- `GetRecordsByBatchAsync(string batchId)` - Load all records in a batch
-
-**Implementation**: `Data/Database/Repositories/SourceRecordRepository.cs`
+### Benefits
+- ✅ No foreign key references needed in Silver layer
+- ✅ Natural deduplication using slugs
+- ✅ Handles missing references gracefully (logs warning, marks failed)
+- ✅ Independent processing order (venues/comedians can be processed before or after events)
 
 ---
 
@@ -400,17 +676,16 @@ public ISubProcessor<TKey> Resolve<TKey>(TKey key, ProcessingState fromState, Pr
 
 1. **Update State Machine**
    ```csharp
-   // ProcessingStateMachine.cs
    private static readonly Dictionary<ProcessingState, ProcessingState> ValidTransitions = new()
    {
        { ProcessingState.Ingested, ProcessingState.Transformed },
-       { ProcessingState.Transformed, ProcessingState.DeDuped }, // Add this
+       { ProcessingState.Transformed, ProcessingState.DeDuped },     // Add this
+       { ProcessingState.DeDuped, ProcessingState.Completed }
    };
    ```
 
 2. **Create State Processor**
    ```csharp
-   // Application/Modules/DataProcessing/Processors/DeDupeStateProcessor.cs
    public class DeDupeStateProcessor : IStateProcessor
    {
        public ProcessingState FromState => ProcessingState.Transformed;
@@ -418,161 +693,97 @@ public ISubProcessor<TKey> Resolve<TKey>(TKey key, ProcessingState fromState, Pr
 
        public async Task ProcessBatchAsync(Guid batchId, CancellationToken cancellationToken)
        {
-           var records = await recordRepository.GetRecordsByBatchAsync(batchId.ToString());
-           var recordsBySource = records.GroupBy(r => r.Source);
+           var batch = await repository.GetBatchById(batchId);
+           var silverRecords = await repository.GetSilverRecordsByBatchId(batchId);
 
-           foreach (var group in recordsBySource)
+           // Group by ContentHash and mark duplicates
+           var grouped = silverRecords.GroupBy(r => r.ContentHash);
+           foreach (var group in grouped)
            {
-               var subProcessor = subProcessorResolver.Resolve(group.Key, FromState, ToState);
-               await subProcessor.ProcessAsync(group, cancellationToken);
+               var first = group.First();
+               first.Status = ProcessingStatus.Completed;
+
+               foreach (var duplicate in group.Skip(1))
+                   duplicate.Status = ProcessingStatus.Duplicate;
            }
 
+           await repository.UpdateSilverRecordsAsync(silverRecords, cancellationToken);
+           await repository.UpdateBatchStateById(batchId, ToState, cancellationToken);
            await mediator.Publish(new StateCompletedEvent(batchId, ToState), cancellationToken);
        }
    }
    ```
 
-3. **Create Generic Sub-Processor**
+3. **Register in DI**
    ```csharp
-   // Application/Modules/DataProcessing/Processors/SubProcessors/GenericDeDupeSubProcessor.cs
-   public class GenericDeDupeSubProcessor : ISubProcessor<DataSource>
+   services.AddScoped<IStateProcessor, TransformStateProcessor>();
+   services.AddScoped<IStateProcessor, DeDupeStateProcessor>();  // Add this
+   services.AddScoped<IStateProcessor, CompleteStateProcessor>();
+   ```
+
+### Adding a New Data Source
+
+**Example**: Add Wikipedia as a data source
+
+1. **Define SourceType**
+   ```csharp
+   public enum DataSourceType
    {
-       public DataSource? Key => null; // Generic
-       public ProcessingState FromState => ProcessingState.Transformed;
-       public ProcessingState ToState => ProcessingState.DeDuped;
+       PunchupTicketsPage,
+       WikipediaComedianPage  // Add this
+   }
 
-       public async Task ProcessAsync(IEnumerable<SourceRecord> records, CancellationToken cancellationToken)
+   public enum DataSource
+   {
+       Punchup,
+       Wikipedia  // Add this
+   }
+   ```
+
+2. **Create SubProcessor**
+   ```csharp
+   public class WikipediaTransformSubProcessor : ISubProcessor<DataSourceType>
+   {
+       public DataSourceType? Key => DataSourceType.WikipediaComedianPage;
+       public ProcessingState FromState => ProcessingState.Ingested;
+       public ProcessingState ToState => ProcessingState.Transformed;
+
+       public async Task ProcessAsync(IEnumerable<BronzeRecord> records, CancellationToken cancellationToken)
        {
-           // Generic de-dupe logic using ContentHash
-           var grouped = records.GroupBy(r => r.ContentHash);
-           foreach (var group in grouped)
-           {
-               var first = group.First();
-               first.State = ProcessingState.DeDuped;
-
-               // Mark duplicates
-               foreach (var duplicate in group.Skip(1))
-               {
-                   duplicate.Status = ProcessingStatus.Duplicate;
-               }
-           }
+           // Parse Wikipedia HTML, extract comedian info, create SilverRecords
        }
    }
    ```
 
-4. **Register in DI**
+3. **Register in DI**
    ```csharp
-   // Application/Modules/DataProcessing/DataProcessingModulesExtensions.cs
-   public static void AddDataProcessingModule(this IServiceCollection services)
-   {
-       services.AddScoped<IStateProcessor, TransformStateProcessor>();
-       services.AddScoped<IStateProcessor, DeDupeStateProcessor>(); // Add this
-
-       services.AddScoped<ISubProcessor<DataSource>, GenericTransformSubProcessor>();
-       services.AddScoped<ISubProcessor<DataSource>, GenericDeDupeSubProcessor>(); // Add this
-   }
+   // In Wikipedia module
+   services.AddScoped<ISubProcessor<DataSourceType>, WikipediaTransformSubProcessor>();
    ```
 
-### Adding Source-Specific Sub-Processor
-
-**Example**: Punchup-specific DeDupe logic
-
-1. **Create in Source Module**
-   ```csharp
-   // Application/Modules/Punchup/Processors/SubProcessors/PunchupDeDupeSubProcessor.cs
-   public class PunchupDeDupeSubProcessor : ISubProcessor<DataSource>
-   {
-       public DataSource? Key => DataSource.Punchup;
-       public ProcessingState FromState => ProcessingState.Transformed;
-       public ProcessingState ToState => ProcessingState.DeDuped;
-
-       public async Task ProcessAsync(IEnumerable<SourceRecord> records, CancellationToken cancellationToken)
-       {
-           // Punchup-specific de-dupe using event IDs from their API
-           // ... custom logic
-       }
-   }
-   ```
-
-2. **Register in Source Module**
-   ```csharp
-   // Application/Modules/Punchup/PunchupModuleExtensions.cs
-   public static void AddPunchupModule(this IServiceCollection services)
-   {
-       services.AddScoped<ISubProcessor<DataSource>, PunchupTransformSubProcessor>();
-       services.AddScoped<ISubProcessor<DataSource>, PunchupDeDupeSubProcessor>(); // Add this
-   }
-   ```
-
-**That's it!** No changes to DataProcessing module needed.
+**That's it!** The Complete stage automatically handles the new SilverRecords.
 
 ---
 
-## Replay Support
+## Performance Considerations
 
-The architecture naturally supports replaying specific stages:
+### Batch Processing
+- All queries use batch operations (load all records, query existing by list of slugs)
+- Bulk inserts/updates reduce database roundtrips
+- Efficient deduplication using in-memory dictionaries
 
-### Manual Replay via State Processor
+### Processing Order
+The Complete stage processes entity types in this order:
+1. **Acts (Comedians)** - No dependencies
+2. **Venues** - No dependencies
+3. **Events** - Depends on Comedians and Venues existing
 
-```csharp
-// Inject the specific state processor
-public class ReplayService(
-    IEnumerable<IStateProcessor> stateProcessors)
-{
-    public async Task ReplayStage(Guid batchId, ProcessingState fromState, ProcessingState toState)
-    {
-        var processor = stateProcessors.FirstOrDefault(p =>
-            p.FromState == fromState &&
-            p.ToState == toState);
+**Why?** Events reference Comedians and Venues. Processing them last ensures foreign keys are valid.
 
-        if (processor == null)
-            throw new InvalidOperationException($"No processor for {fromState} -> {toState}");
-
-        await processor.ProcessBatchAsync(batchId, CancellationToken.None);
-    }
-}
-```
-
-### Replay Entire Pipeline
-
-```csharp
-public async Task ReplayFromState(Guid batchId, ProcessingState startState)
-{
-    // Publish initial event
-    await mediator.Publish(new StateCompletedEvent(batchId, startState));
-
-    // Pipeline continues automatically via event handlers
-}
-```
-
----
-
-## Configuration
-
-### Dependency Injection
-
-**DataProcessing Module** (`DataProcessingModulesExtensions.cs`):
-```csharp
-services.AddScoped<ISubProcessorResolver, SubProcessorResolver>();
-services.AddScoped<IStateProcessor, TransformStateProcessor>();
-services.AddScoped<ISubProcessor<DataSource>, GenericTransformSubProcessor>();
-services.AddScoped<INotificationHandler<StateCompletedEvent>, StateCompletedHandler>();
-```
-
-**Punchup Module** (`PunchupModuleExtensions.cs`):
-```csharp
-services.AddScoped<ISubProcessor<DataSource>, PunchupTransformSubProcessor>();
-```
-
-### Database
-
-Records stored in `SourceRecords` table (ProcessingContext):
-- `BatchId` - Groups records processed together
-- `Source` - DataSource enum (Punchup, etc.)
-- `State` - ProcessingState enum (current pipeline stage)
-- `Status` - ProcessingStatus enum (Processing, Completed, Failed, Duplicate)
-- `RawData` - Original scraped JSON
-- `ProcessedData` - Transformed/enriched JSON
+### Deduplication
+- **Transform Stage**: Creates multiple SilverRecords from same BronzeRecord (expected behavior)
+- **Complete Stage**: Deduplicates using slug lookups before inserting to Gold layer
+- **Future**: Add DeDupe stage between Transform and Complete for advanced deduplication logic
 
 ---
 
@@ -582,33 +793,17 @@ Records stored in `SourceRecords` table (ProcessingContext):
 
 **State Machine Tests**: `Application.Tests/Modules/DataProcessing/ProcessingStateMachineTests.cs`
 
-**Event Handler Tests**: `Application.Tests/Modules/DataProcessing/Events/StateCompletedHandlerTests.cs`
+**Processor Tests**:
+- `TransformStateProcessorTests.cs`
+- `CompleteStateProcessorTests.cs`
 
 ### Testing Strategy
 
-1. **Mock State Processors**: Use FakeItEasy to mock `IStateProcessor`
-2. **Mock Sub-Processors**: Use FakeItEasy to mock `ISubProcessor<DataSource>`
-3. **Test Event Flow**: Verify `StateCompletedHandler` calls correct processor
-4. **Test Resolution Logic**: Verify `SubProcessorResolver` finds correct implementation
-
----
-
-## Future Enhancements
-
-### Planned Features
-
-1. **Parallel Processing**: Process multiple sources concurrently within a batch
-2. **Retry Logic**: Automatic retry for failed batches
-3. **Dead Letter Queue**: Separate queue for repeatedly failing batches
-4. **Progress Tracking**: Real-time progress updates via SignalR
-5. **Pipeline Metrics**: Track processing times, success rates per stage
-
-### Extensibility Points
-
-- **New State Transitions**: Just update state machine and add processors
-- **New Key Types**: Can key sub-processors on EntityType, RecordType, or custom criteria
-- **Conditional Routing**: State processors can route based on complex logic
-- **External Services**: Sub-processors can call external APIs for enrichment
+1. **Mock Repositories**: Use FakeItEasy for `ITransformStateRepository`, `ICompleteStateRepository`
+2. **Test State Transitions**: Verify batch state updates correctly
+3. **Test Flattening**: Verify 1 BronzeRecord → N SilverRecords
+4. **Test Deduplication**: Verify slug-based duplicate detection
+5. **Test Correlation**: Verify ComedianEvent relationships created correctly
 
 ---
 
@@ -616,29 +811,31 @@ Records stored in `SourceRecords` table (ProcessingContext):
 
 ### Common Issues
 
-**Issue**: "No processor found for transition X → Y"
-- **Cause**: Missing state machine transition or missing state processor registration
-- **Fix**: Add transition to `ProcessingStateMachine` and register `IStateProcessor` in DI
+**Issue**: "Comedian with slug X not found for event Y"
+- **Cause**: Events processed before comedians, or comedian slug mismatch
+- **Fix**: Ensure `ProcessActsAsync` runs before `ProcessEventsAsync` in Complete stage
 
-**Issue**: "No sub-processor found for key 'SourceName'"
-- **Cause**: Source-specific sub-processor not registered, and no generic fallback exists
-- **Fix**: Register generic sub-processor with `Key = null` as fallback
+**Issue**: "No processor found for SourceType X"
+- **Cause**: SubProcessor not registered for that SourceType
+- **Fix**: Register SubProcessor in DI with correct `Key` value
 
-**Issue**: Batch processing hangs/never completes
-- **Cause**: State processor not publishing `StateCompletedEvent` after processing
-- **Fix**: Ensure `mediator.Publish(new StateCompletedEvent(...))` is called
+**Issue**: Duplicate Gold records created
+- **Cause**: Slug generation inconsistency or missing slug lookup
+- **Fix**: Verify `GetComediansBySlugAsync` is called before creating new records
 
 ### Debugging Tips
 
-1. Enable detailed logging: Set log level to `Debug` for `ComedyPull.Application.Modules.DataProcessing`
-2. Check event publication: Verify `StateCompletedEvent` is being published
-3. Verify DI registration: Ensure all processors are registered correctly
-4. Database state: Check `SourceRecords.State` column to see where records are stuck
+1. Check Batch.State to see where pipeline is stuck
+2. Query SilverRecords to verify transformation happened correctly
+3. Verify slugs match between ProcessedEvent and ProcessedAct/ProcessedVenue
+4. Enable detailed logging for `CompleteStateProcessor`
 
 ---
 
-## Related Documentation
+## Future Enhancements
 
-- [Architecture Overview](./Architecture-Overview.md)
-- [Module Structure](./Module-Structure.md)
-- [Punchup Module](./Punchup-Module.md) _(coming soon)_
+- **Transactions**: Wrap each entity type processing in a database transaction
+- **Parallel Processing**: Process entity types concurrently
+- **Incremental Updates**: Only process changed records
+- **Advanced Deduplication**: Fuzzy matching for near-duplicates
+- **Data Lineage**: Track which BronzeRecords contributed to each Gold record

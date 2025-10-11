@@ -1,8 +1,8 @@
-using ComedyPull.Application.Modules.DataSync.Configuration;
-using ComedyPull.Application.Modules.DataSync.Services.Interfaces;
+using ComedyPull.Application.Modules.DataSync.Interfaces;
+using ComedyPull.Application.Modules.DataSync.Options;
 using Microsoft.Extensions.Options;
 
-namespace ComedyPull.Application.Modules.DataSync.Services
+namespace ComedyPull.Application.Modules.DataSync
 {
     public class PlaywrightScraperFactory : IPlaywrightScraperFactory
     {

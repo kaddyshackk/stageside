@@ -2,10 +2,9 @@
 using ComedyPull.Application.Modules.Punchup.Models;
 using ComedyPull.Application.Modules.Punchup.Pages;
 using ComedyPull.Application.Interfaces;
-using ComedyPull.Application.Modules.DataSync;
+using ComedyPull.Application.Modules.DataSync.Interfaces;
 using ComedyPull.Application.Utils;
-using ComedyPull.Domain.Enums;
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Domain.Modules.DataProcessing;
 using Microsoft.Playwright;
 
 namespace ComedyPull.Application.Modules.Punchup.Collectors
@@ -13,7 +12,7 @@ namespace ComedyPull.Application.Modules.Punchup.Collectors
     /// <summary>
     /// IPageProcessor implementation that scrapes and stores the result data.
     /// </summary>
-    public class PunchupTicketsPageCollector(IQueue<SourceRecord> queue) : IPageCollector
+    public class PunchupTicketsPageCollector(IQueue<BronzeRecord> queue) : IPageCollector
     {
         /// <summary>
         /// Processes a page at the given URL.
@@ -47,14 +46,10 @@ namespace ComedyPull.Application.Modules.Punchup.Collectors
                 shows = results.Where(show => show != null).ToList()!;
             }
 
-            var record = new SourceRecord
+            var record = new BronzeRecord
             {
                 BatchId = Guid.NewGuid().ToString(),
-                Source = DataSource.Punchup,
-                IngestedAt = DateTimeOffset.UtcNow,
-                EntityType = EntityType.Act,
-                RecordType = RecordType.PunchupTicketsPage,
-                RawData = JsonSerializer.Serialize(new PunchupRecord
+                Data = JsonSerializer.Serialize(new PunchupRecord
                 {
                     Name = name,
                     Bio = bio,

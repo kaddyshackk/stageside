@@ -1,6 +1,6 @@
 using ComedyPull.Application.Interfaces;
-using ComedyPull.Application.Modules.Punchup.Factories;
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Application.Modules.Punchup.Collectors;
+using ComedyPull.Domain.Modules.DataProcessing;
 using FakeItEasy;
 using FluentAssertions;
 
@@ -13,7 +13,7 @@ namespace ComedyPull.Application.Tests.Modules.Punchup.Factories
         public void CreateCollector_ReturnsPunchupTicketsPageCollectorWithQueue()
         {
             // Arrange
-            var mockQueue = A.Fake<IQueue<SourceRecord>>();
+            var mockQueue = A.Fake<IQueue<BronzeRecord>>();
             var factory = new PunchupTicketsPageCollectorFactory(mockQueue);
 
             // Act
@@ -21,14 +21,14 @@ namespace ComedyPull.Application.Tests.Modules.Punchup.Factories
 
             // Assert
             collector.Should().NotBeNull();
-            collector.Should().BeOfType<ComedyPull.Application.Modules.Punchup.Collectors.PunchupTicketsPageCollector>();
+            collector.Should().BeOfType<PunchupTicketsPageCollector>();
         }
 
         [TestMethod, TestCategory("Unit")]
         public void CreateCollector_ReturnsNewInstanceEachTime()
         {
             // Arrange
-            var mockQueue = A.Fake<IQueue<SourceRecord>>();
+            var mockQueue = A.Fake<IQueue<BronzeRecord>>();
             var factory = new PunchupTicketsPageCollectorFactory(mockQueue);
 
             // Act

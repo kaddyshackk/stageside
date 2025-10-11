@@ -1,24 +1,25 @@
 ﻿using ComedyPull.Application.Interfaces;
-using ComedyPull.Application.Modules.DataSync.Configuration;
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Application.Modules.DataSync.Interfaces;
+using ComedyPull.Application.Modules.DataSync.Options;
+using ComedyPull.Domain.Modules.DataProcessing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
 
-namespace ComedyPull.Application.Modules.DataSync.Services
+namespace ComedyPull.Application.Modules.DataSync
 {
     /// <summary>
     /// Background service that processes bronze records from Redis queue in batches.
     /// </summary>
-    public class SourceRecordIngestionService(
-        IQueue<SourceRecord> queue,
-        IDataSyncRepository writeRepository,
-        ILogger<SourceRecordIngestionService> logger,
-        IOptions<SourceRecordIngestionOptions> options
+    public class BronzeRecordIngestionService(
+        IQueue<BronzeRecord> queue,
+        IBronzeRecordIngestionRepository repository,
+        ILogger<BronzeRecordIngestionService> logger,
+        IOptions<BronzeRecordIngestionOptions> options
     ) : BackgroundService
     {
-        private readonly SourceRecordIngestionOptions _options = options.Value;
-        private readonly List<SourceRecord> _currentBatch = [];
+        private readonly BronzeRecordIngestionOptions _options = options.Value;
+        private readonly List<BronzeRecord> _currentBatch = [];
         private DateTime _lastFlushTime = DateTime.UtcNow;
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace ComedyPull.Application.Modules.DataSync.Services
                 logger.LogInformation("Flushing batch of {Count} source records to database", _currentBatch.Count);
 
                 var batchSize = _currentBatch.Count;
-                await writeRepository.BatchInsertAsync(_currentBatch, cancellationToken);
+                await repository.BatchInsertAsync(_currentBatch, cancellationToken);
 
                 logger.LogInformation("Successfully processed {Count} source records", batchSize);
 

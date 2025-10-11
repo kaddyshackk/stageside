@@ -1,5 +1,5 @@
 using ComedyPull.Application.Modules.DataSync;
-using ComedyPull.Application.Modules.DataSync.Services;
+using ComedyPull.Application.Modules.DataSync.Interfaces;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Playwright;

@@ -1,5 +1,5 @@
-using ComedyPull.Application.Modules.DataSync.Configuration;
-using ComedyPull.Application.Modules.DataSync.Services;
+using ComedyPull.Application.Modules.DataSync.Options;
+using ComedyPull.Application.Modules.DataSync;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 

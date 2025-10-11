@@ -6,14 +6,14 @@ namespace ComedyPull.Domain.Modules.Common
     public record Venue : TraceableEntity
     {
         /// <summary>
-        /// Gets or sets the
+        /// Gets or sets the venue name.
         /// </summary>
-        public required string Name { get; init; }
-        
+        public required string Name { get; set; }
+
         /// <summary>
         /// Gets or sets the slug identifier.
         /// </summary>
-        public required string Slug { get; init; }
+        public required string Slug { get; set; }
 
         /// <summary>
         /// Gets the list of events.

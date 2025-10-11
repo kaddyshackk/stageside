@@ -1,4 +1,4 @@
-﻿using ComedyPull.Application.Modules.DataSync.Services;
+﻿using ComedyPull.Application.Modules.DataSync;
 using FakeItEasy;
 using FluentAssertions;
 using RichardSzalay.MockHttp;

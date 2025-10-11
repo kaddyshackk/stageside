@@ -1,8 +1,8 @@
 ﻿using Microsoft.Playwright;
 using System.Threading.Channels;
-using ComedyPull.Application.Modules.DataSync.Services.Interfaces;
+using ComedyPull.Application.Modules.DataSync.Interfaces;
 
-namespace ComedyPull.Application.Modules.DataSync.Services
+namespace ComedyPull.Application.Modules.DataSync
 {
     public class PlaywrightScraper : IScraper
     {

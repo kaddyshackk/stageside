@@ -1,8 +1,10 @@
 ﻿using ComedyPull.Application.Modules.DataProcessing.Events;
+using ComedyPull.Application.Modules.DataProcessing.Exceptions;
 using ComedyPull.Application.Modules.DataProcessing.Services.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Transform.Interfaces;
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Domain.Enums;
+using ComedyPull.Domain.Modules.DataProcessing;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -22,21 +24,28 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Transform
             logger.LogInformation("Starting {Stage} processing for batch {BatchId}", ToState, batchId);
             try
             {
-                var records = await repository.GetRecordsByBatchAsync(batchId.ToString(), cancellationToken);
-                var recordsBySource = records.GroupBy(r => r.Source);
-
-                foreach (var group in recordsBySource)
+                // 1. Load and validate batch
+                var batch = await repository.GetBatchById(batchId.ToString(), cancellationToken);
+                if (batch.State != FromState)
                 {
-                    logger.LogInformation("Processing {Count} records for source {Source} in batch {BatchId}",
-                        group.Count(), group.Key, batchId);
-
-                    // Delegate to sub-processor for this source
-                    var subProcessor = subProcessorResolver.Resolve(group.Key, FromState, ToState);
-                    await subProcessor.ProcessAsync(group, cancellationToken);
+                    throw new InvalidBatchStateException(batchId.ToString(), FromState, batch.State);
                 }
-                await repository.SaveChangesAsync(cancellationToken);
-                logger.LogInformation("Saved changes for {RecordCount} records in batch {BatchId}", records.Count(), batchId);
 
+                // 2. Load all bronze records for this batch
+                var bronzeRecords = await repository.GetBronzeRecordsByBatchId(batchId.ToString(), cancellationToken);
+
+                logger.LogInformation("Processing {Count} records of type {SourceType} in batch {BatchId}",
+                    bronzeRecords.Count(), batch.SourceType, batchId);
+
+                // 3. Resolve SubProcessor by batch.SourceType (all records in batch have same type)
+                var subProcessor = subProcessorResolver.Resolve(batch.SourceType, FromState, ToState);
+
+                // 4. Process all records - SubProcessor will create SilverRecords
+                await subProcessor.ProcessAsync(bronzeRecords, cancellationToken);
+                
+                await repository.UpdateBatchStateById(batchId.ToString(), ToState, cancellationToken);
+
+                // 5. Publish completion event to trigger next stage
                 await mediator.Publish(new StateCompletedEvent(batchId, ToState), cancellationToken);
 
                 logger.LogInformation("Completed {Stage} processing for batch {BatchId}", ToState, batchId);
@@ -44,6 +53,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Transform
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed {Stage} processing for batch {BatchId}", ToState, batchId);
+                await repository.UpdateBatchStatusById(batchId.ToString(), ProcessingStatus.Failed, cancellationToken);
                 throw;
             }
         }

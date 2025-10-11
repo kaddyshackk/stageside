@@ -1,4 +1,4 @@
-namespace ComedyPull.Application.Modules.DataSync.Configuration
+namespace ComedyPull.Application.Modules.DataSync.Options
 {
     /// <summary>
     /// Defines the options for punchup collection.

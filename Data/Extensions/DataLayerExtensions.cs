@@ -1,3 +1,4 @@
+using ComedyPull.Application.Modules.DataSync.Interfaces;
 using ComedyPull.Data.Modules.DataProcessing.Complete;
 using ComedyPull.Data.Modules.DataProcessing.Transform;
 using ComedyPull.Data.Modules.DataSync;
@@ -45,6 +46,7 @@ namespace ComedyPull.Data.Extensions
             {
                 ConfigureDbContextOptionsBuilder(options, configuration);
             });
+            services.AddSingleton<IBronzeRecordIngestionRepository, BronzeRecordIngestionRepository>();
         }
 
         private static void ConfigureDbContextOptionsBuilder(DbContextOptionsBuilder options, IConfiguration configuration)

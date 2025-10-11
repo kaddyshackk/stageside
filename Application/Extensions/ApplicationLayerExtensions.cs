@@ -5,13 +5,16 @@ using ComedyPull.Application.Modules.DataProcessing.Services.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Complete;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Transform;
+using ComedyPull.Application.Modules.DataSync;
+using ComedyPull.Application.Modules.DataSync.Interfaces;
+using ComedyPull.Application.Modules.DataSync.Options;
 using ComedyPull.Application.Modules.Punchup;
-using ComedyPull.Application.Modules.DataSync.Configuration;
-using ComedyPull.Application.Modules.DataSync.Services;
-using ComedyPull.Application.Modules.DataSync.Services.Interfaces;
+using ComedyPull.Application.Modules.Punchup.Collectors;
+using ComedyPull.Application.Modules.Punchup.Collectors.Interfaces;
+using ComedyPull.Application.Modules.Punchup.Processors;
 using ComedyPull.Application.Modules.Queue;
 using ComedyPull.Domain.Enums;
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Domain.Modules.DataProcessing;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,9 +39,9 @@ namespace ComedyPull.Application.Extensions
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
             // Modules
-            services.AddPunchupModule();
             services.AddDataSyncModule(configuration);
             services.AddDataProcessingModule();
+            services.AddPunchupModule();
             services.AddQueueModule();
         }
         
@@ -50,7 +53,7 @@ namespace ComedyPull.Application.Extensions
         private static void AddDataSyncModule(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<DataSyncOptions>(configuration.GetSection("DataSyncOptions"));
-            services.AddHostedService<SourceRecordIngestionService>();
+            services.AddHostedService<BronzeRecordIngestionService>();
             services.AddScoped<ISitemapLoader, SitemapLoader>();
             services.AddScoped<IPlaywrightScraperFactory, PlaywrightScraperFactory>();
         }
@@ -67,9 +70,12 @@ namespace ComedyPull.Application.Extensions
             // Register state processors
             services.AddScoped<IStateProcessor, TransformStateProcessor>();
             services.AddScoped<IStateProcessor, CompleteStateProcessor>();
+        }
 
-            // Register sub-processors
-            services.AddScoped<ISubProcessor<DataSource>, CompleteStateGenericSubProcessor>();
+        private static void AddPunchupModule(this IServiceCollection services)
+        {
+            services.AddScoped<IPunchupTicketsPageCollectorFactory, PunchupTicketsPageCollectorFactory>();
+            services.AddScoped<ISubProcessor<DataSourceType>, PunchupTransformSubProcessor>();
         }
 
         /// <summary>
@@ -78,10 +84,10 @@ namespace ComedyPull.Application.Extensions
         /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
         private static void AddQueueModule(this IServiceCollection services)
         {
-            services.AddSingleton<IQueue<SourceRecord>>(provider =>
+            services.AddSingleton<IQueue<BronzeRecord>>(provider =>
             {
-                var logger = provider.GetRequiredService<ILogger<InMemoryQueue<SourceRecord>>>();
-                return new InMemoryQueue<SourceRecord>(logger);
+                var logger = provider.GetRequiredService<ILogger<InMemoryQueue<BronzeRecord>>>();
+                return new InMemoryQueue<BronzeRecord>(logger);
             });
         }
         

@@ -1,5 +1,5 @@
 using ComedyPull.Application.Modules.DataProcessing;
-using ComedyPull.Domain.Models.Processing;
+using ComedyPull.Domain.Modules.DataProcessing;
 using FluentAssertions;
 
 namespace ComedyPull.Application.Tests.Modules.DataProcessing

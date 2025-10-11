@@ -1,4 +1,4 @@
-﻿namespace ComedyPull.Application.Modules.DataSync.Configuration
+﻿namespace ComedyPull.Application.Modules.DataSync.Options
 {
     /// <summary>
     /// Defines the options for the DataSync module.
@@ -8,7 +8,7 @@
         /// <summary>
         /// Gets the options for source record ingestion.
         /// </summary>
-        public SourceRecordIngestionOptions SourceRecordIngestion { get; init; } = new();
+        public BronzeRecordIngestionOptions BronzeRecordIngestion { get; init; } = new();
 
         /// <summary>
         /// Gets the options for punchup collection.

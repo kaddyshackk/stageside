@@ -1,7 +1,7 @@
-using ComedyPull.Application.Modules.DataSync.Services.Interfaces;
+using ComedyPull.Application.Modules.DataSync.Interfaces;
 using ComedyPull.Application.Modules.Punchup;
 using ComedyPull.Application.Modules.Punchup.Collectors;
-using ComedyPull.Application.Modules.Punchup.Factories;
+using ComedyPull.Application.Modules.Punchup.Collectors.Interfaces;
 using FakeItEasy;
 using FluentAssertions;
 using MediatR;

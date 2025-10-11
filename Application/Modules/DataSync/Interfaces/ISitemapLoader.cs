@@ -1,4 +1,4 @@
-﻿namespace ComedyPull.Application.Modules.DataSync.Services.Interfaces
+﻿namespace ComedyPull.Application.Modules.DataSync.Interfaces
 {
     public interface ISitemapLoader
     {
