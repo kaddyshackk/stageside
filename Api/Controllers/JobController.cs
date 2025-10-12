@@ -17,7 +17,7 @@ namespace ComedyPull.Api.Controllers
         : ControllerBase
     {
         [HttpPost("punchup")]
-        public async Task<IActionResult> TriggerPunchupScrape([FromQuery] int? maxRecords = null)
+        public async Task<IActionResult> TriggerPunchupScrape([FromQuery] int? maxRecords = -1)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace ComedyPull.Api.Controllers
 
                 var jobDataMap = new JobDataMap();
                 if (maxRecords.HasValue)
-                    jobDataMap.Put("maxRecords", maxRecords.Value);
+                    jobDataMap.Put("maxRecords", maxRecords.Value.ToString());
                 
                 await scheduler.TriggerJob(PunchupScrapeJob.Key, jobDataMap);
                 

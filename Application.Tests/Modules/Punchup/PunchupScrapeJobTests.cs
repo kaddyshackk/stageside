@@ -1,7 +1,10 @@
+using ComedyPull.Application.Modules.DataProcessing.Interfaces;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
 using ComedyPull.Application.Modules.Punchup;
 using ComedyPull.Application.Modules.Punchup.Collectors;
 using ComedyPull.Application.Modules.Punchup.Collectors.Interfaces;
+using ComedyPull.Domain.Enums;
+using ComedyPull.Domain.Modules.DataProcessing;
 using FakeItEasy;
 using FluentAssertions;
 using MediatR;
@@ -16,6 +19,7 @@ namespace ComedyPull.Application.Tests.Modules.Punchup
         private ISitemapLoader _mockSitemapLoader = null!;
         private IPlaywrightScraperFactory _mockScraperFactory = null!;
         private IPunchupTicketsPageCollectorFactory _mockCollectorFactory = null!;
+        private IBatchRepository _mockBatchRepository = null!;
         private IScraper _mockScraper = null!;
         private IMediator _mediator = null!;
         private ILogger<PunchupScrapeJob> _logger = null!;
@@ -28,12 +32,27 @@ namespace ComedyPull.Application.Tests.Modules.Punchup
             _mockScraper = A.Fake<IScraper>();
             _mockScraperFactory = A.Fake<IPlaywrightScraperFactory>();
             _mockCollectorFactory = A.Fake<IPunchupTicketsPageCollectorFactory>();
+            _mockBatchRepository = A.Fake<IBatchRepository>();
             _mediator = A.Fake<IMediator>();
             _logger =  A.Fake<ILogger<PunchupScrapeJob>>();
 
             A.CallTo(() => _mockScraperFactory.CreateScraper()).Returns(_mockScraper);
+            
+            var mockBatch = new Batch
+            {
+                Source = DataSource.Punchup,
+                SourceType = DataSourceType.PunchupTicketsPage,
+                State = ProcessingState.Ingested,
+                Status = ProcessingStatus.Processing,
+                CreatedAt = DateTimeOffset.UtcNow,
+                CreatedBy = nameof(PunchupScrapeJob),
+                UpdatedAt = DateTimeOffset.UtcNow,
+                UpdatedBy = nameof(PunchupScrapeJob)
+            };
+            A.CallTo(() => _mockBatchRepository.CreateBatch(A<DataSource>._, A<DataSourceType>._, A<string>._, A<CancellationToken>._))
+                .Returns(mockBatch);
 
-            _job = new PunchupScrapeJob(_mockSitemapLoader, _mockScraperFactory, _mockCollectorFactory, _mediator, _logger);
+            _job = new PunchupScrapeJob(_mockSitemapLoader, _mockScraperFactory, _mockCollectorFactory, _mockBatchRepository, _mediator, _logger);
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -186,7 +205,7 @@ namespace ComedyPull.Application.Tests.Modules.Punchup
                 .Where(call => call.Method.Name == "Log" &&
                               call.Arguments.Get<LogLevel>(0) == LogLevel.Error &&
                               call.Arguments.Get<Exception?>(3) == expectedException)
-                .MustHaveHappenedOnceExactly();
+                .MustHaveHappened(2, Times.Exactly);
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -207,7 +226,7 @@ namespace ComedyPull.Application.Tests.Modules.Punchup
                 .Where(call => call.Method.Name == "Log" &&
                               call.Arguments.Get<LogLevel>(0) == LogLevel.Error &&
                               call.Arguments.Get<Exception?>(3) == expectedException)
-                .MustHaveHappenedOnceExactly();
+                .MustHaveHappened(2, Times.Exactly);
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -225,7 +244,7 @@ namespace ComedyPull.Application.Tests.Modules.Punchup
                 .Where(call => call.Method.Name == "Log" &&
                               call.Arguments.Get<LogLevel>(0) == LogLevel.Error &&
                               call.Arguments.Get<Exception?>(3) == expectedException)
-                .MustHaveHappenedOnceExactly();
+                .MustHaveHappened(2, Times.Exactly);
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -244,7 +263,7 @@ namespace ComedyPull.Application.Tests.Modules.Punchup
                 .Where(call => call.Method.Name == "Log" &&
                               call.Arguments.Get<LogLevel>(0) == LogLevel.Error &&
                               call.Arguments.Get<Exception?>(3) == expectedException)
-                .MustHaveHappenedOnceExactly();
+                .MustHaveHappened(2, Times.Exactly);
         }
 
         [TestMethod, TestCategory("Unit")]

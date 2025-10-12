@@ -19,9 +19,15 @@ namespace ComedyPull.Application.Modules.DataProcessing.Events
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task Handle(StateCompletedEvent notification, CancellationToken cancellationToken)
         {
+            logger.LogInformation("StateCompletedHandler received event for batch {BatchId} with state {CompletedState}", 
+                notification.BatchId, notification.CompletedState);
+            
             try
             {
                 var nextState = ProcessingStateMachine.GetNextState(notification.CompletedState);
+
+                logger.LogInformation("Next state determined as {NextState} for batch {BatchId}", 
+                    nextState, notification.BatchId);
 
                 // Find state processor that handles this transition
                 var processor = stateProcessors.FirstOrDefault(p =>
@@ -30,19 +36,27 @@ namespace ComedyPull.Application.Modules.DataProcessing.Events
 
                 if (processor == null)
                 {
+                    logger.LogError("No state processor found for transition {FromState} -> {ToState} for batch {BatchId}", 
+                        notification.CompletedState, nextState, notification.BatchId);
                     throw new InvalidOperationException(
                         $"No state processor found for transition {notification.CompletedState} -> {nextState}");
                 }
 
-                logger.LogInformation("Starting {NextStage} processing for batch {BatchId}",
-                    nextState, notification.BatchId);
+                logger.LogInformation("Found processor {ProcessorType} for transition {FromState} -> {ToState}. Starting {NextStage} processing for batch {BatchId}",
+                    processor.GetType().Name, notification.CompletedState, nextState, nextState, notification.BatchId);
 
                 await processor.ProcessBatchAsync(notification.BatchId, cancellationToken);
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException ex)
             {
                 // No next stage - processing complete
-                logger.LogInformation("Batch {BatchId} processing completed", notification.BatchId);
+                logger.LogInformation("Batch {BatchId} processing completed. Exception: {Message}", notification.BatchId, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error processing StateCompletedEvent for batch {BatchId} with state {CompletedState}", 
+                    notification.BatchId, notification.CompletedState);
+                throw;
             }
         }
     }

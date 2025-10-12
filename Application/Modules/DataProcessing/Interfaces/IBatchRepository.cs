@@ -1,3 +1,4 @@
+using ComedyPull.Domain.Enums;
 using ComedyPull.Domain.Modules.DataProcessing;
 
 namespace ComedyPull.Application.Modules.DataProcessing.Interfaces
@@ -30,5 +31,15 @@ namespace ComedyPull.Application.Modules.DataProcessing.Interfaces
         /// <param name="status">The new processing status.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         Task UpdateBatchStatusById(string batchId, ProcessingStatus status, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Creates a new batch.
+        /// </summary>
+        /// <param name="source">The data source.</param>
+        /// <param name="sourceType">The data source type.</param>
+        /// <param name="createdBy">The user who created the batch.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The created batch entity.</returns>
+        Task<Batch> CreateBatch(DataSource source, DataSourceType sourceType, string createdBy, CancellationToken cancellationToken);
     }
 }
