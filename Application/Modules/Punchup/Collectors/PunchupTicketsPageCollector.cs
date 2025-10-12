@@ -12,7 +12,7 @@ namespace ComedyPull.Application.Modules.Punchup.Collectors
     /// <summary>
     /// IPageProcessor implementation that scrapes and stores the result data.
     /// </summary>
-    public class PunchupTicketsPageCollector(IQueue<BronzeRecord> queue) : IPageCollector
+    public class PunchupTicketsPageCollector(IQueue<BronzeRecord> queue, string batchId) : IPageCollector
     {
         /// <summary>
         /// Processes a page at the given URL.
@@ -48,7 +48,7 @@ namespace ComedyPull.Application.Modules.Punchup.Collectors
 
             var record = new BronzeRecord
             {
-                BatchId = Guid.NewGuid().ToString(),
+                BatchId = batchId,
                 Data = JsonSerializer.Serialize(new PunchupRecord
                 {
                     Name = name,

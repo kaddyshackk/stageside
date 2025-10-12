@@ -50,7 +50,8 @@ namespace ComedyPull.Application.Modules.DataProcessing.Events
             catch (InvalidOperationException ex)
             {
                 // No next stage - processing complete
-                logger.LogInformation("Batch {BatchId} processing completed. Exception: {Message}", notification.BatchId, ex.Message);
+                logger.LogInformation("✅ Batch {BatchId} processing pipeline completed successfully! Final state: {CompletedState}. (Exception: {Message})", 
+                    notification.BatchId, notification.CompletedState, ex.Message);
             }
             catch (Exception ex)
             {

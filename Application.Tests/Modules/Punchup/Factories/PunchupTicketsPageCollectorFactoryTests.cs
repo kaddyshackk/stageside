@@ -17,7 +17,7 @@ namespace ComedyPull.Application.Tests.Modules.Punchup.Factories
             var factory = new PunchupTicketsPageCollectorFactory(mockQueue);
 
             // Act
-            var collector = factory.CreateCollector();
+            var collector = factory.CreateCollector("test-batch-id");
 
             // Assert
             collector.Should().NotBeNull();
@@ -32,8 +32,8 @@ namespace ComedyPull.Application.Tests.Modules.Punchup.Factories
             var factory = new PunchupTicketsPageCollectorFactory(mockQueue);
 
             // Act
-            var collector1 = factory.CreateCollector();
-            var collector2 = factory.CreateCollector();
+            var collector1 = factory.CreateCollector("test-batch-id-1");
+            var collector2 = factory.CreateCollector("test-batch-id-2");
 
             // Assert
             collector1.Should().NotBeSameAs(collector2);

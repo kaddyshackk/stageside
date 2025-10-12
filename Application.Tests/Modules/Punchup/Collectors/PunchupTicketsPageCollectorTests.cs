@@ -48,7 +48,7 @@ namespace ComedyPull.Application.Tests.Modules.Punchup.Collectors
             // Arrange
             var url = "https://punchup.live/joe-list/tickets";
             var queue = A.Fake<IQueue<BronzeRecord>>();
-            var processor = new PunchupTicketsPageCollector(queue);
+            var processor = new PunchupTicketsPageCollector(queue, "test-batch-id");
 
             // Act
             await processor.CollectPageAsync(url, _page, CancellationToken.None);
