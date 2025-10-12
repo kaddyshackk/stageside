@@ -1,5 +1,6 @@
 using ComedyPull.Application.Modules.DataProcessing.Events;
 using ComedyPull.Application.Modules.DataProcessing.Exceptions;
+using ComedyPull.Application.Modules.DataProcessing.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
 using ComedyPull.Domain.Enums;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
 {
     public class CompleteStateProcessor(
+        IBatchRepository batchRepository,
         ICompleteStateRepository repository,
         IMediator mediator,
         ILogger<CompleteStateProcessor> logger) : IStateProcessor
@@ -23,14 +25,14 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
             logger.LogInformation("Starting {Stage} processing for batch {BatchId}", ToState, batchId);
             try
             {
-                var batch = await repository.GetBatchById(batchId.ToString(), cancellationToken);
+                var batch = await batchRepository.GetBatchById(batchId.ToString(), cancellationToken);
                 if (batch.State != FromState)
                 {
                     throw new InvalidBatchStateException(batchId.ToString(), FromState, batch.State);
                 }
-                
+
                 var records = await repository.GetSilverRecordsByBatchId(batchId.ToString(), cancellationToken);
-                
+
                 logger.LogInformation("Processing {Count} records of type {SourceType} in batch {BatchId}",
                     records.Count(), batch.SourceType, batchId);
 
@@ -52,12 +54,12 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
                             throw new InvalidEntityTypeException(batchId.ToString(), group.Key);
                     }
                 }
-                
+
                 // Update batch State & Status
-                await repository.UpdateBatchStateById(batchId.ToString(), ToState, cancellationToken);
-                await repository.UpdateBatchStatusById(batchId.ToString(), ProcessingStatus.Completed, cancellationToken);
-                
-                // Signal Event                
+                await batchRepository.UpdateBatchStateById(batchId.ToString(), ToState, cancellationToken);
+                await batchRepository.UpdateBatchStatusById(batchId.ToString(), ProcessingStatus.Completed, cancellationToken);
+
+                // Signal Event
                 await mediator.Publish(new StateCompletedEvent(batchId, ToState), cancellationToken);
 
                 logger.LogInformation("Completed {Stage} processing for batch {BatchId}", ToState, batchId);
@@ -65,7 +67,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed {Stage} processing for batch {BatchId}", ToState, batchId);
-                await repository.UpdateBatchStatusById(batchId.ToString(), ProcessingStatus.Failed, cancellationToken);
+                await batchRepository.UpdateBatchStatusById(batchId.ToString(), ProcessingStatus.Failed, cancellationToken);
                 throw;
             }
         }

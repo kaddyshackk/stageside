@@ -1,4 +1,8 @@
+using ComedyPull.Application.Modules.DataProcessing.Interfaces;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Transform.Interfaces;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
+using ComedyPull.Data.Modules.DataProcessing;
 using ComedyPull.Data.Modules.DataProcessing.Complete;
 using ComedyPull.Data.Modules.DataProcessing.Transform;
 using ComedyPull.Data.Modules.DataSync;
@@ -27,17 +31,26 @@ namespace ComedyPull.Data.Extensions
 
         private static void AddDataProcessingServices(this IServiceCollection services, IConfiguration configuration)
         {
+            // Batch Context (shared across all processing states)
+            services.AddDbContextFactory<BatchContext>((_, options) =>
+            {
+                ConfigureDbContextOptionsBuilder(options, configuration);
+            });
+            services.AddSingleton<IBatchRepository, BatchRepository>();
+
             // Transform State
             services.AddDbContextFactory<TransformStateContext>((_, options) =>
             {
                 ConfigureDbContextOptionsBuilder(options, configuration);
             });
-            
+            services.AddSingleton<ITransformStateRepository, TransformStateRepository>();
+
             // Complete State
             services.AddDbContextFactory<CompleteStateContext>((_, options) =>
             {
                 ConfigureDbContextOptionsBuilder(options, configuration);
             });
+            services.AddSingleton<ICompleteStateRepository, CompleteStateRepository>();
         }
 
         private static void AddDataSyncServices(this IServiceCollection services, IConfiguration configuration)

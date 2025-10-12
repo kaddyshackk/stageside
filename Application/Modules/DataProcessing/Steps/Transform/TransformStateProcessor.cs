@@ -1,5 +1,6 @@
 ﻿using ComedyPull.Application.Modules.DataProcessing.Events;
 using ComedyPull.Application.Modules.DataProcessing.Exceptions;
+using ComedyPull.Application.Modules.DataProcessing.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Services.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Transform.Interfaces;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace ComedyPull.Application.Modules.DataProcessing.Steps.Transform
 {
     public class TransformStateProcessor(
+        IBatchRepository batchRepository,
         ITransformStateRepository repository,
         ISubProcessorResolver subProcessorResolver,
         IMediator mediator,
@@ -25,7 +27,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Transform
             try
             {
                 // 1. Load and validate batch
-                var batch = await repository.GetBatchById(batchId.ToString(), cancellationToken);
+                var batch = await batchRepository.GetBatchById(batchId.ToString(), cancellationToken);
                 if (batch.State != FromState)
                 {
                     throw new InvalidBatchStateException(batchId.ToString(), FromState, batch.State);
@@ -42,8 +44,8 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Transform
 
                 // 4. Process all records - SubProcessor will create SilverRecords
                 await subProcessor.ProcessAsync(bronzeRecords, cancellationToken);
-                
-                await repository.UpdateBatchStateById(batchId.ToString(), ToState, cancellationToken);
+
+                await batchRepository.UpdateBatchStateById(batchId.ToString(), ToState, cancellationToken);
 
                 // 5. Publish completion event to trigger next stage
                 await mediator.Publish(new StateCompletedEvent(batchId, ToState), cancellationToken);
@@ -53,7 +55,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Transform
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed {Stage} processing for batch {BatchId}", ToState, batchId);
-                await repository.UpdateBatchStatusById(batchId.ToString(), ProcessingStatus.Failed, cancellationToken);
+                await batchRepository.UpdateBatchStatusById(batchId.ToString(), ProcessingStatus.Failed, cancellationToken);
                 throw;
             }
         }

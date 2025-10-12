@@ -7,7 +7,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
     [TestClass]
     public class StateCompletedEventTests
     {
-        [TestMethod]
+        [TestMethod, TestCategory("Unit")]
         public void StateCompletedEvent_ShouldCreateWithCorrectProperties()
         {
             // Arrange

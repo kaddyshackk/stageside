@@ -24,7 +24,7 @@ var app = builder.Build();
 await VerifyPlaywrightAsync();
 
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Local"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
