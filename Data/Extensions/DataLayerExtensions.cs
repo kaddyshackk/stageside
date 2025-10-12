@@ -2,6 +2,7 @@ using ComedyPull.Application.Modules.DataProcessing.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Transform.Interfaces;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
+using ComedyPull.Data.Modules.Common;
 using ComedyPull.Data.Modules.DataProcessing;
 using ComedyPull.Data.Modules.DataProcessing.Complete;
 using ComedyPull.Data.Modules.DataProcessing.Transform;
@@ -25,6 +26,12 @@ namespace ComedyPull.Data.Extensions
         /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
         public static void AddDataServices(this IServiceCollection services, IConfiguration configuration)
         {
+            // Schema Context (for migrations only)
+            services.AddDbContext<SchemaContext>(options =>
+            {
+                ConfigureDbContextOptionsBuilder(options, configuration);
+            });
+
             services.AddDataProcessingServices(configuration);
             services.AddDataSyncServices(configuration);
         }
