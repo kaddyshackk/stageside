@@ -4,6 +4,7 @@
     {
         public static IEndpointRouteBuilder AddPublicEndpoints(this IEndpointRouteBuilder builder)
         {
+            builder.AddJobEndpoints();
             builder.AddEventEndpoints();
 
             return builder;

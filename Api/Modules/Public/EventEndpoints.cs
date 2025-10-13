@@ -12,9 +12,9 @@ namespace ComedyPull.Api.Modules.Public
             group.MapGet("/{slug}",
                     async (
                         string slug, IHandler<GetEventBySlugQuery, GetEventBySlugResponse> handler,
-                        CancellationToken cancellationToken) =>
+                        CancellationToken ct) =>
                     {
-                        var @event = await handler.HandleAsync(new GetEventBySlugQuery(slug), cancellationToken);
+                        var @event = await handler.HandleAsync(new GetEventBySlugQuery(slug), ct);
                         return @event is null ? Results.NotFound() : Results.Ok(@event);
                     })
                 .WithName("GetEventBySlug")
