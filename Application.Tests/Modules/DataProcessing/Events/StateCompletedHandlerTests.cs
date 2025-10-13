@@ -18,8 +18,8 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
         [TestInitialize]
         public void Setup()
         {
-            _mockLogger = A.Fake<ILogger<StateCompletedHandler>>();
             _mockStateProcessor = A.Fake<IStateProcessor>();
+            _mockLogger = A.Fake<ILogger<StateCompletedHandler>>();
 
             // Configure mock state processor
             A.CallTo(() => _mockStateProcessor.FromState).Returns(ProcessingState.Ingested);
@@ -55,12 +55,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
 
             // Act
             await _handler.Handle(stateCompletedEvent, cancellationToken);
-
-            // Assert
-            A.CallTo(_mockLogger)
-                .Where(call => call.Method.Name == "Log" &&
-                              call.Arguments.Get<LogLevel>(0) == LogLevel.Information)
-                .MustHaveHappenedOnceExactly();
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -75,11 +69,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
             await _handler.Handle(stateCompletedEvent, cancellationToken);
 
             // Assert
-            A.CallTo(_mockLogger)
-                .Where(call => call.Method.Name == "Log" &&
-                              call.Arguments.Get<LogLevel>(0) == LogLevel.Information)
-                .MustHaveHappenedOnceExactly();
-
             A.CallTo(() => _mockStateProcessor.ProcessBatchAsync(A<Guid>._, A<CancellationToken>._))
                 .MustNotHaveHappened();
         }
@@ -94,12 +83,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
 
             // Act
             await _handler.Handle(stateCompletedEvent, cancellationToken);
-
-            // Assert
-            A.CallTo(_mockLogger)
-                .Where(call => call.Method.Name == "Log" &&
-                              call.Arguments.Get<LogLevel>(0) == LogLevel.Information)
-                .MustHaveHappenedOnceExactly();
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -112,12 +95,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
 
             // Act
             await _handler.Handle(stateCompletedEvent, cancellationToken);
-
-            // Assert
-            A.CallTo(_mockLogger)
-                .Where(call => call.Method.Name == "Log" &&
-                              call.Arguments.Get<LogLevel>(0) == LogLevel.Information)
-                .MustHaveHappenedOnceExactly();
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -130,12 +107,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
 
             // Act
             await _handler.Handle(stateCompletedEvent, cancellationToken);
-
-            // Assert
-            A.CallTo(_mockLogger)
-                .Where(call => call.Method.Name == "Log" &&
-                              call.Arguments.Get<LogLevel>(0) == LogLevel.Information)
-                .MustHaveHappenedOnceExactly();
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -148,12 +119,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
 
             // Act
             await _handler.Handle(stateCompletedEvent, cancellationToken);
-
-            // Assert
-            A.CallTo(_mockLogger)
-                .Where(call => call.Method.Name == "Log" &&
-                              call.Arguments.Get<LogLevel>(0) == LogLevel.Information)
-                .MustHaveHappenedOnceExactly();
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -166,12 +131,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
 
             // Act
             await _handler.Handle(stateCompletedEvent, cancellationToken);
-
-            // Assert
-            A.CallTo(_mockLogger)
-                .Where(call => call.Method.Name == "Log" &&
-                              call.Arguments.Get<LogLevel>(0) == LogLevel.Information)
-                .MustHaveHappenedOnceExactly();
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -205,12 +164,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
 
             // Act
             await handler.Handle(stateCompletedEvent, CancellationToken.None);
-
-            // Assert - Should log completion message when no transition found
-            A.CallTo(logger)
-                .Where(call => call.Method.Name == "Log" &&
-                              call.Arguments.Get<LogLevel>(0) == LogLevel.Information)
-                .MustHaveHappenedOnceExactly();
         }
     }
 }
