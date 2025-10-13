@@ -2,11 +2,13 @@ using ComedyPull.Application.Modules.DataProcessing.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Transform.Interfaces;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
+using ComedyPull.Application.Modules.Public.Events.GetEventBySlug.Interfaces;
 using ComedyPull.Data.Modules.Common;
 using ComedyPull.Data.Modules.DataProcessing;
 using ComedyPull.Data.Modules.DataProcessing.Complete;
 using ComedyPull.Data.Modules.DataProcessing.Transform;
 using ComedyPull.Data.Modules.DataSync;
+using ComedyPull.Data.Modules.Public.Events.GetEventBySlug;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,11 +34,18 @@ namespace ComedyPull.Data.Extensions
                 ConfigureDbContextOptionsBuilder(options, configuration);
             });
 
-            services.AddDataProcessingServices(configuration);
-            services.AddDataSyncServices(configuration);
+            services.AddPublicDataModule();
+            services.AddDataProcessingDataModule(configuration);
+            services.AddDataSyncDataModule(configuration);
         }
 
-        private static void AddDataProcessingServices(this IServiceCollection services, IConfiguration configuration)
+        private static void AddPublicDataModule(this IServiceCollection services)
+        {
+            
+            services.AddScoped<IGetEventBySlugRepository, GetEventBySlugRepository>();
+        }
+
+        private static void AddDataProcessingDataModule(this IServiceCollection services, IConfiguration configuration)
         {
             // Batch Context (shared across all processing states)
             services.AddDbContextFactory<BatchContext>((_, options) =>
@@ -60,7 +69,7 @@ namespace ComedyPull.Data.Extensions
             services.AddSingleton<ICompleteStateRepository, CompleteStateRepository>();
         }
 
-        private static void AddDataSyncServices(this IServiceCollection services, IConfiguration configuration)
+        private static void AddDataSyncDataModule(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContextFactory<DataSyncContext>((_, options) =>
             {

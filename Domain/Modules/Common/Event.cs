@@ -14,7 +14,6 @@ namespace ComedyPull.Domain.Modules.Common
 
         /// <summary>
         /// Gets or sets the slug identifier for the event.
-        /// Generated from comedian slug, venue slug, and date (e.g., "joe-list-comedy-store-2024-10-15").
         /// </summary>
         public required string Slug { get; set; }
 
