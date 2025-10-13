@@ -13,3 +13,6 @@
 .DS_Store
 .idea/
 **/appsettings.Local.json
+*.DotSettings.user
+*.csproj.user
+*.local.json
