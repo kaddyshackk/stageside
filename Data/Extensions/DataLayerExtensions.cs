@@ -41,7 +41,7 @@ namespace ComedyPull.Data.Extensions
 
         private static void AddPublicDataModule(this IServiceCollection services)
         {
-            
+            services.AddDbContext<GetEventBySlugContext>();
             services.AddScoped<IGetEventBySlugRepository, GetEventBySlugRepository>();
         }
 

@@ -3,6 +3,7 @@ using ComedyPull.Api.Modules.Public;
 using ComedyPull.Application.Extensions;
 using ComedyPull.Data.Extensions;
 using Microsoft.Playwright;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,7 @@ await VerifyPlaywrightAsync();
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Local"))
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();

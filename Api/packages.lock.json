@@ -28,6 +28,12 @@
         "resolved": "1.22.1",
         "contentHash": "EfYANhAWqmWKoLwN6bxoiPZSOfJSO9lzX+UrU6GVhLhPub1Hd+5f0zL0/tggIA6mRz6Ebw2xCNcIsM4k+7NPng=="
       },
+      "Scalar.AspNetCore": {
+        "type": "Direct",
+        "requested": "[2.8.11, )",
+        "resolved": "2.8.11",
+        "contentHash": "/diesSakiNH7N+KExjIc9ARi2j7LtH6DWfcPz710gvNGKWLwezfFgGK7f7+y8jlrnO1/oghBXamFrr3ddMv7MQ=="
+      },
       "Humanizer.Core": {
         "type": "Transitive",
         "resolved": "2.14.1",
