@@ -30,7 +30,6 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Local"))
 }
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
 
 app.MapGroup("/api")
     .AddPublicEndpoints();
