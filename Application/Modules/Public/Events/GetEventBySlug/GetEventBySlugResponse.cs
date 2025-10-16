@@ -34,10 +34,5 @@ namespace ComedyPull.Application.Modules.Public.Events.GetEventBySlug
         /// Gets the event venue.
         /// </summary>
         public required VenueResponse Venue { get; init; }
-
-        /// <summary>
-        /// Gets the Comedian relationship object.
-        /// </summary>
-        public required List<ComedianResponse> Comedians { get; init; }
     }
 }

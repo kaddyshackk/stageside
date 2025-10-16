@@ -3,16 +3,14 @@ using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Transform.Interfaces;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
 using ComedyPull.Application.Modules.Public.Events.GetEventBySlug.Interfaces;
-using ComedyPull.Data.Modules.Common;
 using ComedyPull.Data.Modules.DataProcessing;
 using ComedyPull.Data.Modules.DataProcessing.Complete;
 using ComedyPull.Data.Modules.DataProcessing.Transform;
 using ComedyPull.Data.Modules.DataSync;
 using ComedyPull.Data.Modules.Public.Events.GetEventBySlug;
-using Microsoft.EntityFrameworkCore;
+using ComedyPull.Data.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace ComedyPull.Data.Extensions
 {
@@ -28,20 +26,17 @@ namespace ComedyPull.Data.Extensions
         /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
         public static void AddDataServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // Schema Context (for migrations only)
-            services.AddDbContext<SchemaContext>(options =>
-            {
-                ConfigureDbContextOptionsBuilder(options, configuration);
-            });
-
-            services.AddPublicDataModule();
+            services.AddPublicDataModule(configuration);
             services.AddDataProcessingDataModule(configuration);
             services.AddDataSyncDataModule(configuration);
         }
 
-        private static void AddPublicDataModule(this IServiceCollection services)
+        private static void AddPublicDataModule(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<GetEventBySlugContext>();
+            services.AddDbContext<GetEventBySlugContext>(options =>
+            {
+                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration);
+            });
             services.AddScoped<IGetEventBySlugRepository, GetEventBySlugRepository>();
         }
 
@@ -50,21 +45,21 @@ namespace ComedyPull.Data.Extensions
             // Batch Context (shared across all processing states)
             services.AddDbContextFactory<BatchContext>((_, options) =>
             {
-                ConfigureDbContextOptionsBuilder(options, configuration);
+                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration);
             });
             services.AddSingleton<IBatchRepository, BatchRepository>();
 
             // Transform State
             services.AddDbContextFactory<TransformStateContext>((_, options) =>
             {
-                ConfigureDbContextOptionsBuilder(options, configuration);
+                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration);
             });
             services.AddSingleton<ITransformStateRepository, TransformStateRepository>();
 
             // Complete State
             services.AddDbContextFactory<CompleteStateContext>((_, options) =>
             {
-                ConfigureDbContextOptionsBuilder(options, configuration);
+                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration);
             });
             services.AddSingleton<ICompleteStateRepository, CompleteStateRepository>();
         }
@@ -73,51 +68,9 @@ namespace ComedyPull.Data.Extensions
         {
             services.AddDbContextFactory<DataSyncContext>((_, options) =>
             {
-                ConfigureDbContextOptionsBuilder(options, configuration);
+                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration);
             });
             services.AddSingleton<IBronzeRecordIngestionRepository, BronzeRecordIngestionRepository>();
-        }
-
-        private static void ConfigureDbContextOptionsBuilder(DbContextOptionsBuilder options, IConfiguration configuration)
-        {
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            if (string.IsNullOrEmpty(environment))
-            {
-                throw new InvalidOperationException("ASPNETCORE_ENVIRONMENT is not set");
-            }
-            
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new InvalidOperationException("DefaultConnection string is not configured.");
-            }
-            
-            options.UseNpgsql(connectionString, npgsqlOptions =>
-            {
-                npgsqlOptions.EnableRetryOnFailure(
-                    maxRetryCount: 3,
-                    maxRetryDelay: TimeSpan.FromSeconds(30),
-                    errorCodesToAdd: null);
-                    
-                npgsqlOptions.CommandTimeout(30);
-            });
-            
-            switch (environment)
-            {
-                case "Local":
-                case "Development":
-                    options.EnableSensitiveDataLogging();
-                    options.EnableDetailedErrors();
-                    options.LogTo(Console.WriteLine, LogLevel.Information);
-                    break;
-                case "Staging":
-                case "Production":
-                    options.EnableServiceProviderCaching();
-                    options.EnableSensitiveDataLogging(false);
-                    break;
-                default:
-                    throw new InvalidOperationException("Unknown environment: " + environment);
-            }
         }
     }
 }

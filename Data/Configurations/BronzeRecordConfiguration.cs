@@ -9,15 +9,16 @@ namespace ComedyPull.Data.Configurations
         public new void Configure(EntityTypeBuilder<BronzeRecord> builder)
         {
             base.Configure(builder);
+
+            builder.ToTable("BronzeRecords");
             
             builder.Property(x => x.BatchId)
                 .HasMaxLength(50)
-                .HasColumnType("varchar(50)")
                 .IsRequired();
             
             builder.Property(r => r.Status)
+                .HasConversion<string>()
                 .HasMaxLength(50)
-                .HasColumnType("varchar(50)")
                 .IsRequired();
             
             builder.Property(r => r.Data)
@@ -27,8 +28,10 @@ namespace ComedyPull.Data.Configurations
             
             builder.Property(r => r.ContentHash)
                 .HasMaxLength(255)
-                .HasColumnType("varchar(255)")
                 .IsRequired();
+            
+            // Indices
+            builder.HasIndex(r => r.BatchId);
         }
     }
 }

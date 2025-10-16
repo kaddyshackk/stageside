@@ -1,30 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
+using ComedyPull.Data.Modules.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace ComedyPull.Data.Modules.DataProcessing.Transform
 {
-    public class TransformStateContextFactory : IDesignTimeDbContextFactory<TransformStateContext>
+    /// <summary>
+    /// Design-time factory for TransformStateContext to support EF migrations.
+    /// </summary>
+    public class TransformStateContextFactory : BaseDesignTimeDbContextFactory<TransformStateContext>
     {
-        public TransformStateContext CreateDbContext(string[] args)
+        /// <summary>
+        /// Creates a new instance of TransformStateContext with the provided options.
+        /// </summary>
+        /// <param name="options">The configured DbContext options.</param>
+        /// <returns>A new TransformStateContext instance.</returns>
+        protected override TransformStateContext CreateContext(DbContextOptions<TransformStateContext> options)
         {
-            // Build configuration from the API project settings
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Api", "Settings"))
-                .AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .Build();
-
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new InvalidOperationException("DefaultConnection string is not configured.");
-            }
-
-            var optionsBuilder = new DbContextOptionsBuilder<TransformStateContext>();
-            optionsBuilder.UseNpgsql(connectionString);
-
-            return new TransformStateContext(optionsBuilder.Options);
+            return new TransformStateContext(options);
         }
     }
 }

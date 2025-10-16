@@ -17,8 +17,8 @@ namespace ComedyPull.Data.Configurations
         {
             base.Configure(builder);
             
-            // Properties
-
+            builder.ToTable("Venues");
+            
             builder.Property(v => v.Name)
                 .HasMaxLength(100)
                 .IsRequired();
@@ -27,14 +27,10 @@ namespace ComedyPull.Data.Configurations
                 .HasMaxLength(50)
                 .IsRequired();
 
-            // Relationships
-
             builder.HasMany(v => v.Events)
                 .WithOne(e => e.Venue)
-                .HasForeignKey(v => v.VenueId)
+                .HasForeignKey(e => e.VenueId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            // Indices
 
             builder.HasIndex(v => v.Slug).IsUnique();
         }

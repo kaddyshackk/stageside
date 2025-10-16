@@ -1,4 +1,5 @@
-﻿using ComedyPull.Domain.Modules.Common;
+﻿using ComedyPull.Data.Configurations;
+using ComedyPull.Domain.Modules.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComedyPull.Data.Modules.Public.Events.GetEventBySlug
@@ -9,5 +10,12 @@ namespace ComedyPull.Data.Modules.Public.Events.GetEventBySlug
         /// Gets or sets the Events DbSet.
         /// </summary>
         public DbSet<Event> Events { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            
+            modelBuilder.ApplyConfiguration(new EventConfiguration());
+        }
     }
 }

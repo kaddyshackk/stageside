@@ -1,30 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
+using ComedyPull.Data.Modules.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace ComedyPull.Data.Modules.DataProcessing.Complete
 {
-    public class CompleteStateContextFactory : IDesignTimeDbContextFactory<CompleteStateContext>
+    /// <summary>
+    /// Design-time factory for CompleteStateContext to support EF migrations.
+    /// </summary>
+    public class CompleteStateContextFactory : BaseDesignTimeDbContextFactory<CompleteStateContext>
     {
-        public CompleteStateContext CreateDbContext(string[] args)
+        /// <summary>
+        /// Creates a new instance of CompleteStateContext with the provided options.
+        /// </summary>
+        /// <param name="options">The configured DbContext options.</param>
+        /// <returns>A new CompleteStateContext instance.</returns>
+        protected override CompleteStateContext CreateContext(DbContextOptions<CompleteStateContext> options)
         {
-            // Build configuration from the API project settings
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Api", "Settings"))
-                .AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .Build();
-
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new InvalidOperationException("DefaultConnection string is not configured.");
-            }
-
-            var optionsBuilder = new DbContextOptionsBuilder<CompleteStateContext>();
-            optionsBuilder.UseNpgsql(connectionString);
-
-            return new CompleteStateContext(optionsBuilder.Options);
+            return new CompleteStateContext(options);
         }
     }
 }

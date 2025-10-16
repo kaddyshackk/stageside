@@ -46,10 +46,5 @@ namespace ComedyPull.Domain.Modules.Common
         /// Gets the Comedian relationship object.
         /// </summary>
         public virtual ICollection<ComedianEvent> ComedianEvents { get; init; } = new List<ComedianEvent>();
-
-        /// <summary>
-        /// Gets the event comedian list.
-        /// </summary>
-        public virtual ICollection<Comedian> Comedians => ComedianEvents.Select(ce => ce.Comedian).ToList();
     }
 }

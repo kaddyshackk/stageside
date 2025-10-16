@@ -25,7 +25,7 @@ var app = builder.Build();
 
 await VerifyPlaywrightAsync();
 
-if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Local"))
+if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
