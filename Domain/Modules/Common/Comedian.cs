@@ -24,10 +24,5 @@
         /// Navigation property to ComedianEvent relationship table.
         /// </summary>
         public virtual ICollection<ComedianEvent> ComedianEvents { get; init; } = new List<ComedianEvent>();
-
-        /// <summary>
-        /// Navigation property to get comedians.
-        /// </summary>
-        public virtual ICollection<Event> Events => ComedianEvents.Select(ce => ce.Event).ToList();
     }
 }

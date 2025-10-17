@@ -8,6 +8,7 @@ using ComedyPull.Application.Modules.DataProcessing.Steps.Transform;
 using ComedyPull.Application.Modules.DataSync;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
 using ComedyPull.Application.Modules.DataSync.Options;
+using ComedyPull.Application.Modules.Public.Events.GetEventBySlug;
 using ComedyPull.Application.Modules.Punchup;
 using ComedyPull.Application.Modules.Punchup.Collectors;
 using ComedyPull.Application.Modules.Punchup.Collectors.Interfaces;
@@ -39,10 +40,16 @@ namespace ComedyPull.Application.Extensions
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
             // Modules
-            services.AddDataSyncModule(configuration);
-            services.AddDataProcessingModule();
-            services.AddPunchupModule();
+            services.AddPublicApplicationModule();
+            services.AddDataSyncApplicationModule(configuration);
+            services.AddDataProcessingApplicationModule();
+            services.AddPunchupApplicationModule();
             services.AddQueueModule();
+        }
+
+        private static void AddPublicApplicationModule(this IServiceCollection services)
+        {
+            services.AddScoped<IHandler<GetEventBySlugQuery, GetEventBySlugResponse>, GetEventBySlugHandler>();
         }
         
         /// <summary>
@@ -50,7 +57,7 @@ namespace ComedyPull.Application.Extensions
         /// </summary>
         /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
         /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
-        private static void AddDataSyncModule(this IServiceCollection services, IConfiguration configuration)
+        private static void AddDataSyncApplicationModule(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<DataSyncOptions>(configuration.GetSection("DataSyncOptions"));
             services.AddHostedService<BronzeRecordIngestionService>();
@@ -62,7 +69,7 @@ namespace ComedyPull.Application.Extensions
         /// Configures services for the DataProcessing module.
         /// </summary>
         /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
-        private static void AddDataProcessingModule(this IServiceCollection services)
+        private static void AddDataProcessingApplicationModule(this IServiceCollection services)
         {
             services.AddScoped<INotificationHandler<StateCompletedEvent>, StateCompletedHandler>();
             services.AddScoped<ISubProcessorResolver, SubProcessorResolver>();
@@ -72,7 +79,7 @@ namespace ComedyPull.Application.Extensions
             services.AddScoped<IStateProcessor, CompleteStateProcessor>();
         }
 
-        private static void AddPunchupModule(this IServiceCollection services)
+        private static void AddPunchupApplicationModule(this IServiceCollection services)
         {
             services.AddScoped<IPunchupTicketsPageCollectorFactory, PunchupTicketsPageCollectorFactory>();
             services.AddScoped<ISubProcessor<DataSourceType>, PunchupTransformSubProcessor>();

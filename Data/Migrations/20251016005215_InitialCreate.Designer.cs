@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ComedyPull.Data.Migrations
 {
     [DbContext(typeof(SchemaContext))]
-    [Migration("20251012032842_InitialCreate")]
+    [Migration("20251016005215_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,25 +20,10 @@ namespace ComedyPull.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("ComedianEvent", b =>
-                {
-                    b.Property<string>("ComediansId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("EventsId")
-                        .HasColumnType("text");
-
-                    b.HasKey("ComediansId", "EventsId");
-
-                    b.HasIndex("EventsId");
-
-                    b.ToTable("ComedianEvent");
-                });
 
             modelBuilder.Entity("ComedyPull.Domain.Modules.Common.Comedian", b =>
                 {
@@ -52,7 +37,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 214, DateTimeKind.Unspecified).AddTicks(7874), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 832, DateTimeKind.Unspecified).AddTicks(9130), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -75,7 +60,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 214, DateTimeKind.Unspecified).AddTicks(8358), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 832, DateTimeKind.Unspecified).AddTicks(9550), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -109,7 +94,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 216, DateTimeKind.Unspecified).AddTicks(5034), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 833, DateTimeKind.Unspecified).AddTicks(4720), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -141,7 +126,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 216, DateTimeKind.Unspecified).AddTicks(5576), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 833, DateTimeKind.Unspecified).AddTicks(5120), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -166,7 +151,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 217, DateTimeKind.Unspecified).AddTicks(2654), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 833, DateTimeKind.Unspecified).AddTicks(8830), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -189,7 +174,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 217, DateTimeKind.Unspecified).AddTicks(3467), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 833, DateTimeKind.Unspecified).AddTicks(9180), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -208,7 +193,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 213, DateTimeKind.Unspecified).AddTicks(814), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(5130), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -229,7 +214,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 213, DateTimeKind.Unspecified).AddTicks(1684), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(5440), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -255,7 +240,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 212, DateTimeKind.Unspecified).AddTicks(5311), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 828, DateTimeKind.Unspecified).AddTicks(7570), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -271,7 +256,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 212, DateTimeKind.Unspecified).AddTicks(5802), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(1070), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -301,7 +286,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 212, DateTimeKind.Unspecified).AddTicks(8086), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(3280), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -320,7 +305,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 212, DateTimeKind.Unspecified).AddTicks(8530), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(3630), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -329,21 +314,6 @@ namespace ComedyPull.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SilverRecords");
-                });
-
-            modelBuilder.Entity("ComedianEvent", b =>
-                {
-                    b.HasOne("ComedyPull.Domain.Modules.Common.Comedian", null)
-                        .WithMany()
-                        .HasForeignKey("ComediansId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ComedyPull.Domain.Modules.Common.Event", null)
-                        .WithMany()
-                        .HasForeignKey("EventsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ComedyPull.Domain.Modules.Common.ComedianEvent", b =>

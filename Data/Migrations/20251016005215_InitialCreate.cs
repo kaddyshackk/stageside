@@ -20,9 +20,9 @@ namespace ComedyPull.Data.Migrations
                     SourceType = table.Column<int>(type: "integer", nullable: false),
                     State = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 213, DateTimeKind.Unspecified).AddTicks(814), new TimeSpan(0, 0, 0, 0, 0))),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(5130), new TimeSpan(0, 0, 0, 0, 0))),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 213, DateTimeKind.Unspecified).AddTicks(1684), new TimeSpan(0, 0, 0, 0, 0))),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(5440), new TimeSpan(0, 0, 0, 0, 0))),
                     UpdatedBy = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -39,9 +39,9 @@ namespace ComedyPull.Data.Migrations
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Data = table.Column<string>(type: "text", nullable: false),
                     ContentHash = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 212, DateTimeKind.Unspecified).AddTicks(5311), new TimeSpan(0, 0, 0, 0, 0))),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 828, DateTimeKind.Unspecified).AddTicks(7570), new TimeSpan(0, 0, 0, 0, 0))),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 212, DateTimeKind.Unspecified).AddTicks(5802), new TimeSpan(0, 0, 0, 0, 0))),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(1070), new TimeSpan(0, 0, 0, 0, 0))),
                     UpdatedBy = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -57,9 +57,9 @@ namespace ComedyPull.Data.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Slug = table.Column<string>(type: "text", nullable: false),
                     Bio = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 214, DateTimeKind.Unspecified).AddTicks(7874), new TimeSpan(0, 0, 0, 0, 0))),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 832, DateTimeKind.Unspecified).AddTicks(9130), new TimeSpan(0, 0, 0, 0, 0))),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 214, DateTimeKind.Unspecified).AddTicks(8358), new TimeSpan(0, 0, 0, 0, 0))),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 832, DateTimeKind.Unspecified).AddTicks(9550), new TimeSpan(0, 0, 0, 0, 0))),
                     UpdatedBy = table.Column<string>(type: "text", nullable: false),
                     Source = table.Column<int>(type: "integer", nullable: false),
                     IngestedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
@@ -80,9 +80,9 @@ namespace ComedyPull.Data.Migrations
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Data = table.Column<string>(type: "text", nullable: false),
                     ContentHash = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 212, DateTimeKind.Unspecified).AddTicks(8086), new TimeSpan(0, 0, 0, 0, 0))),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(3280), new TimeSpan(0, 0, 0, 0, 0))),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 212, DateTimeKind.Unspecified).AddTicks(8530), new TimeSpan(0, 0, 0, 0, 0))),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(3630), new TimeSpan(0, 0, 0, 0, 0))),
                     UpdatedBy = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -97,9 +97,9 @@ namespace ComedyPull.Data.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Slug = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 217, DateTimeKind.Unspecified).AddTicks(2654), new TimeSpan(0, 0, 0, 0, 0))),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 833, DateTimeKind.Unspecified).AddTicks(8830), new TimeSpan(0, 0, 0, 0, 0))),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 217, DateTimeKind.Unspecified).AddTicks(3467), new TimeSpan(0, 0, 0, 0, 0))),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 833, DateTimeKind.Unspecified).AddTicks(9180), new TimeSpan(0, 0, 0, 0, 0))),
                     UpdatedBy = table.Column<string>(type: "text", nullable: false),
                     Source = table.Column<int>(type: "integer", nullable: false),
                     IngestedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
@@ -120,9 +120,9 @@ namespace ComedyPull.Data.Migrations
                     StartDateTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     EndDateTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     VenueId = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 216, DateTimeKind.Unspecified).AddTicks(5034), new TimeSpan(0, 0, 0, 0, 0))),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 833, DateTimeKind.Unspecified).AddTicks(4720), new TimeSpan(0, 0, 0, 0, 0))),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 12, 3, 28, 42, 216, DateTimeKind.Unspecified).AddTicks(5576), new TimeSpan(0, 0, 0, 0, 0))),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 833, DateTimeKind.Unspecified).AddTicks(5120), new TimeSpan(0, 0, 0, 0, 0))),
                     UpdatedBy = table.Column<string>(type: "text", nullable: false),
                     Source = table.Column<int>(type: "integer", nullable: false),
                     IngestedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
@@ -134,30 +134,6 @@ namespace ComedyPull.Data.Migrations
                         name: "FK_Events_Venues_VenueId",
                         column: x => x.VenueId,
                         principalTable: "Venues",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ComedianEvent",
-                columns: table => new
-                {
-                    ComediansId = table.Column<string>(type: "text", nullable: false),
-                    EventsId = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ComedianEvent", x => new { x.ComediansId, x.EventsId });
-                    table.ForeignKey(
-                        name: "FK_ComedianEvent_Comedians_ComediansId",
-                        column: x => x.ComediansId,
-                        principalTable: "Comedians",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ComedianEvent_Events_EventsId",
-                        column: x => x.EventsId,
-                        principalTable: "Events",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -187,11 +163,6 @@ namespace ComedyPull.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ComedianEvent_EventsId",
-                table: "ComedianEvent",
-                column: "EventsId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ComedianEvents_EventId",
                 table: "ComedianEvents",
                 column: "EventId");
@@ -210,9 +181,6 @@ namespace ComedyPull.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "BronzeRecords");
-
-            migrationBuilder.DropTable(
-                name: "ComedianEvent");
 
             migrationBuilder.DropTable(
                 name: "ComedianEvents");

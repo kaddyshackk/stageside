@@ -16,31 +16,20 @@ namespace ComedyPull.Data.Configurations
         public new void Configure(EntityTypeBuilder<Comedian> builder)
         {
             base.Configure(builder);
-            
-            // Properties
+
+            builder.ToTable("Comedians");
             
             builder.Property(c => c.Name)
-                .HasColumnName("name")
                 .HasMaxLength(100)
                 .IsRequired();
             
             builder.Property(c => c.Slug)
-                .HasColumnName("slug")
                 .HasMaxLength(255)
                 .IsRequired();
 
             builder.Property(c => c.Bio)
-                .HasColumnName("name")
                 .HasMaxLength(2000)
                 .IsRequired();
-            
-            // Relationships
-
-            builder.HasMany(c => c.Events)
-                .WithMany(e => e.Comedians)
-                .UsingEntity<ComedianEvent>();
-            
-            // Indices
             
             builder.HasIndex(c => c.Slug).IsUnique();
             builder.HasIndex(c => c.Name);

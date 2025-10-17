@@ -1,8 +1,9 @@
 using ComedyPull.Api.Extensions;
+using ComedyPull.Api.Modules.Public;
 using ComedyPull.Application.Extensions;
 using ComedyPull.Data.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Playwright;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile($"Settings/appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
+builder.Services.AddOpenApi();
 builder.Services.AddApiServices(builder.Configuration);
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddDataServices(builder.Configuration);
@@ -23,16 +25,16 @@ var app = builder.Build();
 
 await VerifyPlaywrightAsync();
 
-
-if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Local"))
+if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
+
+app.MapGroup("/api")
+    .AddPublicEndpoints();
 
 app.Run();
 

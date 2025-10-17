@@ -2,6 +2,15 @@
   "version": 2,
   "dependencies": {
     "net9.0": {
+      "Microsoft.AspNetCore.OpenApi": {
+        "type": "Direct",
+        "requested": "[9.0.9, )",
+        "resolved": "9.0.9",
+        "contentHash": "3Sina0gS/CTYt9XG6DUFPdXOmJui7e551U0kO2bIiDk3vZ2sctxxenN+cE1a5CrUpjIVZfZr32neWYYRO+Piaw==",
+        "dependencies": {
+          "Microsoft.OpenApi": "1.6.17"
+        }
+      },
       "Microsoft.Playwright": {
         "type": "Direct",
         "requested": "[1.54.0, )",
@@ -19,17 +28,11 @@
         "resolved": "1.22.1",
         "contentHash": "EfYANhAWqmWKoLwN6bxoiPZSOfJSO9lzX+UrU6GVhLhPub1Hd+5f0zL0/tggIA6mRz6Ebw2xCNcIsM4k+7NPng=="
       },
-      "Swashbuckle.AspNetCore": {
+      "Scalar.AspNetCore": {
         "type": "Direct",
-        "requested": "[7.2.0, )",
-        "resolved": "7.2.0",
-        "contentHash": "vJv19UpWm6OOgnS9QLDnWARNVasXUfj8SFvlG7UVALm4nBnfwRnEky7C0veSDqMUmBeMPC6Ec3d6G1ts/J04Uw==",
-        "dependencies": {
-          "Microsoft.Extensions.ApiDescription.Server": "6.0.5",
-          "Swashbuckle.AspNetCore.Swagger": "7.2.0",
-          "Swashbuckle.AspNetCore.SwaggerGen": "7.2.0",
-          "Swashbuckle.AspNetCore.SwaggerUI": "7.2.0"
-        }
+        "requested": "[2.8.11, )",
+        "resolved": "2.8.11",
+        "contentHash": "/diesSakiNH7N+KExjIc9ARi2j7LtH6DWfcPz710gvNGKWLwezfFgGK7f7+y8jlrnO1/oghBXamFrr3ddMv7MQ=="
       },
       "Humanizer.Core": {
         "type": "Transitive",
@@ -135,11 +138,6 @@
           "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
           "Microsoft.Extensions.Logging": "9.0.0"
         }
-      },
-      "Microsoft.Extensions.ApiDescription.Server": {
-        "type": "Transitive",
-        "resolved": "6.0.5",
-        "contentHash": "Ckb5EDBUNJdFWyajfXzUIMRkhf52fHZOQuuZg/oiu8y7zDCVwD0iHhew6MnThjHmevanpxL3f5ci2TtHQEN6bw=="
       },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "Transitive",
@@ -313,8 +311,8 @@
       },
       "Microsoft.OpenApi": {
         "type": "Transitive",
-        "resolved": "1.6.22",
-        "contentHash": "aBvunmrdu/x+4CaA/UP1Jx4xWGwk4kymhoIRnn2Vp+zi5/KOPQJ9EkSXHRUr01WcGKtYl3Au7XfkPJbU1G2sjQ=="
+        "resolved": "1.6.17",
+        "contentHash": "Le+kehlmrlQfuDFUt1zZ2dVwrhFQtKREdKBo+rexOwaCoYP0/qpgT9tLxCsZjsgR5Itk1UKPcbgO+FyaNid/bA=="
       },
       "Mono.TextTemplating": {
         "type": "Transitive",
@@ -341,27 +339,6 @@
           "Microsoft.Extensions.Options": "9.0.0",
           "Quartz": "3.15.0"
         }
-      },
-      "Swashbuckle.AspNetCore.Swagger": {
-        "type": "Transitive",
-        "resolved": "7.2.0",
-        "contentHash": "y27fNDfIh1vGhJjXYynLcZjl7DLOW1bSO2MDsY9wB4Zm1fdxpPsuBSiR4U+0acWlAqLmnuOPKr/OeOgwRUkBlw==",
-        "dependencies": {
-          "Microsoft.OpenApi": "1.6.22"
-        }
-      },
-      "Swashbuckle.AspNetCore.SwaggerGen": {
-        "type": "Transitive",
-        "resolved": "7.2.0",
-        "contentHash": "pMrTxGVuXM7t4wqft5CNNU8A0++Yw5kTLmYhB6tbEcyBfO8xEF/Y8pkJhO6BZ/2MYONrRYoQTfPFJqu8fOf5WQ==",
-        "dependencies": {
-          "Swashbuckle.AspNetCore.Swagger": "7.2.0"
-        }
-      },
-      "Swashbuckle.AspNetCore.SwaggerUI": {
-        "type": "Transitive",
-        "resolved": "7.2.0",
-        "contentHash": "hgrXeKzyp5OGN8qVvL7A+vhmU7mDJTfGpiMBRL66IcfLOyna8UTLtn3cC3CghamXpRDufcc9ciklTszUGEQK0w=="
       },
       "System.CodeDom": {
         "type": "Transitive",
@@ -465,7 +442,8 @@
           "Microsoft.Playwright": "[1.54.0, )",
           "Quartz": "[3.15.0, )",
           "Quartz.Extensions.Hosting": "[3.15.0, )",
-          "Quartz.Serialization.Json": "[3.15.0, )"
+          "Quartz.Serialization.Json": "[3.15.0, )",
+          "Riok.Mapperly": "[4.3.0-next.5, )"
         }
       },
       "data": {
@@ -476,6 +454,7 @@
           "Microsoft.EntityFrameworkCore": "[9.0.0, )",
           "Microsoft.EntityFrameworkCore.Design": "[9.0.0, )",
           "Microsoft.EntityFrameworkCore.Tools": "[9.0.0, )",
+          "Microsoft.Extensions.Configuration.EnvironmentVariables": "[9.0.0, )",
           "Microsoft.Extensions.Configuration.FileExtensions": "[9.0.0, )",
           "Microsoft.Extensions.Configuration.Json": "[9.0.0, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.2, )"
@@ -539,6 +518,16 @@
         "contentHash": "qjw+3/CaWiWnyVblvKHY11rQKH5eHQDSbtxjgxVhxGJrOpmjZ3JxtD0pjwkr4y/ELubsXr6xDfBcRJSkX/9hWQ==",
         "dependencies": {
           "Microsoft.EntityFrameworkCore.Design": "9.0.0"
+        }
+      },
+      "Microsoft.Extensions.Configuration.EnvironmentVariables": {
+        "type": "CentralTransitive",
+        "requested": "[9.0.0, )",
+        "resolved": "9.0.0",
+        "contentHash": "v5R638eNMxksfXb7MFnkPwLPp+Ym4W/SIGNuoe8qFVVyvygQD5DdLusybmYSJEr9zc1UzWzim/ATKeIOVvOFDg==",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "9.0.0",
+          "Microsoft.Extensions.Configuration.Abstractions": "9.0.0"
         }
       },
       "Microsoft.Extensions.Configuration.FileExtensions": {
@@ -647,6 +636,12 @@
           "Newtonsoft.Json": "13.0.3",
           "Quartz": "3.15.0"
         }
+      },
+      "Riok.Mapperly": {
+        "type": "CentralTransitive",
+        "requested": "[4.3.0-next.5, )",
+        "resolved": "4.3.0-next.5",
+        "contentHash": "sICJfHHDO3X7nXp0kPNyXyYpMO0iTw6aIKNnYzLVRbCsw5BS8CSV2sqfJ+gk9416q5yrt9QqtJzS4n79gPsBeQ=="
       }
     }
   }

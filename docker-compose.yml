@@ -6,9 +6,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5281:8080"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Local
-      - ConnectionStrings__DefaultConnection=Host=postgres;Database=comedypull;Username=postgres;Password=postgres
+    env_file:
+      - .env.development
     volumes:
       - ./Api:/app/Api
       - ./Application:/app/Application
@@ -23,10 +22,8 @@ services:
 
   postgres:
     image: postgres:15-alpine
-    environment:
-      - POSTGRES_DB=comedypull
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+    env_file:
+      - .env.development
     ports:
       - "5432:5432"
     volumes:

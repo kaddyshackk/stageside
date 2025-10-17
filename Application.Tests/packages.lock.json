@@ -359,7 +359,8 @@
           "Microsoft.Playwright": "[1.54.0, )",
           "Quartz": "[3.15.0, )",
           "Quartz.Extensions.Hosting": "[3.15.0, )",
-          "Quartz.Serialization.Json": "[3.15.0, )"
+          "Quartz.Serialization.Json": "[3.15.0, )",
+          "Riok.Mapperly": "[4.3.0-next.5, )"
         }
       },
       "domain": {
@@ -461,6 +462,12 @@
           "Newtonsoft.Json": "13.0.3",
           "Quartz": "3.15.0"
         }
+      },
+      "Riok.Mapperly": {
+        "type": "CentralTransitive",
+        "requested": "[4.3.0-next.5, )",
+        "resolved": "4.3.0-next.5",
+        "contentHash": "sICJfHHDO3X7nXp0kPNyXyYpMO0iTw6aIKNnYzLVRbCsw5BS8CSV2sqfJ+gk9416q5yrt9QqtJzS4n79gPsBeQ=="
       }
     }
   }

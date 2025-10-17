@@ -17,6 +17,7 @@ namespace ComedyPull.Data.Configurations
             base.Configure(builder);
             
             builder.Property(t => t.Source)
+                .HasConversion<string>()
                 .HasMaxLength(255)
                 .IsRequired();
             
