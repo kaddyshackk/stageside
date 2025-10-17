@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 using ComedyPull.Application.Modules.DataProcessing.Events;
 using ComedyPull.Application.Modules.DataProcessing.Interfaces;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
@@ -42,7 +43,8 @@ namespace ComedyPull.Application.Modules.Punchup
 
         private async Task ScrapeTicketsPages(IJobExecutionContext context)
         {
-            // Create batch for PunchupTicketsPage scraping
+            var parameters = GetJobParameters(context);
+            
             var batch = await batchRepository.CreateBatch(
                 DataSource.Punchup, 
                 DataSourceType.PunchupTicketsPage, 
@@ -57,28 +59,23 @@ namespace ComedyPull.Application.Modules.Punchup
             try
             {
                 var urls = await sitemapLoader.LoadSitemapAsync(sitemapUrl);
-
-                // Filter Urls
-                var regex = TicketsPageUrlRegex();
-                var matched = urls.Where(url => regex.IsMatch(url)).ToList();
+                var matched = urls.Where(url => TicketsPageUrlRegex().IsMatch(url)).ToList();
 
                 // Limit records for testing if specified
-                var maxRecordsString = context.MergedJobDataMap.GetString("maxRecords");
-                if (!string.IsNullOrEmpty(maxRecordsString) && int.TryParse(maxRecordsString, out var maxRecords) && maxRecords > 0)
+                if (parameters.MaxRecords is > 0)
                 {
-                    matched = matched.Take(maxRecords).ToList();
-                    logger.LogInformation("Limited to {MaxRecords} records for testing", maxRecords);
+                    matched = matched.Take(parameters.MaxRecords.Value).ToList();
+                    logger.LogInformation("Limited to {MaxRecords} records for testing", parameters.MaxRecords.Value);
                 }
 
-                // Perform scraping
                 await scraper.InitializeAsync();
                 if (matched.Count != 0)
                 {
                     await scraper.RunAsync(matched, () => collectorFactory.CreateCollector(batch.Id));
                 }
 
-                // Mark batch as completed
                 await mediator.Publish(new StateCompletedEvent(Guid.Parse(batch.Id), ProcessingState.Ingested));
+
                 logger.LogInformation("DataSync - PunchupTicketsPage scraping completed - BatchId: {BatchId}", batch.Id);
             }
             catch (Exception ex)
@@ -90,6 +87,22 @@ namespace ComedyPull.Application.Modules.Punchup
             {
                 scraper.Dispose();
             }
+        }
+
+        private static PunchupJobParameters GetJobParameters(IJobExecutionContext context)
+        {
+            if (!context.MergedJobDataMap.TryGetValue("parameters", out var parametersObj) ||
+                parametersObj?.ToString() is not { } parametersJson) return new PunchupJobParameters();
+            try
+            {
+                return JsonSerializer.Deserialize<PunchupJobParameters>(parametersJson) ?? new PunchupJobParameters();
+            }
+            catch (JsonException)
+            {
+                // Fall back to empty parameters if deserialization fails
+            }
+
+            return new PunchupJobParameters();
         }
 
         [GeneratedRegex(@"^https?:\/\/(?:www\.)?punchup\.live\/([^\/]+)\/tickets(?:\/)?$")]

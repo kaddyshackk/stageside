@@ -1,4 +1,5 @@
-﻿using ComedyPull.Application.Modules.Punchup;
+﻿using System.Text.Json;
+using ComedyPull.Application.Modules.Punchup;
 using Quartz;
 
 namespace ComedyPull.Api.Modules.Public
@@ -16,9 +17,9 @@ namespace ComedyPull.Api.Modules.Public
                     if (!await scheduler.CheckExists(PunchupScrapeJob.Key, ct))
                         return Results.NotFound($"Job {PunchupScrapeJob.Key} not found");
 
+                    var parameters = new PunchupJobParameters { MaxRecords = maxRecords };
                     var jobDataMap = new JobDataMap();
-                    if (maxRecords.HasValue)
-                        jobDataMap.Put("maxRecords", maxRecords.Value.ToString());
+                    jobDataMap.Put("parameters", JsonSerializer.Serialize(parameters));
             
                     await scheduler.TriggerJob(PunchupScrapeJob.Key, jobDataMap, ct);
             
