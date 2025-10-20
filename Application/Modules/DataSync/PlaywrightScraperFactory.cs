@@ -4,19 +4,12 @@ using Microsoft.Extensions.Options;
 
 namespace ComedyPull.Application.Modules.DataSync
 {
-    public class PlaywrightScraperFactory : IPlaywrightScraperFactory
+    public class PlaywrightScraperFactory(IOptions<DataSyncOptions> options) : IPlaywrightScraperFactory
     {
-        private readonly IOptions<DataSyncOptions> _options;
-
-        public PlaywrightScraperFactory(IOptions<DataSyncOptions> options)
-        {
-            _options = options;
-        }
-
         public IScraper CreateScraper()
         {
             return new PlaywrightScraper(
-                concurrency: _options.Value.PunchupCollection.Concurrency
+                concurrency: options.Value.PunchupCollection.Concurrency
             );
         }
     }
