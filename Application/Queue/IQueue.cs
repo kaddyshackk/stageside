@@ -1,4 +1,4 @@
-﻿namespace ComedyPull.Application.Interfaces
+﻿namespace ComedyPull.Application.Queue
 {
     /// <summary>
     /// Interface for queuing bronze records for batch processing.
