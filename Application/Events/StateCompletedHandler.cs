@@ -1,7 +1,10 @@
 ﻿using ComedyPull.Application.Modules.DataProcessing;
+using ComedyPull.Application.Modules.DataProcessing.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
+using ComedyPull.Domain.Enums;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Serilog.Context;
 
 namespace ComedyPull.Application.Events
 {
@@ -9,6 +12,7 @@ namespace ComedyPull.Application.Events
     /// Event handler for StateCompletedEvent. Starts the next stage in the data pipeline.
     /// </summary>
     public class StateCompletedHandler(
+        IBatchRepository batchRepository,
         IEnumerable<IStateProcessor> stateProcessors,
         ILogger<StateCompletedHandler> logger)
         : INotificationHandler<StateCompletedEvent>
@@ -20,45 +24,50 @@ namespace ComedyPull.Application.Events
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task Handle(StateCompletedEvent notification, CancellationToken cancellationToken)
         {
-            logger.LogInformation("StateCompletedHandler received event for batch {BatchId} with state {CompletedState}", 
-                notification.BatchId, notification.CompletedState);
+            using (LogContext.PushProperty("BatchId", notification.BatchId))
+            {
+                logger.LogInformation("Handling state completed event");
             
-            try
-            {
-                var nextState = ProcessingStateMachine.GetNextState(notification.CompletedState);
+                var batch = await batchRepository.GetBatchById(notification.BatchId, cancellationToken);
 
-                logger.LogInformation("Next state determined as {NextState} for batch {BatchId}", 
-                    nextState, notification.BatchId);
-
-                // Find state processor that handles this transition
-                var processor = stateProcessors.FirstOrDefault(p =>
-                    p.FromState == notification.CompletedState &&
-                    p.ToState == nextState);
-
-                if (processor == null)
+                using (LogContext.PushProperty("CurrentState", batch.State))
                 {
-                    logger.LogError("No state processor found for transition {FromState} -> {ToState} for batch {BatchId}", 
-                        notification.CompletedState, nextState, notification.BatchId);
-                    throw new InvalidOperationException(
-                        $"No state processor found for transition {notification.CompletedState} -> {nextState}");
+                    if (batch.State == ProcessingState.Completed)
+                    {
+                        logger.LogInformation("Batch processing already completed, no further action needed");
+                        return;
+                    }
+                
+                    var targetState = ProcessingStateMachine.GetNextState(batch.State);
+
+                    if (targetState == null)
+                    {
+                        logger.LogCritical("State machine configuration error: no next state defined for non-terminal state");
+                        throw new InvalidOperationException(
+                            $"State machine misconfiguration: no next state defined for {batch.State}");
+                    }
+
+                    using (LogContext.PushProperty("TargetState", targetState))
+                    {
+                        var processor = stateProcessors.FirstOrDefault(p =>
+                            p.FromState == batch.State &&
+                            p.ToState == targetState);
+
+                        if (processor == null)
+                        {
+                            logger.LogCritical("Processor configuration error: no processor registered for state transition");
+                            throw new InvalidOperationException(
+                                $"No state processor registered for transition {batch.State} -> {targetState}");
+                        }
+
+                        logger.LogInformation("Starting state transition with processor {ProcessorType}", 
+                            processor.GetType().Name);
+
+                        await processor.ProcessBatchAsync(notification.BatchId, cancellationToken);
+                        
+                        logger.LogInformation("State transition completed successfully");
+                    }
                 }
-
-                logger.LogInformation("Found processor {ProcessorType} for transition {FromState} -> {ToState}. Starting {NextStage} processing for batch {BatchId}",
-                    processor.GetType().Name, notification.CompletedState, nextState, nextState, notification.BatchId);
-
-                await processor.ProcessBatchAsync(notification.BatchId, cancellationToken);
-            }
-            catch (InvalidOperationException ex)
-            {
-                // No next stage - processing complete
-                logger.LogInformation("✅ Batch {BatchId} processing pipeline completed successfully! Final state: {CompletedState}. (Exception: {Message})", 
-                    notification.BatchId, notification.CompletedState, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error processing StateCompletedEvent for batch {BatchId} with state {CompletedState}", 
-                    notification.BatchId, notification.CompletedState);
-                throw;
             }
         }
     }

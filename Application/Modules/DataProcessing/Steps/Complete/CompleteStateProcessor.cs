@@ -59,7 +59,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
                 await batchRepository.UpdateBatchStateById(batchId, ToState, cancellationToken);
 
                 // Signal Event
-                await mediator.Publish(new StateCompletedEvent(batchId, ToState), cancellationToken);
+                await mediator.Publish(new StateCompletedEvent(batchId), cancellationToken);
 
                 logger.LogInformation("Completed {Stage} processing for batch {BatchId}", ToState, batchId);
             }

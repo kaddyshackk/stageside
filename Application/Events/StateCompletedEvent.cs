@@ -3,5 +3,5 @@ using MediatR;
 
 namespace ComedyPull.Application.Events
 {
-    public record StateCompletedEvent(Guid BatchId, ProcessingState CompletedState) : INotification;
+    public record StateCompletedEvent(Guid BatchId) : INotification;
 }

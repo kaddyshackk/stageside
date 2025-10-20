@@ -30,19 +30,21 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing
         [TestMethod, TestCategory("Unit")]
         public void GetNextState_WithCompletedState_ThrowsInvalidOperationException()
         {
-            // Act & Assert
-            var act = () => ProcessingStateMachine.GetNextState(ProcessingState.Completed);
-            act.Should().Throw<InvalidOperationException>()
-                .WithMessage("No valid transition from state Completed");
+            // Act
+            var nextState = ProcessingStateMachine.GetNextState(ProcessingState.Completed);
+            
+            // Assert
+            nextState.Should().BeNull();
         }
 
         [TestMethod, TestCategory("Unit")]
         public void GetNextState_WithFailedState_ThrowsInvalidOperationException()
         {
-            // Act & Assert
-            var act = () => ProcessingStateMachine.GetNextState(ProcessingState.Failed);
-            act.Should().Throw<InvalidOperationException>()
-                .WithMessage("No valid transition from state Failed");
+            // Act
+            var nextState = ProcessingStateMachine.GetNextState(ProcessingState.Failed);
+            
+            // Assert
+            nextState.Should().BeNull();
         }
 
         [TestMethod, TestCategory("Unit")]

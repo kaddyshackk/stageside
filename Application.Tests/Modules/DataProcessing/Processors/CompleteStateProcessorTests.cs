@@ -403,8 +403,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
             // Assert
             A.CallTo(() => _mockMediator.Publish(
                 A<StateCompletedEvent>.That.Matches(e =>
-                    e.BatchId == batchId &&
-                    e.CompletedState == ProcessingState.Completed),
+                    e.BatchId == batchId),
                 A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }
@@ -508,8 +507,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
 
             A.CallTo(() => _mockMediator.Publish(
                 A<StateCompletedEvent>.That.Matches(e =>
-                    e.BatchId == batchId &&
-                    e.CompletedState == ProcessingState.Completed),
+                    e.BatchId == batchId),
                 A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }

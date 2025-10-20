@@ -82,7 +82,7 @@ namespace ComedyPull.Application.Modules.Punchup
 
                         await batchRepository.UpdateBatchStateById(batch.Id, ProcessingState.Ingested, context.CancellationToken);
 
-                        await mediator.Publish(new StateCompletedEvent(batch.Id, ProcessingState.Ingested));
+                        await mediator.Publish(new StateCompletedEvent(batch.Id));
 
                         logger.LogInformation("Batch scraping completed.");
                     }

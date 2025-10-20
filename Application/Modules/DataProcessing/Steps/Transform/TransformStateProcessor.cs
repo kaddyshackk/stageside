@@ -46,8 +46,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Transform
 
                 await batchRepository.UpdateBatchStateById(batchId, ToState, cancellationToken);
 
-                // 5. Publish completion event to trigger next stage
-                await mediator.Publish(new StateCompletedEvent(batchId, ToState), cancellationToken);
+                await mediator.Publish(new StateCompletedEvent(batchId), cancellationToken);
 
                 logger.LogInformation("Completed {Stage} processing for batch {BatchId}", ToState, batchId);
             }
