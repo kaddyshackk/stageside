@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ComedyPull.Data.Migrations
 {
     [DbContext(typeof(SchemaContext))]
-    [Migration("20251016005215_InitialCreate")]
+    [Migration("20251020185920_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -37,7 +37,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 832, DateTimeKind.Unspecified).AddTicks(9130), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 835, DateTimeKind.Unspecified).AddTicks(7198), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -60,7 +60,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 832, DateTimeKind.Unspecified).AddTicks(9550), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 835, DateTimeKind.Unspecified).AddTicks(8258), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -94,7 +94,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 833, DateTimeKind.Unspecified).AddTicks(4720), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 837, DateTimeKind.Unspecified).AddTicks(669), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -126,7 +126,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 833, DateTimeKind.Unspecified).AddTicks(5120), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 837, DateTimeKind.Unspecified).AddTicks(1570), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -151,7 +151,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 833, DateTimeKind.Unspecified).AddTicks(8830), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 837, DateTimeKind.Unspecified).AddTicks(9585), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -174,7 +174,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 833, DateTimeKind.Unspecified).AddTicks(9180), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 838, DateTimeKind.Unspecified).AddTicks(502), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -193,7 +193,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(5130), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 830, DateTimeKind.Unspecified).AddTicks(8781), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -208,13 +208,10 @@ namespace ComedyPull.Data.Migrations
                     b.Property<int>("State")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(5440), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 830, DateTimeKind.Unspecified).AddTicks(9521), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -240,7 +237,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 828, DateTimeKind.Unspecified).AddTicks(7570), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 827, DateTimeKind.Unspecified).AddTicks(5084), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -256,7 +253,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(1070), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 829, DateTimeKind.Unspecified).AddTicks(9861), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -286,7 +283,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(3280), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 830, DateTimeKind.Unspecified).AddTicks(4632), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -305,7 +302,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 16, 0, 52, 14, 830, DateTimeKind.Unspecified).AddTicks(3630), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 830, DateTimeKind.Unspecified).AddTicks(5408), new TimeSpan(0, 0, 0, 0, 0)));
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
