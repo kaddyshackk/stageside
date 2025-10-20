@@ -13,13 +13,10 @@ using ComedyPull.Application.Modules.Punchup;
 using ComedyPull.Application.Modules.Punchup.Collectors;
 using ComedyPull.Application.Modules.Punchup.Collectors.Interfaces;
 using ComedyPull.Application.Modules.Punchup.Processors;
-using ComedyPull.Application.Modules.Queue;
 using ComedyPull.Domain.Enums;
-using ComedyPull.Domain.Modules.DataProcessing;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 using Quartz;
 
@@ -44,7 +41,6 @@ namespace ComedyPull.Application.Extensions
             services.AddDataSyncApplicationModule(configuration);
             services.AddDataProcessingApplicationModule();
             services.AddPunchupApplicationModule();
-            services.AddQueueModule();
         }
 
         private static void AddPublicApplicationModule(this IServiceCollection services)
@@ -83,19 +79,6 @@ namespace ComedyPull.Application.Extensions
         {
             services.AddScoped<IPunchupTicketsPageCollectorFactory, PunchupTicketsPageCollectorFactory>();
             services.AddScoped<ISubProcessor<DataSourceType>, PunchupTransformSubProcessor>();
-        }
-
-        /// <summary>
-        /// Configures queue services.
-        /// </summary>
-        /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
-        private static void AddQueueModule(this IServiceCollection services)
-        {
-            services.AddSingleton<IQueue<BronzeRecord>>(provider =>
-            {
-                var logger = provider.GetRequiredService<ILogger<InMemoryQueue<BronzeRecord>>>();
-                return new InMemoryQueue<BronzeRecord>(logger);
-            });
         }
         
         /// <summary>
