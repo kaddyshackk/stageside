@@ -1,5 +1,5 @@
+using ComedyPull.Application.Events;
 using ComedyPull.Application.Interfaces;
-using ComedyPull.Application.Modules.DataProcessing.Events;
 using ComedyPull.Application.Modules.DataProcessing.Services;
 using ComedyPull.Application.Modules.DataProcessing.Services.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Complete;

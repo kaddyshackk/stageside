@@ -1,6 +1,6 @@
-using ComedyPull.Application.Modules.DataProcessing.Events;
+using ComedyPull.Application.Events;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
-using ComedyPull.Domain.Modules.DataProcessing;
+using ComedyPull.Domain.Enums;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;

@@ -1,5 +1,5 @@
-using ComedyPull.Application.Modules.DataProcessing.Events;
-using ComedyPull.Domain.Modules.DataProcessing;
+using ComedyPull.Application.Events;
+using ComedyPull.Domain.Enums;
 using FluentAssertions;
 
 namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events

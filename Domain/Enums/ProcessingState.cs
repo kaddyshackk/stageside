@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
+using ComedyPull.Domain.Modules.DataProcessing;
 
-namespace ComedyPull.Domain.Modules.DataProcessing
+namespace ComedyPull.Domain.Enums
 {
     /// <summary>
     /// Represents the state of a <see cref="Batch"/> in the data pipeline.

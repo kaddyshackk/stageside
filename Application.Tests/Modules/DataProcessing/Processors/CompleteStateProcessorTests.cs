@@ -1,4 +1,3 @@
-using ComedyPull.Application.Modules.DataProcessing.Events;
 using ComedyPull.Application.Modules.DataProcessing.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Complete;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
@@ -10,6 +9,7 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using ComedyPull.Application.Events;
 
 namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
 {

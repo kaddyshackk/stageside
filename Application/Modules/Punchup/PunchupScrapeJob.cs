@@ -1,11 +1,10 @@
 ﻿using System.Text.Json;
 using System.Text.RegularExpressions;
-using ComedyPull.Application.Modules.DataProcessing.Events;
+using ComedyPull.Application.Events;
 using ComedyPull.Application.Modules.DataProcessing.Interfaces;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
 using ComedyPull.Application.Modules.Punchup.Collectors.Interfaces;
 using ComedyPull.Domain.Enums;
-using ComedyPull.Domain.Modules.DataProcessing;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Quartz;
@@ -103,7 +102,7 @@ namespace ComedyPull.Application.Modules.Punchup
         private static PunchupJobParameters GetJobParameters(IJobExecutionContext context)
         {
             if (!context.MergedJobDataMap.TryGetValue("parameters", out var parametersObj) ||
-                parametersObj?.ToString() is not { } parametersJson) return new PunchupJobParameters();
+                parametersObj.ToString() is not { } parametersJson) return new PunchupJobParameters();
             try
             {
                 return JsonSerializer.Deserialize<PunchupJobParameters>(parametersJson) ?? new PunchupJobParameters();

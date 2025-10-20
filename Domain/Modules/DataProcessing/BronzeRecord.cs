@@ -1,4 +1,5 @@
-﻿using ComedyPull.Domain.Modules.Common;
+﻿using ComedyPull.Domain.Enums;
+using ComedyPull.Domain.Modules.Common;
 
 namespace ComedyPull.Domain.Modules.DataProcessing
 {

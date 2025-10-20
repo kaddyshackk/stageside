@@ -1,7 +1,7 @@
-﻿using ComedyPull.Domain.Modules.DataProcessing;
+﻿using ComedyPull.Domain.Enums;
 using MediatR;
 
-namespace ComedyPull.Application.Modules.DataProcessing.Events
+namespace ComedyPull.Application.Events
 {
     public record StateCompletedEvent(Guid BatchId, ProcessingState CompletedState) : INotification;
 }

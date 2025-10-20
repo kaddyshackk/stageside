@@ -1,8 +1,9 @@
-﻿using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
+﻿using ComedyPull.Application.Modules.DataProcessing;
+using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace ComedyPull.Application.Modules.DataProcessing.Events
+namespace ComedyPull.Application.Events
 {
     /// <summary>
     /// Event handler for StateCompletedEvent. Starts the next stage in the data pipeline.

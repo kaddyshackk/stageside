@@ -1,4 +1,4 @@
-using ComedyPull.Application.Modules.DataProcessing.Events;
+using ComedyPull.Application.Events;
 using ComedyPull.Application.Modules.DataProcessing.Exceptions;
 using ComedyPull.Application.Modules.DataProcessing.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
