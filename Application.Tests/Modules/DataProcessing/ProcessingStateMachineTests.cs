@@ -28,33 +28,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing
         }
 
         [TestMethod, TestCategory("Unit")]
-        public void GetNextState_WithDeDupedState_ThrowsInvalidOperationException()
-        {
-            // Act & Assert
-            var act = () => ProcessingStateMachine.GetNextState(ProcessingState.DeDuped);
-            act.Should().Throw<InvalidOperationException>()
-                .WithMessage("No valid transition from state DeDuped");
-        }
-
-        [TestMethod, TestCategory("Unit")]
-        public void GetNextState_WithEnrichedState_ThrowsInvalidOperationException()
-        {
-            // Act & Assert
-            var act = () => ProcessingStateMachine.GetNextState(ProcessingState.Enriched);
-            act.Should().Throw<InvalidOperationException>()
-                .WithMessage("No valid transition from state Enriched");
-        }
-
-        [TestMethod, TestCategory("Unit")]
-        public void GetNextState_WithLinkedState_ThrowsInvalidOperationException()
-        {
-            // Act & Assert
-            var act = () => ProcessingStateMachine.GetNextState(ProcessingState.Linked);
-            act.Should().Throw<InvalidOperationException>()
-                .WithMessage("No valid transition from state Linked");
-        }
-
-        [TestMethod, TestCategory("Unit")]
         public void GetNextState_WithCompletedState_ThrowsInvalidOperationException()
         {
             // Act & Assert
@@ -83,16 +56,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing
         }
 
         [TestMethod, TestCategory("Unit")]
-        public void CanTransition_FromIngestedToDeDuped_ReturnsFalse()
-        {
-            // Act
-            var canTransition = ProcessingStateMachine.CanTransition(ProcessingState.Ingested, ProcessingState.DeDuped);
-
-            // Assert
-            canTransition.Should().BeFalse();
-        }
-
-        [TestMethod, TestCategory("Unit")]
         public void CanTransition_FromTransformedToCompleted_ReturnsTrue()
         {
             // Act
@@ -109,9 +72,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing
             var targetStates = new[]
             {
                 ProcessingState.Ingested,
-                ProcessingState.DeDuped,
-                ProcessingState.Enriched,
-                ProcessingState.Linked,
                 ProcessingState.Failed
             };
 
@@ -129,9 +89,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing
             // Arrange
             var invalidStates = new[]
             {
-                ProcessingState.DeDuped,
-                ProcessingState.Enriched,
-                ProcessingState.Linked,
                 ProcessingState.Completed,
                 ProcessingState.Failed
             };

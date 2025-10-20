@@ -97,9 +97,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
             {
                 ProcessingState.Ingested,
                 ProcessingState.Transformed,
-                ProcessingState.DeDuped,
-                ProcessingState.Enriched,
-                ProcessingState.Linked,
                 ProcessingState.Completed,
                 ProcessingState.Failed
             };

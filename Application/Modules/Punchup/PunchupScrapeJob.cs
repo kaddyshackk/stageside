@@ -9,6 +9,7 @@ using ComedyPull.Domain.Modules.DataProcessing;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Quartz;
+using Serilog.Context;
 
 namespace ComedyPull.Application.Modules.Punchup
 {
@@ -25,67 +26,77 @@ namespace ComedyPull.Application.Modules.Punchup
 
         public async Task Execute(IJobExecutionContext context)
         {
-            logger.LogInformation("DataSync - Job started: {JobName}", nameof(PunchupScrapeJob));
-            
-            try
+            using (LogContext.PushProperty("JobName", nameof(PunchupScrapeJob)))
             {
-                await ScrapeTicketsPages(context);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "DataSync - Job failed - {JobName}", nameof(PunchupScrapeJob));
-            }
-            finally
-            {
-                logger.LogInformation("DataSync - Job finished - {JobName}", nameof(PunchupScrapeJob));
+                logger.LogInformation("Job started.");
+                try
+                {
+                    await ScrapeTicketsPages(context);
+                    logger.LogInformation("Job finished.");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Job failed.");
+                }
             }
         }
 
         private async Task ScrapeTicketsPages(IJobExecutionContext context)
         {
             var parameters = GetJobParameters(context);
+
+            logger.LogDebug("Job Params: {@Parameters}", parameters);
             
             var batch = await batchRepository.CreateBatch(
                 DataSource.Punchup, 
                 DataSourceType.PunchupTicketsPage, 
                 nameof(PunchupScrapeJob),
-                context.CancellationToken);
+                context.CancellationToken
+            );
 
-            logger.LogInformation("DataSync - PunchupTicketsPage scraping started - BatchId: {BatchId}", batch.Id);
-
-            const string sitemapUrl = "https://www.punchup.live/sitemap.xml";
-            var scraper = scraperFactory.CreateScraper();
+            using (LogContext.PushProperty("@Batch", batch))
+            using (LogContext.PushProperty("SourceType", batch.SourceType))
+            {
+                // TODO: Move to database configuration. Support multiple sitemaps.
+                const string sitemapUrl = "https://www.punchup.live/sitemap.xml";
+                var scraper = scraperFactory.CreateScraper();
             
-            try
-            {
-                var urls = await sitemapLoader.LoadSitemapAsync(sitemapUrl);
-                var matched = urls.Where(url => TicketsPageUrlRegex().IsMatch(url)).ToList();
-
-                // Limit records for testing if specified
-                if (parameters.MaxRecords is > 0)
+                try
                 {
-                    matched = matched.Take(parameters.MaxRecords.Value).ToList();
-                    logger.LogInformation("Limited to {MaxRecords} records for testing", parameters.MaxRecords.Value);
-                }
+                    var urls = await sitemapLoader.LoadSitemapAsync(sitemapUrl);
+                    var matched = urls.Where(url => TicketsPageUrlRegex().IsMatch(url)).ToList();
 
-                await scraper.InitializeAsync();
-                if (matched.Count != 0)
+                    if (parameters.MaxRecords is > 0)
+                    {
+                        matched = matched.Take(parameters.MaxRecords.Value).ToList();
+                        logger.LogDebug("Limited batch to {MaxRecords} records.", parameters.MaxRecords.Value);
+                    }
+
+                    using (LogContext.PushProperty("BatchSize", matched.Count))
+                    {
+                        await scraper.InitializeAsync();
+                        if (matched.Count != 0)
+                        {
+                            logger.LogInformation("Starting batch scrape job");
+                            await scraper.RunAsync(matched, () => collectorFactory.CreateCollector(batch.Id));
+                        }
+
+                        await batchRepository.UpdateBatchStateById(batch.Id, ProcessingState.Ingested, context.CancellationToken);
+
+                        await mediator.Publish(new StateCompletedEvent(Guid.Parse(batch.Id), ProcessingState.Ingested));
+
+                        logger.LogInformation("Batch scraping completed.");
+                    }
+                }
+                catch (Exception ex)
                 {
-                    await scraper.RunAsync(matched, () => collectorFactory.CreateCollector(batch.Id));
+                    logger.LogError(ex, "Batch scraping failed.");
+                    throw;
                 }
-
-                await mediator.Publish(new StateCompletedEvent(Guid.Parse(batch.Id), ProcessingState.Ingested));
-
-                logger.LogInformation("DataSync - PunchupTicketsPage scraping completed - BatchId: {BatchId}", batch.Id);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "DataSync - PunchupTicketsPage scraping failed - BatchId: {BatchId}", batch.Id);
-                throw;
-            }
-            finally
-            {
-                scraper.Dispose();
+                finally
+                {
+                    scraper.Dispose();
+                }
             }
         }
 
@@ -105,6 +116,7 @@ namespace ComedyPull.Application.Modules.Punchup
             return new PunchupJobParameters();
         }
 
+        // TODO: Move to database configuration.
         [GeneratedRegex(@"^https?:\/\/(?:www\.)?punchup\.live\/([^\/]+)\/tickets(?:\/)?$")]
         private static partial Regex TicketsPageUrlRegex();
 

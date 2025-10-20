@@ -74,42 +74,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
         }
 
         [TestMethod, TestCategory("Unit")]
-        public async Task Handle_WithDeDupedState_CatchesInvalidOperationExceptionAndLogsCompletion()
-        {
-            // Arrange
-            var batchId = Guid.NewGuid();
-            var stateCompletedEvent = new StateCompletedEvent(batchId, ProcessingState.DeDuped);
-            var cancellationToken = CancellationToken.None;
-
-            // Act
-            await _handler.Handle(stateCompletedEvent, cancellationToken);
-        }
-
-        [TestMethod, TestCategory("Unit")]
-        public async Task Handle_WithEnrichedState_CatchesInvalidOperationExceptionAndLogsCompletion()
-        {
-            // Arrange
-            var batchId = Guid.NewGuid();
-            var stateCompletedEvent = new StateCompletedEvent(batchId, ProcessingState.Enriched);
-            var cancellationToken = CancellationToken.None;
-
-            // Act
-            await _handler.Handle(stateCompletedEvent, cancellationToken);
-        }
-
-        [TestMethod, TestCategory("Unit")]
-        public async Task Handle_WithLinkedState_CatchesInvalidOperationExceptionAndLogsCompletion()
-        {
-            // Arrange
-            var batchId = Guid.NewGuid();
-            var stateCompletedEvent = new StateCompletedEvent(batchId, ProcessingState.Linked);
-            var cancellationToken = CancellationToken.None;
-
-            // Act
-            await _handler.Handle(stateCompletedEvent, cancellationToken);
-        }
-
-        [TestMethod, TestCategory("Unit")]
         public async Task Handle_WithCompletedState_CatchesInvalidOperationExceptionAndLogsCompletion()
         {
             // Arrange
@@ -148,22 +112,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Events
             // Act & Assert
             var act = async () => await _handler.Handle(stateCompletedEvent, cancellationToken);
             await act.Should().ThrowAsync<Exception>().WithMessage("Processing failed");
-        }
-
-        [TestMethod, TestCategory("Unit")]
-        public async Task Handle_WithUnsupportedState_CatchesInvalidOperationExceptionAndLogsCompletion()
-        {
-            // Arrange
-            var stateProcessors = new List<IStateProcessor>();
-            var logger = A.Fake<ILogger<StateCompletedHandler>>();
-            var handler = new StateCompletedHandler(stateProcessors, logger);
-
-            var batchId = Guid.NewGuid();
-            // Use a state that doesn't have a transition in the state machine - DeDuped
-            var stateCompletedEvent = new StateCompletedEvent(batchId, ProcessingState.DeDuped);
-
-            // Act
-            await handler.Handle(stateCompletedEvent, CancellationToken.None);
         }
     }
 }

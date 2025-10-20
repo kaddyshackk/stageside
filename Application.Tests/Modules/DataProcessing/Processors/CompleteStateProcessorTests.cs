@@ -382,9 +382,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
             // Assert
             A.CallTo(() => _mockBatchRepository.UpdateBatchStateById(batchId.ToString(), ProcessingState.Completed, A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
-
-            A.CallTo(() => _mockBatchRepository.UpdateBatchStatusById(batchId.ToString(), ProcessingStatus.Completed, A<CancellationToken>._))
-                .MustHaveHappenedOnceExactly();
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -464,9 +461,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
             // Act & Assert
             var act = async () => await _processor.ProcessBatchAsync(batchId, CancellationToken.None);
             await act.Should().ThrowAsync<Exception>().WithMessage("Test exception");
-
-            A.CallTo(() => _mockBatchRepository.UpdateBatchStatusById(batchId.ToString(), ProcessingStatus.Failed, A<CancellationToken>._))
-                .MustHaveHappenedOnceExactly();
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -527,7 +521,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
                 Source = DataSource.Punchup,
                 SourceType = DataSourceType.PunchupTicketsPage,
                 State = state,
-                Status = ProcessingStatus.Processing,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "Test",
                 UpdatedAt = DateTimeOffset.UtcNow,

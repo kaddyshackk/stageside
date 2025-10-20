@@ -4,7 +4,6 @@ using ComedyPull.Application.Modules.DataProcessing.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Services.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Transform.Interfaces;
-using ComedyPull.Domain.Enums;
 using ComedyPull.Domain.Modules.DataProcessing;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -55,7 +54,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Transform
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed {Stage} processing for batch {BatchId}", ToState, batchId);
-                await batchRepository.UpdateBatchStatusById(batchId.ToString(), ProcessingStatus.Failed, cancellationToken);
+                await batchRepository.UpdateBatchStateById(batchId.ToString(), ProcessingState.Failed, cancellationToken);
                 throw;
             }
         }

@@ -25,14 +25,6 @@ namespace ComedyPull.Application.Modules.DataProcessing.Interfaces
         Task UpdateBatchStateById(string batchId, ProcessingState state, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Updates the processing status of a batch.
-        /// </summary>
-        /// <param name="batchId">The unique identifier of the batch.</param>
-        /// <param name="status">The new processing status.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        Task UpdateBatchStatusById(string batchId, ProcessingStatus status, CancellationToken cancellationToken);
-
-        /// <summary>
         /// Creates a new batch.
         /// </summary>
         /// <param name="source">The data source.</param>
