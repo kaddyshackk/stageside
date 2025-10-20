@@ -11,12 +11,12 @@ namespace ComedyPull.Domain.Modules.DataProcessing
         /// <summary>
         /// Gets the processing batch id.
         /// </summary>
-        public required string BatchId { get; init; }
+        public required Guid BatchId { get; init; }
         
         /// <summary>
         /// Gets the original bronze record id.
         /// </summary>
-        public required string BronzeRecordId { get; init; }
+        public required Guid BronzeRecordId { get; init; }
         
         /// <summary>
         /// Gets the entity type.

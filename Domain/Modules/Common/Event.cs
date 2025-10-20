@@ -35,7 +35,7 @@ namespace ComedyPull.Domain.Modules.Common
         /// <summary>
         /// Gets the venue foreign key.
         /// </summary>
-        public required string VenueId { get; set; }
+        public required Guid VenueId { get; set; }
 
         /// <summary>
         /// Gets the event venue.

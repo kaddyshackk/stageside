@@ -8,12 +8,12 @@ namespace ComedyPull.Domain.Modules.Common
         /// <summary>
         /// ID of the comedian at the event.
         /// </summary>
-        public required string ComedianId { get; set; }
+        public required Guid ComedianId { get; set; }
 
         /// <summary>
         /// ID of the event.
         /// </summary>
-        public required string EventId { get; set; }
+        public required Guid EventId { get; set; }
 
         /// <summary>
         /// Navigation property to comedian.

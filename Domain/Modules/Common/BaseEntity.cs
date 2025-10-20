@@ -10,7 +10,7 @@ namespace ComedyPull.Domain.Modules.Common
         /// <summary>
         /// Gets or sets the comedian id.
         /// </summary>
-        public string Id { get; } = Guid.NewGuid().ToString();
+        public Guid Id { get; } = Guid.NewGuid();
         
         /// <summary>
         /// Gets or sets the time the entity was created.

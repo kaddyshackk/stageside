@@ -4,7 +4,7 @@ using ComedyPull.Domain.Modules.DataProcessing;
 using FakeItEasy;
 using FluentAssertions;
 
-namespace ComedyPull.Application.Tests.Modules.Punchup.Factories
+namespace ComedyPull.Application.Tests.Modules.Punchup.Collectors
 {
     [TestClass]
     public class PunchupTicketsPageCollectorFactoryTests
@@ -17,7 +17,7 @@ namespace ComedyPull.Application.Tests.Modules.Punchup.Factories
             var factory = new PunchupTicketsPageCollectorFactory(mockQueue);
 
             // Act
-            var collector = factory.CreateCollector("test-batch-id");
+            var collector = factory.CreateCollector(Guid.NewGuid());
 
             // Assert
             collector.Should().NotBeNull();
@@ -32,8 +32,8 @@ namespace ComedyPull.Application.Tests.Modules.Punchup.Factories
             var factory = new PunchupTicketsPageCollectorFactory(mockQueue);
 
             // Act
-            var collector1 = factory.CreateCollector("test-batch-id-1");
-            var collector2 = factory.CreateCollector("test-batch-id-2");
+            var collector1 = factory.CreateCollector(Guid.NewGuid());
+            var collector2 = factory.CreateCollector(Guid.NewGuid());
 
             // Assert
             collector1.Should().NotBeSameAs(collector2);

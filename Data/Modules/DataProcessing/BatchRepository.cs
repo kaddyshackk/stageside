@@ -11,7 +11,7 @@ namespace ComedyPull.Data.Modules.DataProcessing
     public class BatchRepository(IDbContextFactory<BatchContext> contextFactory) : IBatchRepository
     {
         /// <inheritdoc />
-        public async Task<Batch> GetBatchById(string batchId, CancellationToken cancellationToken)
+        public async Task<Batch> GetBatchById(Guid batchId, CancellationToken cancellationToken)
         {
             await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
@@ -28,7 +28,7 @@ namespace ComedyPull.Data.Modules.DataProcessing
         }
 
         /// <inheritdoc />
-        public async Task UpdateBatchStateById(string batchId, ProcessingState state, CancellationToken cancellationToken)
+        public async Task UpdateBatchStateById(Guid batchId, ProcessingState state, CancellationToken cancellationToken)
         {
             await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 

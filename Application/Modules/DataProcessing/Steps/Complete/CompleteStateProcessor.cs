@@ -25,13 +25,13 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
             logger.LogInformation("Starting {Stage} processing for batch {BatchId}", ToState, batchId);
             try
             {
-                var batch = await batchRepository.GetBatchById(batchId.ToString(), cancellationToken);
+                var batch = await batchRepository.GetBatchById(batchId, cancellationToken);
                 if (batch.State != FromState)
                 {
                     throw new InvalidBatchStateException(batchId.ToString(), FromState, batch.State);
                 }
 
-                var records = await repository.GetSilverRecordsByBatchId(batchId.ToString(), cancellationToken);
+                var records = await repository.GetSilverRecordsByBatchId(batchId, cancellationToken);
 
                 logger.LogInformation("Processing {Count} records of type {SourceType} in batch {BatchId}",
                     records.Count(), batch.SourceType, batchId);
@@ -56,7 +56,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
                 }
 
                 // Update batch State & Status
-                await batchRepository.UpdateBatchStateById(batchId.ToString(), ToState, cancellationToken);
+                await batchRepository.UpdateBatchStateById(batchId, ToState, cancellationToken);
 
                 // Signal Event
                 await mediator.Publish(new StateCompletedEvent(batchId, ToState), cancellationToken);
@@ -66,7 +66,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed {Stage} processing for batch {BatchId}", ToState, batchId);
-                await batchRepository.UpdateBatchStateById(batchId.ToString(), ProcessingState.Failed, cancellationToken);
+                await batchRepository.UpdateBatchStateById(batchId, ProcessingState.Failed, cancellationToken);
                 throw;
             }
         }
