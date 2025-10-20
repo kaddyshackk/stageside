@@ -16,6 +16,7 @@
     <PackageReference Include="Quartz.Serialization.Json" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Riok.Mapperly" />
+    <PackageReference Include="Serilog.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>

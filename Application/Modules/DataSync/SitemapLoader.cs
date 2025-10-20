@@ -1,9 +1,11 @@
 ﻿using System.Xml.Linq;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
+using Microsoft.Extensions.Logging;
+using Serilog.Context;
 
 namespace ComedyPull.Application.Modules.DataSync
 {
-    public class SitemapLoader(IHttpClientFactory httpClientFactory) : ISitemapLoader
+    public class SitemapLoader(IHttpClientFactory httpClientFactory, ILogger<SitemapLoader> logger) : ISitemapLoader
     {
         private const string NamespaceUrl = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
@@ -14,11 +16,43 @@ namespace ComedyPull.Application.Modules.DataSync
         /// <returns>Returns a list of URLs parsed from the sitemap.</returns>
         public async Task<List<string>> LoadSitemapAsync(string sitemapUrl)
         {
-            using var client = httpClientFactory.CreateClient();
-            var response = await client.GetStringAsync(sitemapUrl);
-            var sitemap = XDocument.Parse(response);
+            using (LogContext.PushProperty("SitemapUrl", sitemapUrl))
+            {
+                logger.LogDebug("Loading sitemap.");
+
+                try
+                {
+                    using var client = httpClientFactory.CreateClient();
+                    var response = await client.GetStringAsync(sitemapUrl);
+                
+                    logger.LogInformation("Loaded sitemap.");
+                
+                    return ParseSitemap(response);
+                }
+                catch (HttpRequestException ex)
+                {
+                    logger.LogError(
+                        ex,
+                        "HTTP error loading sitemap"
+                    );
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(
+                        ex,
+                        "Unexpected error loading sitemap"
+                    );
+                    throw;
+                }
+            }
+        }
+
+        private static List<string> ParseSitemap(string sitemap)
+        {
+            var s = XDocument.Parse(sitemap);
             var ns = XNamespace.Get(NamespaceUrl);
-            return sitemap.Descendants(ns + "url")
+            return s.Descendants(ns + "url")
                 .Select(url => url.Element(ns + "loc")?.Value)
                 .OfType<string>()
                 .ToList();

@@ -528,7 +528,8 @@
           "Quartz": "[3.15.0, )",
           "Quartz.Extensions.Hosting": "[3.15.0, )",
           "Quartz.Serialization.Json": "[3.15.0, )",
-          "Riok.Mapperly": "[4.3.0-next.5, )"
+          "Riok.Mapperly": "[4.3.0-next.5, )",
+          "Serilog.AspNetCore": "[9.0.0, )"
         }
       },
       "data": {
