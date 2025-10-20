@@ -2,6 +2,7 @@ using ComedyPull.Application.Modules.DataSync;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 
 namespace ComedyPull.Application.Tests.Modules.DataSync.Services
@@ -35,7 +36,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         [TestMethod, TestCategory("Unit")]
         public async Task InitializeAsync_WithDefaults_CreatesPlaywrightAndBrowser()
         {
-            var scraper = new PlaywrightScraper(playwright: _mockPlaywright);
+            var scraper = new PlaywrightScraper(3, A.Fake<ILogger<PlaywrightScraper>>(), playwright: _mockPlaywright);
 
             await scraper.InitializeAsync();
 
@@ -54,7 +55,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         [TestMethod, TestCategory("Unit")]
         public async Task InitializeAsync_WithCustomOptions_UsesProvidedOptions()
         {
-            var scraper = new PlaywrightScraper(playwright: _mockPlaywright);
+            var scraper = new PlaywrightScraper(3, A.Fake<ILogger<PlaywrightScraper>>(), playwright: _mockPlaywright);
             var customOptions = new BrowserTypeLaunchOptions { Headless = false, SlowMo = 100 };
 
             await scraper.InitializeAsync(customOptions);
@@ -67,6 +68,8 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         public async Task InitializeAsync_WithProvidedBrowserAndContext_SkipsCreation()
         {
             var scraper = new PlaywrightScraper(
+                3, 
+                A.Fake<ILogger<PlaywrightScraper>>(),
                 playwright: _mockPlaywright,
                 browser: _mockBrowser,
                 context: _mockContext);
@@ -82,7 +85,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         [TestMethod, TestCategory("Unit")]
         public async Task RunAsync_WithUrls_ProcessesAllUrlsConcurrently()
         {
-            var scraper = new PlaywrightScraper(concurrency: 2, playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
+            var scraper = new PlaywrightScraper(concurrency: 2, logger: A.Fake<ILogger<PlaywrightScraper>>(), playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
             var urls = new[] { "https://example1.com", "https://example2.com", "https://example3.com" };
 
             await scraper.RunAsync(urls, () => _mockCollector);
@@ -100,7 +103,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         [TestMethod, TestCategory("Unit")]
         public async Task RunAsync_WithoutInitialization_ThrowsInvalidOperationException()
         {
-            var scraper = new PlaywrightScraper();
+            var scraper = new PlaywrightScraper(3, A.Fake<ILogger<PlaywrightScraper>>());
             var urls = new[] { "https://example.com" };
 
             var act = async () => await scraper.RunAsync(urls, () => _mockCollector);
@@ -112,7 +115,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         [TestMethod, TestCategory("Unit")]
         public async Task RunAsync_WithNullContext_ThrowsInvalidOperationException()
         {
-            var scraper = new PlaywrightScraper(browser: _mockBrowser);
+            var scraper = new PlaywrightScraper(concurrency: 3, logger: A.Fake<ILogger<PlaywrightScraper>>(), browser: _mockBrowser);
             A.CallTo(() => _mockBrowser.NewContextAsync(A<BrowserNewContextOptions>._))
                 .Returns(Task.FromResult<IBrowserContext>(null!));
             
@@ -128,7 +131,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         [TestMethod, TestCategory("Unit")]
         public async Task RunAsync_ProcessorThrowsException_ContinuesProcessingOtherUrls()
         {
-            var scraper = new PlaywrightScraper(concurrency: 1, playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
+            var scraper = new PlaywrightScraper(concurrency: 1, A.Fake<ILogger<PlaywrightScraper>>(), playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
             var urls = new[] { "https://error.com", "https://success.com" };
             
             A.CallTo(() => _mockCollector.CollectPageAsync("https://error.com", A<IPage>._, A<CancellationToken>._))
@@ -146,7 +149,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         [TestMethod, TestCategory("Unit")]
         public async Task RunAsync_WithCancellationToken_RespectsCancellation()
         {
-            var scraper = new PlaywrightScraper(playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
+            var scraper = new PlaywrightScraper(3, A.Fake<ILogger<PlaywrightScraper>>(), playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
             var urls = new[] { "https://example.com" };
             var cts = new CancellationTokenSource();
             await cts.CancelAsync();
@@ -159,7 +162,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         [TestMethod, TestCategory("Unit")]
         public async Task DisposeAsync_DisposesAllResources()
         {
-            var scraper = new PlaywrightScraper(playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
+            var scraper = new PlaywrightScraper(3, A.Fake<ILogger<PlaywrightScraper>>(), playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
 
             await scraper.DisposeAsync();
 
@@ -171,7 +174,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         [TestMethod, TestCategory("Unit")]
         public async Task DisposeAsync_CalledMultipleTimes_OnlyDisposesOnce()
         {
-            var scraper = new PlaywrightScraper(playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
+            var scraper = new PlaywrightScraper(3, A.Fake<ILogger<PlaywrightScraper>>(), playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
 
             await scraper.DisposeAsync();
             await scraper.DisposeAsync();
@@ -184,7 +187,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         [TestMethod, TestCategory("Unit")]
         public void Dispose_CallsDisposeAsync()
         {
-            var scraper = new PlaywrightScraper(playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
+            var scraper = new PlaywrightScraper(3, A.Fake<ILogger<PlaywrightScraper>>(), playwright: _mockPlaywright, browser: _mockBrowser, context: _mockContext);
 
             scraper.Dispose();
 
@@ -196,15 +199,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         [TestMethod, TestCategory("Unit")]
         public void Constructor_WithCustomConcurrency_SetsConcurrencyLevel()
         {
-            var scraper = new PlaywrightScraper(concurrency: 10);
-
-            scraper.Should().NotBeNull();
-        }
-
-        [TestMethod, TestCategory("Unit")]
-        public void Constructor_WithDefaultConcurrency_Uses5()
-        {
-            var scraper = new PlaywrightScraper();
+            var scraper = new PlaywrightScraper(concurrency: 10, A.Fake<ILogger<PlaywrightScraper>>());
 
             scraper.Should().NotBeNull();
         }

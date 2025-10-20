@@ -1,11 +1,14 @@
 ﻿using Microsoft.Playwright;
 using System.Threading.Channels;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace ComedyPull.Application.Modules.DataSync
 {
     public class PlaywrightScraper : IScraper
     {
+        private readonly ILogger<PlaywrightScraper> _logger;
+        
         private readonly int _concurrency;
         private readonly SemaphoreSlim _semaphore;
         private readonly ChannelWriter<string> _urlWriter;
@@ -16,13 +19,28 @@ namespace ComedyPull.Application.Modules.DataSync
         private IBrowser? _browser;
         private IBrowserContext? _context;
 
+        public PlaywrightScraper(int concurrency, ILogger<PlaywrightScraper> logger)
+        {
+            _logger = logger;
+            _concurrency = concurrency;
+            _semaphore = new SemaphoreSlim(_concurrency);
+            var queue = Channel.CreateUnbounded<string>();
+            _urlWriter = queue.Writer;
+            _urlReader = queue.Reader;
+            _playwright = null;
+            _browser = null;
+            _context = null;
+        }
+        
         public PlaywrightScraper(
-            int concurrency = 5,
+            int concurrency,
+            ILogger<PlaywrightScraper> logger,
             IPlaywright? playwright = null,
             IBrowser? browser = null,
             IBrowserContext? context = null
         )
         {
+            _logger = logger;
             _concurrency = concurrency;
             _semaphore = new SemaphoreSlim(_concurrency);
             var queue = Channel.CreateUnbounded<string>();
