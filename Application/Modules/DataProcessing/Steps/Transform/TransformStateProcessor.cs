@@ -7,6 +7,7 @@ using ComedyPull.Application.Modules.DataProcessing.Steps.Transform.Interfaces;
 using ComedyPull.Domain.Enums;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Serilog.Context;
 
 namespace ComedyPull.Application.Modules.DataProcessing.Steps.Transform
 {
@@ -25,30 +26,35 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Transform
             logger.LogInformation("Starting {Stage} processing for batch {BatchId}", ToState, batchId);
             try
             {
-                // 1. Load and validate batch
                 var batch = await batchRepository.GetBatchById(batchId, cancellationToken);
                 if (batch.State != FromState)
                 {
-                    throw new InvalidBatchStateException(batchId.ToString(), FromState, batch.State);
+                    throw new InvalidBatchStateException(batchId, FromState, batch.State);
                 }
 
-                // 2. Load all bronze records for this batch
-                var bronzeRecords = await repository.GetBronzeRecordsByBatchId(batchId, cancellationToken);
+                using (LogContext.PushProperty("@Batch", batch))
+                using (LogContext.PushProperty("FromState", FromState))
+                using (LogContext.PushProperty("ToState", ToState))
+                {
+                    var records = await repository.GetBronzeRecordsByBatchId(batchId, cancellationToken);
 
-                logger.LogInformation("Processing {Count} records of type {SourceType} in batch {BatchId}",
-                    bronzeRecords.Count(), batch.SourceType, batchId);
+                    using (LogContext.PushProperty("BatchSize", records.Count()))
+                    {
+                        logger.LogInformation("Processing batch {BatchId} from {FromState} to {ToState}",
+                            batch.Id, FromState, ToState);
 
-                // 3. Resolve SubProcessor by batch.SourceType (all records in batch have same type)
-                var subProcessor = subProcessorResolver.Resolve(batch.SourceType, FromState, ToState);
+                        // Resolve processor and start processing
+                        var subProcessor = subProcessorResolver.Resolve(batch.SourceType, FromState, ToState);
+                        await subProcessor.ProcessAsync(records, cancellationToken);
 
-                // 4. Process all records - SubProcessor will create SilverRecords
-                await subProcessor.ProcessAsync(bronzeRecords, cancellationToken);
+                        // Update batch state and signal state completed
+                        await batchRepository.UpdateBatchStateById(batchId, ToState, cancellationToken);
 
-                await batchRepository.UpdateBatchStateById(batchId, ToState, cancellationToken);
+                        await mediator.Publish(new StateCompletedEvent(batchId), cancellationToken);
 
-                await mediator.Publish(new StateCompletedEvent(batchId), cancellationToken);
-
-                logger.LogInformation("Completed {Stage} processing for batch {BatchId}", ToState, batchId);
+                        logger.LogInformation("Completed {Stage} processing for batch {BatchId}", ToState, batchId);
+                    }
+                }
             }
             catch (Exception ex)
             {
