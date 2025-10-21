@@ -1,10 +1,11 @@
 ﻿using ComedyPull.Application.Modules.Public.Events.GetEventBySlug.Interfaces;
+using ComedyPull.Data.Modules.Common;
 using ComedyPull.Domain.Modules.Common;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Modules.Public.Events.GetEventBySlug
+namespace ComedyPull.Data.Modules.Public
 {
-    public class GetEventBySlugRepository(GetEventBySlugContext context) : IGetEventBySlugRepository
+    public class GetEventBySlugRepository(ComedyPullContext context) : IGetEventBySlugRepository
     {
         public async Task<Event?> GetEventBySlugAsync(string slug, CancellationToken cancellationToken)
         {

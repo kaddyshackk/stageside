@@ -1,4 +1,5 @@
 using ComedyPull.Application.Modules.DataProcessing.Interfaces;
+using ComedyPull.Data.Modules.Common;
 using ComedyPull.Domain.Enums;
 using ComedyPull.Domain.Modules.DataProcessing;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ namespace ComedyPull.Data.Modules.DataProcessing
     /// <summary>
     /// Repository for managing Batch entity operations across all processing states.
     /// </summary>
-    public class BatchRepository(IDbContextFactory<BatchContext> contextFactory) : IBatchRepository
+    public class BatchRepository(IDbContextFactory<ComedyPullContext> contextFactory) : IBatchRepository
     {
         /// <inheritdoc />
         public async Task<Batch> GetBatchById(Guid batchId, CancellationToken cancellationToken)

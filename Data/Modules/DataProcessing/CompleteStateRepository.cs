@@ -1,14 +1,15 @@
 using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
+using ComedyPull.Data.Modules.Common;
 using ComedyPull.Domain.Modules.Common;
 using ComedyPull.Domain.Modules.DataProcessing;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Modules.DataProcessing.Complete
+namespace ComedyPull.Data.Modules.DataProcessing
 {
     /// <summary>
     /// Repository for Complete state operations - handles Silver to Gold entity transformations.
     /// </summary>
-    public class CompleteStateRepository(IDbContextFactory<CompleteStateContext> contextFactory)
+    public class CompleteStateRepository(IDbContextFactory<ComedyPullContext> contextFactory)
         : ICompleteStateRepository
     {
         // Silver record operations

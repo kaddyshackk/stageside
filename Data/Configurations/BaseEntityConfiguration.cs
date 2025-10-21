@@ -18,14 +18,14 @@ namespace ComedyPull.Data.Configurations
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.CreatedAt)
-                .HasDefaultValue(DateTimeOffset.UtcNow)
+                .HasDefaultValueSql("NOW()")
                 .IsRequired();
 
             builder.Property(e => e.CreatedBy)
                 .IsRequired();
             
             builder.Property(e => e.UpdatedAt)
-                .HasDefaultValue(DateTimeOffset.UtcNow)
+                .HasDefaultValueSql("NOW()")
                 .IsRequired();
 
             builder.Property(e => e.UpdatedBy)

@@ -1,13 +1,14 @@
 using ComedyPull.Application.Modules.DataProcessing.Steps.Transform.Interfaces;
+using ComedyPull.Data.Modules.Common;
 using ComedyPull.Domain.Modules.DataProcessing;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Modules.DataProcessing.Transform
+namespace ComedyPull.Data.Modules.DataProcessing
 {
     /// <summary>
     /// Repository for Transform state operations - handles Bronze to Silver record transformations.
     /// </summary>
-    public class TransformStateRepository(IDbContextFactory<TransformStateContext> contextFactory)
+    public class TransformStateRepository(IDbContextFactory<ComedyPullContext> contextFactory)
         : ITransformStateRepository
     {
         /// <inheritdoc />

@@ -7,7 +7,7 @@ services:
     ports:
       - "5281:8080"
     env_file:
-      - .env.development
+      - .env
     volumes:
       - ./Api:/app/Api
       - ./Application:/app/Application
@@ -23,7 +23,7 @@ services:
   postgres:
     image: postgres:15-alpine
     env_file:
-      - .env.development
+      - .env
     ports:
       - "5432:5432"
     volumes:

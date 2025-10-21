@@ -3,6 +3,7 @@ using System;
 using ComedyPull.Data.Modules.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,10 +11,12 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ComedyPull.Data.Migrations
 {
-    [DbContext(typeof(SchemaContext))]
-    partial class SchemaContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ComedyPullContext))]
+    [Migration("20251021213829_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,8 +27,9 @@ namespace ComedyPull.Data.Migrations
 
             modelBuilder.Entity("ComedyPull.Domain.Modules.Common.Comedian", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Bio")
                         .IsRequired()
@@ -34,7 +38,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 835, DateTimeKind.Unspecified).AddTicks(7198), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -57,7 +61,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 835, DateTimeKind.Unspecified).AddTicks(8258), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -70,11 +74,11 @@ namespace ComedyPull.Data.Migrations
 
             modelBuilder.Entity("ComedyPull.Domain.Modules.Common.ComedianEvent", b =>
                 {
-                    b.Property<string>("ComedianId")
-                        .HasColumnType("text");
+                    b.Property<Guid>("ComedianId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("EventId")
-                        .HasColumnType("text");
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("ComedianId", "EventId");
 
@@ -85,13 +89,14 @@ namespace ComedyPull.Data.Migrations
 
             modelBuilder.Entity("ComedyPull.Domain.Modules.Common.Event", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 837, DateTimeKind.Unspecified).AddTicks(669), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -123,15 +128,14 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 837, DateTimeKind.Unspecified).AddTicks(1570), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("VenueId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("VenueId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -142,13 +146,14 @@ namespace ComedyPull.Data.Migrations
 
             modelBuilder.Entity("ComedyPull.Domain.Modules.Common.Venue", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 837, DateTimeKind.Unspecified).AddTicks(9585), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -171,7 +176,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 838, DateTimeKind.Unspecified).AddTicks(502), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -184,13 +189,14 @@ namespace ComedyPull.Data.Migrations
 
             modelBuilder.Entity("ComedyPull.Domain.Modules.DataProcessing.Batch", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 830, DateTimeKind.Unspecified).AddTicks(8781), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -208,7 +214,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 830, DateTimeKind.Unspecified).AddTicks(9521), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -221,12 +227,12 @@ namespace ComedyPull.Data.Migrations
 
             modelBuilder.Entity("ComedyPull.Domain.Modules.DataProcessing.BronzeRecord", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("BatchId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("BatchId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ContentHash")
                         .HasColumnType("text");
@@ -234,7 +240,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 827, DateTimeKind.Unspecified).AddTicks(5084), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -250,7 +256,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 829, DateTimeKind.Unspecified).AddTicks(9861), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -263,16 +269,15 @@ namespace ComedyPull.Data.Migrations
 
             modelBuilder.Entity("ComedyPull.Domain.Modules.DataProcessing.SilverRecord", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("BatchId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("BatchId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("BronzeRecordId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("BronzeRecordId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ContentHash")
                         .HasColumnType("text");
@@ -280,7 +285,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 830, DateTimeKind.Unspecified).AddTicks(4632), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -299,7 +304,7 @@ namespace ComedyPull.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTimeOffset(new DateTime(2025, 10, 20, 18, 59, 19, 830, DateTimeKind.Unspecified).AddTicks(5408), new TimeSpan(0, 0, 0, 0, 0)));
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
