@@ -1,6 +1,6 @@
 ﻿using ComedyPull.Application.Interfaces;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
-using ComedyPull.Application.Modules.DataSync.Options;
+using ComedyPull.Application.Options;
 using ComedyPull.Domain.Modules.DataProcessing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,14 +12,14 @@ namespace ComedyPull.Application.Modules.DataSync
     /// <summary>
     /// Background service that processes bronze records from Redis queue in batches.
     /// </summary>
-    public class BronzeRecordIngestionService(
+    public class IngestionService(
         IQueue<BronzeRecord> queue,
         IBronzeRecordIngestionRepository repository,
-        ILogger<BronzeRecordIngestionService> logger,
-        IOptions<BronzeRecordIngestionOptions> options
+        ILogger<IngestionService> logger,
+        IOptions<IngestionOptions> options
     ) : BackgroundService
     {
-        private readonly BronzeRecordIngestionOptions _options = options.Value;
+        private readonly IngestionOptions _options = options.Value;
         private readonly List<BronzeRecord> _currentBatch = [];
         private DateTime _lastFlushTime = DateTime.UtcNow;
 
