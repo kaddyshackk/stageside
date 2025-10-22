@@ -38,8 +38,6 @@ namespace ComedyPull.Application.Extensions
             services.AddQuartzServices(configuration);
             services.AddMediatR(cfg =>
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-
-            
             
             // Modules
             services.AddPublicApplicationModule();
