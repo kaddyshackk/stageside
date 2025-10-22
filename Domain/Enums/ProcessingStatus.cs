@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
+using ComedyPull.Domain.Modules.DataProcessing;
 
-namespace ComedyPull.Domain.Modules.DataProcessing
+namespace ComedyPull.Domain.Enums
 {
     /// <summary>
     /// Represents the status of a <see cref="BronzeRecord"/> in the data pipeline.

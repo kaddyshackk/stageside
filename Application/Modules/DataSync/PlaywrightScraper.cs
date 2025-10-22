@@ -1,11 +1,15 @@
 ﻿using Microsoft.Playwright;
 using System.Threading.Channels;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
+using Microsoft.Extensions.Logging;
+using Serilog.Context;
 
 namespace ComedyPull.Application.Modules.DataSync
 {
     public class PlaywrightScraper : IScraper
     {
+        private readonly ILogger<PlaywrightScraper> _logger;
+        
         private readonly int _concurrency;
         private readonly SemaphoreSlim _semaphore;
         private readonly ChannelWriter<string> _urlWriter;
@@ -16,13 +20,28 @@ namespace ComedyPull.Application.Modules.DataSync
         private IBrowser? _browser;
         private IBrowserContext? _context;
 
+        public PlaywrightScraper(int concurrency, ILogger<PlaywrightScraper> logger)
+        {
+            _logger = logger;
+            _concurrency = concurrency;
+            _semaphore = new SemaphoreSlim(_concurrency);
+            var queue = Channel.CreateUnbounded<string>();
+            _urlWriter = queue.Writer;
+            _urlReader = queue.Reader;
+            _playwright = null;
+            _browser = null;
+            _context = null;
+        }
+        
         public PlaywrightScraper(
-            int concurrency = 5,
+            int concurrency,
+            ILogger<PlaywrightScraper> logger,
             IPlaywright? playwright = null,
             IBrowser? browser = null,
             IBrowserContext? context = null
         )
         {
+            _logger = logger;
             _concurrency = concurrency;
             _semaphore = new SemaphoreSlim(_concurrency);
             var queue = Channel.CreateUnbounded<string>();
@@ -54,6 +73,8 @@ namespace ComedyPull.Application.Modules.DataSync
                 UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                 ViewportSize = new ViewportSize { Width = 1920, Height = 1080 }
             });
+            
+            _logger.LogInformation("Initialized PlaywrightScraper with {@Options}", options);
         }
 
         /// <summary>
@@ -69,18 +90,26 @@ namespace ComedyPull.Application.Modules.DataSync
             CancellationToken cancellationToken = default)
             where TProcessor : IPageCollector
         {
-            if (_browser == null)
-                throw new InvalidOperationException("Scraper not initialized. Call InitializeAsync first.");
-            if (_context == null)
-                throw new InvalidOperationException("Scraper failed to initialize a new context.");
+            using (LogContext.PushProperty("Concurrency", _concurrency))
+            using (LogContext.PushProperty("UrlCount", urls))
+            {
+                _logger.LogInformation("Starting PlaywrightScraper");
+            
+                if (_browser == null)
+                    throw new InvalidOperationException("Scraper not initialized. Call InitializeAsync first.");
+                if (_context == null)
+                    throw new InvalidOperationException("Scraper failed to initialize a new context.");
 
-            var workers = Enumerable.Range(0, _concurrency)
-                .Select(_ => WorkAsync(processorFactory(), cancellationToken))
-                .ToArray();
+                var workers = Enumerable.Range(0, _concurrency)
+                    .Select(_ => WorkAsync(processorFactory(), cancellationToken))
+                    .ToArray();
 
-            await EnqueueUrlsAsync(urls);
+                await EnqueueUrlsAsync(urls);
+            
+                _logger.LogInformation("Started PlaywrightScraper");
 
-            await Task.WhenAll(workers);
+                await Task.WhenAll(workers);
+            }
         }
 
         /// <summary>

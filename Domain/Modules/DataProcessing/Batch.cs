@@ -22,10 +22,5 @@ namespace ComedyPull.Domain.Modules.DataProcessing
         /// Gets or sets the current processing state.
         /// </summary>
         public ProcessingState State { get; set; } = ProcessingState.Transformed;
-        
-        /// <summary>
-        /// Gets or sets the current processing status.
-        /// </summary>
-        public ProcessingStatus Status { get; set; } = ProcessingStatus.Processing;
     }
 }

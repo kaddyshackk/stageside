@@ -14,7 +14,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Interfaces
         /// <param name="batchId">The unique identifier of the batch.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The batch entity.</returns>
-        Task<Batch> GetBatchById(string batchId, CancellationToken cancellationToken);
+        Task<Batch> GetBatchById(Guid batchId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Updates the processing state of a batch.
@@ -22,15 +22,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Interfaces
         /// <param name="batchId">The unique identifier of the batch.</param>
         /// <param name="state">The new processing state.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        Task UpdateBatchStateById(string batchId, ProcessingState state, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Updates the processing status of a batch.
-        /// </summary>
-        /// <param name="batchId">The unique identifier of the batch.</param>
-        /// <param name="status">The new processing status.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        Task UpdateBatchStatusById(string batchId, ProcessingStatus status, CancellationToken cancellationToken);
+        Task UpdateBatchStateById(Guid batchId, ProcessingState state, CancellationToken cancellationToken);
 
         /// <summary>
         /// Creates a new batch.

@@ -1,4 +1,5 @@
-﻿using ComedyPull.Domain.Modules.DataProcessing;
+﻿using ComedyPull.Domain.Enums;
+using ComedyPull.Domain.Modules.DataProcessing;
 
 namespace ComedyPull.Application.Modules.DataProcessing
 {
@@ -10,12 +11,11 @@ namespace ComedyPull.Application.Modules.DataProcessing
             { ProcessingState.Transformed, ProcessingState.Completed },
         };
 
-        public static ProcessingState GetNextState(ProcessingState currentStage)
+        public static ProcessingState? GetNextState(ProcessingState currentStage)
         {
             if (ValidTransitions.TryGetValue(currentStage, out var nextStage))
                 return nextStage;
-        
-            throw new InvalidOperationException($"No valid transition from state {currentStage}");
+            return null;
         }
 
         public static bool CanTransition(ProcessingState from, ProcessingState to)

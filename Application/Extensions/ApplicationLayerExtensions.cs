@@ -1,5 +1,5 @@
+using ComedyPull.Application.Events;
 using ComedyPull.Application.Interfaces;
-using ComedyPull.Application.Modules.DataProcessing.Events;
 using ComedyPull.Application.Modules.DataProcessing.Services;
 using ComedyPull.Application.Modules.DataProcessing.Services.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Complete;
@@ -7,19 +7,16 @@ using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Transform;
 using ComedyPull.Application.Modules.DataSync;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
-using ComedyPull.Application.Modules.DataSync.Options;
 using ComedyPull.Application.Modules.Public.Events.GetEventBySlug;
 using ComedyPull.Application.Modules.Punchup;
 using ComedyPull.Application.Modules.Punchup.Collectors;
 using ComedyPull.Application.Modules.Punchup.Collectors.Interfaces;
 using ComedyPull.Application.Modules.Punchup.Processors;
-using ComedyPull.Application.Modules.Queue;
+using ComedyPull.Application.Options;
 using ComedyPull.Domain.Enums;
-using ComedyPull.Domain.Modules.DataProcessing;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 using Quartz;
 
@@ -34,17 +31,19 @@ namespace ComedyPull.Application.Extensions
         /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
         public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
+            // Options
+            services.Configure<ApplicationOptions>(configuration.GetSection("ApplicationOptions"));
+            
+            // Frameworks & Libraries
             services.AddQuartzServices(configuration);
-
             services.AddMediatR(cfg =>
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-
+            
             // Modules
             services.AddPublicApplicationModule();
             services.AddDataSyncApplicationModule(configuration);
             services.AddDataProcessingApplicationModule();
             services.AddPunchupApplicationModule();
-            services.AddQueueModule();
         }
 
         private static void AddPublicApplicationModule(this IServiceCollection services)
@@ -60,7 +59,7 @@ namespace ComedyPull.Application.Extensions
         private static void AddDataSyncApplicationModule(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<DataSyncOptions>(configuration.GetSection("DataSyncOptions"));
-            services.AddHostedService<BronzeRecordIngestionService>();
+            services.AddHostedService<IngestionService>();
             services.AddScoped<ISitemapLoader, SitemapLoader>();
             services.AddScoped<IPlaywrightScraperFactory, PlaywrightScraperFactory>();
         }
@@ -83,19 +82,6 @@ namespace ComedyPull.Application.Extensions
         {
             services.AddScoped<IPunchupTicketsPageCollectorFactory, PunchupTicketsPageCollectorFactory>();
             services.AddScoped<ISubProcessor<DataSourceType>, PunchupTransformSubProcessor>();
-        }
-
-        /// <summary>
-        /// Configures queue services.
-        /// </summary>
-        /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
-        private static void AddQueueModule(this IServiceCollection services)
-        {
-            services.AddSingleton<IQueue<BronzeRecord>>(provider =>
-            {
-                var logger = provider.GetRequiredService<ILogger<InMemoryQueue<BronzeRecord>>>();
-                return new InMemoryQueue<BronzeRecord>(logger);
-            });
         }
         
         /// <summary>

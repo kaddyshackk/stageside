@@ -6,7 +6,7 @@ namespace ComedyPull.Application.Modules.Punchup.Collectors
 {
     public class PunchupTicketsPageCollectorFactory(IQueue<BronzeRecord> queue) : IPunchupTicketsPageCollectorFactory
     {
-        public PunchupTicketsPageCollector CreateCollector(string batchId)
+        public PunchupTicketsPageCollector CreateCollector(Guid batchId)
         {
             return new PunchupTicketsPageCollector(queue, batchId);
         }

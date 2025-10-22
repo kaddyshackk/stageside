@@ -1,4 +1,5 @@
-﻿using ComedyPull.Domain.Modules.Common;
+﻿using ComedyPull.Domain.Enums;
+using ComedyPull.Domain.Modules.Common;
 
 namespace ComedyPull.Domain.Modules.DataProcessing
 {
@@ -10,7 +11,7 @@ namespace ComedyPull.Domain.Modules.DataProcessing
         /// <summary>
         /// Gets the processing batch id.
         /// </summary>
-        public required string BatchId { get; init; }
+        public required Guid BatchId { get; init; }
 
         /// <summary>
         /// Gets or sets the current processing status.

@@ -1,24 +1,25 @@
 ﻿using ComedyPull.Application.Interfaces;
 using ComedyPull.Application.Modules.DataSync.Interfaces;
-using ComedyPull.Application.Modules.DataSync.Options;
+using ComedyPull.Application.Options;
 using ComedyPull.Domain.Modules.DataProcessing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
+using Serilog.Context;
 
 namespace ComedyPull.Application.Modules.DataSync
 {
     /// <summary>
     /// Background service that processes bronze records from Redis queue in batches.
     /// </summary>
-    public class BronzeRecordIngestionService(
+    public class IngestionService(
         IQueue<BronzeRecord> queue,
         IBronzeRecordIngestionRepository repository,
-        ILogger<BronzeRecordIngestionService> logger,
-        IOptions<BronzeRecordIngestionOptions> options
+        ILogger<IngestionService> logger,
+        IOptions<IngestionOptions> options
     ) : BackgroundService
     {
-        private readonly BronzeRecordIngestionOptions _options = options.Value;
+        private readonly IngestionOptions _options = options.Value;
         private readonly List<BronzeRecord> _currentBatch = [];
         private DateTime _lastFlushTime = DateTime.UtcNow;
 
@@ -60,21 +61,23 @@ namespace ComedyPull.Application.Modules.DataSync
             // Dequeue records up to available space in current batch
             var records = await queue.DequeueAsync(availableSpace, timeout, cancellationToken);
 
-            if (records.Count != 0)
+            using (LogContext.PushProperty("RecordCount", records.Count))
+            using (LogContext.PushProperty("BatchSize", _currentBatch.Count))
             {
-                _currentBatch.AddRange(records);
-                logger.LogDebug("Added {Count} records to batch. Current batch size: {BatchSize}",
-                    records.Count, _currentBatch.Count);
-            }
+                if (records.Count != 0)
+                {
+                    _currentBatch.AddRange(records);
+                    logger.LogDebug("Added records to batch.");
+                }
+                
+                var shouldFlushBySize = _currentBatch.Count >= _options.BatchSize;
+                var shouldFlushByTime =
+                    DateTime.UtcNow - _lastFlushTime >= TimeSpan.FromSeconds(_options.FlushIntervalSeconds);
 
-            // Check if we should flush the batch
-            var shouldFlushBySize = _currentBatch.Count >= _options.BatchSize;
-            var shouldFlushByTime =
-                DateTime.UtcNow - _lastFlushTime >= TimeSpan.FromSeconds(_options.FlushIntervalSeconds);
-
-            if (_currentBatch.Count != 0 && (shouldFlushBySize || shouldFlushByTime))
-            {
-                await FlushCurrentBatchAsync(cancellationToken);
+                if (_currentBatch.Count != 0 && (shouldFlushBySize || shouldFlushByTime))
+                {
+                    await FlushCurrentBatchAsync(cancellationToken);
+                }
             }
         }
 
@@ -88,20 +91,19 @@ namespace ComedyPull.Application.Modules.DataSync
                 return;
             try
             {
-                logger.LogInformation("Flushing batch of {Count} source records to database", _currentBatch.Count);
+                logger.LogDebug("Flushing batch of BronzeRecord's.");
 
                 var batchSize = _currentBatch.Count;
                 await repository.BatchInsertAsync(_currentBatch, cancellationToken);
 
-                logger.LogInformation("Successfully processed {Count} source records", batchSize);
+                logger.LogInformation("Flushed batch of BronzeRecord's.");
 
-                // Clear the batch and update flush time
                 _currentBatch.Clear();
                 _lastFlushTime = DateTime.UtcNow;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to flush source records batch of size {Count}", _currentBatch.Count);
+                logger.LogError(ex, "Failed to flush batch of BronzeRecord's.");
 
                 // TODO: Replace with better error handling
                 _currentBatch.Clear();

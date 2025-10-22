@@ -1,6 +1,8 @@
 ﻿using ComedyPull.Application.Modules.DataSync;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichardSzalay.MockHttp;
 
 namespace ComedyPull.Application.Tests.Modules.DataSync.Services
@@ -59,7 +61,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         {
             // Arrange
             const string sitemapUrl = "https://www.punchup.live/sitemap.xml";
-            var sitemapService = new SitemapLoader(_mockHttpClientFactory);
+            var sitemapService = new SitemapLoader(_mockHttpClientFactory, A.Fake<ILogger<SitemapLoader>>());
 
             _mockHandler
                 .When(sitemapUrl)
@@ -81,7 +83,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         {
             // Arrange
             var sitemapUrl = "https://www.punchup.live/sitemap.xml";
-            var sitemapService = new SitemapLoader(_mockHttpClientFactory);
+            var sitemapService = new SitemapLoader(_mockHttpClientFactory, A.Fake<ILogger<SitemapLoader>>());
 
             _mockHandler
                 .When(sitemapUrl)
@@ -100,7 +102,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         {
             // Arrange
             var sitemapUrl = "https://www.punchup.live/sitemap.xml";
-            var sitemapService = new SitemapLoader(_mockHttpClientFactory);
+            var sitemapService = new SitemapLoader(_mockHttpClientFactory, A.Fake<ILogger<SitemapLoader>>());
 
             _mockHandler
                 .When(sitemapUrl)
@@ -116,7 +118,7 @@ namespace ComedyPull.Application.Tests.Modules.DataSync.Services
         {
             // Arrange
             var sitemapUrl = "https://www.punchup.live/sitemap.xml";
-            var sitemapService = new SitemapLoader(_mockHttpClientFactory);
+            var sitemapService = new SitemapLoader(_mockHttpClientFactory, A.Fake<ILogger<SitemapLoader>>());
 
             _mockHandler
                 .When(sitemapUrl)

@@ -1,9 +1,9 @@
-﻿namespace ComedyPull.Application.Modules.DataSync.Options
+﻿namespace ComedyPull.Application.Options
 {
     /// <summary>
     /// Configuration options for source record ingestion.
     /// </summary>
-    public class BronzeRecordIngestionOptions
+    public class IngestionOptions
     {
         /// <summary>
         /// Maximum number of records to process in a single batch.

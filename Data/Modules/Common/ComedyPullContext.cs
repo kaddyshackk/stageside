@@ -2,7 +2,6 @@
 using ComedyPull.Domain.Modules.Common;
 using ComedyPull.Domain.Modules.DataProcessing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace ComedyPull.Data.Modules.Common
 {
@@ -11,8 +10,9 @@ namespace ComedyPull.Data.Modules.Common
     /// This context is used only for migrations and schema management, not for runtime data access.
     /// </summary>
     /// <param name="options">Injected <see cref="DbContextOptions"/> instance.</param>
-    public class SchemaContext(DbContextOptions<SchemaContext> options) : DbContext(options)
+    public class ComedyPullContext(DbContextOptions<ComedyPullContext> options) : DbContext(options)
     {
+        // All entities
         public DbSet<BronzeRecord> BronzeRecords { get; set; }
         public DbSet<SilverRecord> SilverRecords { get; set; }
         public DbSet<Batch> Batches { get; set; }
@@ -21,10 +21,6 @@ namespace ComedyPull.Data.Modules.Common
         public DbSet<Venue> Venues { get; set; }
         public DbSet<ComedianEvent> ComedianEvents { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
-        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

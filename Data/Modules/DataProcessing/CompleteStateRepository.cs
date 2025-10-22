@@ -1,27 +1,22 @@
 using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
+using ComedyPull.Data.Modules.Common;
 using ComedyPull.Domain.Modules.Common;
 using ComedyPull.Domain.Modules.DataProcessing;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Modules.DataProcessing.Complete
+namespace ComedyPull.Data.Modules.DataProcessing
 {
     /// <summary>
     /// Repository for Complete state operations - handles Silver to Gold entity transformations.
     /// </summary>
-    public class CompleteStateRepository : ICompleteStateRepository
+    public class CompleteStateRepository(IDbContextFactory<ComedyPullContext> contextFactory)
+        : ICompleteStateRepository
     {
-        private readonly IDbContextFactory<CompleteStateContext> _contextFactory;
-
-        public CompleteStateRepository(IDbContextFactory<CompleteStateContext> contextFactory)
-        {
-            _contextFactory = contextFactory;
-        }
-
         // Silver record operations
         /// <inheritdoc />
-        public async Task<IEnumerable<SilverRecord>> GetSilverRecordsByBatchId(string batchId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SilverRecord>> GetSilverRecordsByBatchId(Guid batchId, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             var records = await context.SilverRecords
                 .AsNoTracking()
@@ -34,7 +29,7 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
         /// <inheritdoc />
         public async Task UpdateSilverRecordsAsync(IEnumerable<SilverRecord> records, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             context.SilverRecords.UpdateRange(records);
             await context.SaveChangesAsync(cancellationToken);
@@ -44,7 +39,7 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
         /// <inheritdoc />
         public async Task<IEnumerable<Comedian>> GetComediansBySlugAsync(IEnumerable<string> slugs, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             var comedians = await context.Comedians
                 .AsNoTracking()
@@ -57,7 +52,7 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
         /// <inheritdoc />
         public async Task AddComediansAsync(IEnumerable<Comedian> comedians, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             context.Comedians.AddRange(comedians);
             await context.SaveChangesAsync(cancellationToken);
@@ -66,7 +61,7 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
         /// <inheritdoc />
         public async Task UpdateComediansAsync(IEnumerable<Comedian> comedians, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             context.Comedians.UpdateRange(comedians);
             await context.SaveChangesAsync(cancellationToken);
@@ -76,7 +71,7 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
         /// <inheritdoc />
         public async Task<IEnumerable<Venue>> GetVenuesBySlugAsync(IEnumerable<string> slugs, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             var venues = await context.Venues
                 .AsNoTracking()
@@ -89,7 +84,7 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
         /// <inheritdoc />
         public async Task AddVenuesAsync(IEnumerable<Venue> venues, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             context.Venues.AddRange(venues);
             await context.SaveChangesAsync(cancellationToken);
@@ -98,7 +93,7 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
         /// <inheritdoc />
         public async Task UpdateVenuesAsync(IEnumerable<Venue> venues, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             context.Venues.UpdateRange(venues);
             await context.SaveChangesAsync(cancellationToken);
@@ -108,7 +103,7 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
         /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetEventsBySlugAsync(IEnumerable<string> slugs, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             var events = await context.Events
                 .AsNoTracking()
@@ -121,7 +116,7 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
         /// <inheritdoc />
         public async Task AddEventsAsync(IEnumerable<Event> events, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             context.Events.AddRange(events);
             await context.SaveChangesAsync(cancellationToken);
@@ -130,7 +125,7 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
         /// <inheritdoc />
         public async Task UpdateEventsAsync(IEnumerable<Event> events, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             context.Events.UpdateRange(events);
             await context.SaveChangesAsync(cancellationToken);
@@ -140,7 +135,7 @@ namespace ComedyPull.Data.Modules.DataProcessing.Complete
         /// <inheritdoc />
         public async Task AddComedianEventsAsync(IEnumerable<ComedianEvent> comedianEvents, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             context.ComedianEvents.AddRange(comedianEvents);
             await context.SaveChangesAsync(cancellationToken);

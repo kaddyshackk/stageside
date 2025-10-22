@@ -43,7 +43,6 @@ namespace ComedyPull.Application.Tests.Modules.Punchup
                 Source = DataSource.Punchup,
                 SourceType = DataSourceType.PunchupTicketsPage,
                 State = ProcessingState.Ingested,
-                Status = ProcessingStatus.Processing,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = nameof(PunchupScrapeJob),
                 UpdatedAt = DateTimeOffset.UtcNow,

@@ -15,7 +15,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interface
         /// <param name="batchId">The unique identifier of the batch.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Collection of Silver records.</returns>
-        Task<IEnumerable<SilverRecord>> GetSilverRecordsByBatchId(string batchId, CancellationToken cancellationToken);
+        Task<IEnumerable<SilverRecord>> GetSilverRecordsByBatchId(Guid batchId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Updates existing Silver records in the database.

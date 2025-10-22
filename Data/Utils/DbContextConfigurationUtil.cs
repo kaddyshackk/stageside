@@ -35,9 +35,7 @@ namespace ComedyPull.Data.Utils
                 case "Development":
                     options.EnableSensitiveDataLogging();
                     options.EnableDetailedErrors();
-                    options.LogTo(Console.WriteLine, LogLevel.Information);
                     break;
-                case "Staging":
                 case "Production":
                     options.EnableServiceProviderCaching();
                     options.EnableSensitiveDataLogging(false);

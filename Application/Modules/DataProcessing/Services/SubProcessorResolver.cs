@@ -1,6 +1,6 @@
 using ComedyPull.Application.Modules.DataProcessing.Services.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
-using ComedyPull.Domain.Modules.DataProcessing;
+using ComedyPull.Domain.Enums;
 
 namespace ComedyPull.Application.Modules.DataProcessing.Services
 {

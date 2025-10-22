@@ -13,7 +13,7 @@ namespace ComedyPull.Application.Modules.DataProcessing.Steps.Transform.Interfac
         /// <param name="batchId">The unique identifier of the batch.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Collection of Bronze records.</returns>
-        Task<IEnumerable<BronzeRecord>> GetBronzeRecordsByBatchId(string batchId, CancellationToken cancellationToken);
+        Task<IEnumerable<BronzeRecord>> GetBronzeRecordsByBatchId(Guid batchId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Creates new Silver records in the database.

@@ -16,6 +16,8 @@
 *.DotSettings.user
 *.csproj.user
 *.local.json
+/env
 .env.local
 .env.development
 .env.production
+.env

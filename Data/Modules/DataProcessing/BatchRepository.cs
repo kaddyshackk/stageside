@@ -1,4 +1,5 @@
 using ComedyPull.Application.Modules.DataProcessing.Interfaces;
+using ComedyPull.Data.Modules.Common;
 using ComedyPull.Domain.Enums;
 using ComedyPull.Domain.Modules.DataProcessing;
 using Microsoft.EntityFrameworkCore;
@@ -8,19 +9,12 @@ namespace ComedyPull.Data.Modules.DataProcessing
     /// <summary>
     /// Repository for managing Batch entity operations across all processing states.
     /// </summary>
-    public class BatchRepository : IBatchRepository
+    public class BatchRepository(IDbContextFactory<ComedyPullContext> contextFactory) : IBatchRepository
     {
-        private readonly IDbContextFactory<BatchContext> _contextFactory;
-
-        public BatchRepository(IDbContextFactory<BatchContext> contextFactory)
-        {
-            _contextFactory = contextFactory;
-        }
-
         /// <inheritdoc />
-        public async Task<Batch> GetBatchById(string batchId, CancellationToken cancellationToken)
+        public async Task<Batch> GetBatchById(Guid batchId, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             var batch = await context.Batches
                 .AsNoTracking()
@@ -35,9 +29,9 @@ namespace ComedyPull.Data.Modules.DataProcessing
         }
 
         /// <inheritdoc />
-        public async Task UpdateBatchStateById(string batchId, ProcessingState state, CancellationToken cancellationToken)
+        public async Task UpdateBatchStateById(Guid batchId, ProcessingState state, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             var batch = await context.Batches
                 .FirstOrDefaultAsync(b => b.Id == batchId, cancellationToken);
@@ -52,33 +46,15 @@ namespace ComedyPull.Data.Modules.DataProcessing
         }
 
         /// <inheritdoc />
-        public async Task UpdateBatchStatusById(string batchId, ProcessingStatus status, CancellationToken cancellationToken)
-        {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-
-            var batch = await context.Batches
-                .FirstOrDefaultAsync(b => b.Id == batchId, cancellationToken);
-
-            if (batch == null)
-            {
-                throw new InvalidOperationException($"Batch with ID '{batchId}' not found.");
-            }
-
-            batch.Status = status;
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
-        /// <inheritdoc />
         public async Task<Batch> CreateBatch(DataSource source, DataSourceType sourceType, string createdBy, CancellationToken cancellationToken)
         {
-            await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             var batch = new Batch
             {
                 Source = source,
                 SourceType = sourceType,
-                State = ProcessingState.Ingested,
-                Status = ProcessingStatus.Processing,
+                State = ProcessingState.Created,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = createdBy,
                 UpdatedAt = DateTimeOffset.UtcNow,

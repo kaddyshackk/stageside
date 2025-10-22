@@ -1,5 +1,5 @@
 using ComedyPull.Application.Modules.DataProcessing;
-using ComedyPull.Domain.Modules.DataProcessing;
+using ComedyPull.Domain.Enums;
 using FluentAssertions;
 
 namespace ComedyPull.Application.Tests.Modules.DataProcessing
@@ -28,48 +28,23 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing
         }
 
         [TestMethod, TestCategory("Unit")]
-        public void GetNextState_WithDeDupedState_ThrowsInvalidOperationException()
-        {
-            // Act & Assert
-            var act = () => ProcessingStateMachine.GetNextState(ProcessingState.DeDuped);
-            act.Should().Throw<InvalidOperationException>()
-                .WithMessage("No valid transition from state DeDuped");
-        }
-
-        [TestMethod, TestCategory("Unit")]
-        public void GetNextState_WithEnrichedState_ThrowsInvalidOperationException()
-        {
-            // Act & Assert
-            var act = () => ProcessingStateMachine.GetNextState(ProcessingState.Enriched);
-            act.Should().Throw<InvalidOperationException>()
-                .WithMessage("No valid transition from state Enriched");
-        }
-
-        [TestMethod, TestCategory("Unit")]
-        public void GetNextState_WithLinkedState_ThrowsInvalidOperationException()
-        {
-            // Act & Assert
-            var act = () => ProcessingStateMachine.GetNextState(ProcessingState.Linked);
-            act.Should().Throw<InvalidOperationException>()
-                .WithMessage("No valid transition from state Linked");
-        }
-
-        [TestMethod, TestCategory("Unit")]
         public void GetNextState_WithCompletedState_ThrowsInvalidOperationException()
         {
-            // Act & Assert
-            var act = () => ProcessingStateMachine.GetNextState(ProcessingState.Completed);
-            act.Should().Throw<InvalidOperationException>()
-                .WithMessage("No valid transition from state Completed");
+            // Act
+            var nextState = ProcessingStateMachine.GetNextState(ProcessingState.Completed);
+            
+            // Assert
+            nextState.Should().BeNull();
         }
 
         [TestMethod, TestCategory("Unit")]
         public void GetNextState_WithFailedState_ThrowsInvalidOperationException()
         {
-            // Act & Assert
-            var act = () => ProcessingStateMachine.GetNextState(ProcessingState.Failed);
-            act.Should().Throw<InvalidOperationException>()
-                .WithMessage("No valid transition from state Failed");
+            // Act
+            var nextState = ProcessingStateMachine.GetNextState(ProcessingState.Failed);
+            
+            // Assert
+            nextState.Should().BeNull();
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -80,16 +55,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing
 
             // Assert
             canTransition.Should().BeTrue();
-        }
-
-        [TestMethod, TestCategory("Unit")]
-        public void CanTransition_FromIngestedToDeDuped_ReturnsFalse()
-        {
-            // Act
-            var canTransition = ProcessingStateMachine.CanTransition(ProcessingState.Ingested, ProcessingState.DeDuped);
-
-            // Assert
-            canTransition.Should().BeFalse();
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -109,9 +74,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing
             var targetStates = new[]
             {
                 ProcessingState.Ingested,
-                ProcessingState.DeDuped,
-                ProcessingState.Enriched,
-                ProcessingState.Linked,
                 ProcessingState.Failed
             };
 
@@ -129,9 +91,6 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing
             // Arrange
             var invalidStates = new[]
             {
-                ProcessingState.DeDuped,
-                ProcessingState.Enriched,
-                ProcessingState.Linked,
                 ProcessingState.Completed,
                 ProcessingState.Failed
             };

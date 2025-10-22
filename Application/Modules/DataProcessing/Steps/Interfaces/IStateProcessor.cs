@@ -1,4 +1,4 @@
-﻿using ComedyPull.Domain.Modules.DataProcessing;
+﻿using ComedyPull.Domain.Enums;
 
 namespace ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces
 {

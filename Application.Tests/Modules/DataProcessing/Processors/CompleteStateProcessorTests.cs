@@ -1,4 +1,3 @@
-using ComedyPull.Application.Modules.DataProcessing.Events;
 using ComedyPull.Application.Modules.DataProcessing.Interfaces;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Complete;
 using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
@@ -10,6 +9,7 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using ComedyPull.Application.Events;
 
 namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
 {
@@ -56,19 +56,19 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
         {
             // Arrange
             var batchId = Guid.NewGuid();
-            var batch = CreateBatch(batchId, ProcessingState.Transformed);
+            var batch = CreateBatch(ProcessingState.Transformed);
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Returns(batch);
 
-            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId, A<CancellationToken>._))
                 .Returns(new List<SilverRecord>());
 
             // Act
             await _processor.ProcessBatchAsync(batchId, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }
 
@@ -77,9 +77,9 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
         {
             // Arrange
             var batchId = Guid.NewGuid();
-            var batch = CreateBatch(batchId, ProcessingState.Ingested); // Wrong state
+            var batch = CreateBatch(ProcessingState.Ingested); // Wrong state
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Returns(batch);
 
             // Act & Assert
@@ -92,16 +92,16 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
         {
             // Arrange
             var batchId = Guid.NewGuid();
-            var batch = CreateBatch(batchId, ProcessingState.Transformed);
+            var batch = CreateBatch(ProcessingState.Transformed);
             var silverRecords = new List<SilverRecord>
             {
-                CreateSilverRecord(batchId.ToString(), EntityType.Act)
+                CreateSilverRecord(batchId, EntityType.Act)
             };
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Returns(batch);
 
-            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId, A<CancellationToken>._))
                 .Returns(silverRecords);
 
             A.CallTo(() => _mockRepository.GetComediansBySlugAsync(A<IEnumerable<string>>._, A<CancellationToken>._))
@@ -111,7 +111,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
             await _processor.ProcessBatchAsync(batchId, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId, A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }
 
@@ -120,7 +120,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
         {
             // Arrange
             var batchId = Guid.NewGuid();
-            var batch = CreateBatch(batchId, ProcessingState.Transformed);
+            var batch = CreateBatch(ProcessingState.Transformed);
             var processedAct = new ProcessedAct
             {
                 Name = "John Doe",
@@ -130,13 +130,13 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
 
             var silverRecords = new List<SilverRecord>
             {
-                CreateSilverRecord(batchId.ToString(), EntityType.Act, JsonSerializer.Serialize(processedAct))
+                CreateSilverRecord(batchId, EntityType.Act, JsonSerializer.Serialize(processedAct))
             };
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Returns(batch);
 
-            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId, A<CancellationToken>._))
                 .Returns(silverRecords);
 
             A.CallTo(() => _mockRepository.GetComediansBySlugAsync(A<IEnumerable<string>>._, A<CancellationToken>._))
@@ -160,21 +160,21 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
         {
             // Arrange
             var batchId = Guid.NewGuid();
-            var batch = CreateBatch(batchId, ProcessingState.Transformed);
+            var batch = CreateBatch(ProcessingState.Transformed);
 
             var processedAct1 = new ProcessedAct { Name = "John Doe", Slug = "john-doe", Bio = "Bio" };
             var processedAct2 = new ProcessedAct { Name = "John Doe", Slug = "john-doe", Bio = "Bio" };
 
             var silverRecords = new List<SilverRecord>
             {
-                CreateSilverRecord(batchId.ToString(), EntityType.Act, JsonSerializer.Serialize(processedAct1)),
-                CreateSilverRecord(batchId.ToString(), EntityType.Act, JsonSerializer.Serialize(processedAct2))
+                CreateSilverRecord(batchId, EntityType.Act, JsonSerializer.Serialize(processedAct1)),
+                CreateSilverRecord(batchId, EntityType.Act, JsonSerializer.Serialize(processedAct2))
             };
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Returns(batch);
 
-            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId, A<CancellationToken>._))
                 .Returns(silverRecords);
 
             A.CallTo(() => _mockRepository.GetComediansBySlugAsync(A<IEnumerable<string>>._, A<CancellationToken>._))
@@ -195,7 +195,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
         {
             // Arrange
             var batchId = Guid.NewGuid();
-            var batch = CreateBatch(batchId, ProcessingState.Transformed);
+            var batch = CreateBatch(ProcessingState.Transformed);
 
             var existingComedian = new Comedian
             {
@@ -217,13 +217,13 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
 
             var silverRecords = new List<SilverRecord>
             {
-                CreateSilverRecord(batchId.ToString(), EntityType.Act, JsonSerializer.Serialize(processedAct))
+                CreateSilverRecord(batchId, EntityType.Act, JsonSerializer.Serialize(processedAct))
             };
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Returns(batch);
 
-            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId, A<CancellationToken>._))
                 .Returns(silverRecords);
 
             A.CallTo(() => _mockRepository.GetComediansBySlugAsync(A<IEnumerable<string>>._, A<CancellationToken>._))
@@ -249,7 +249,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
         {
             // Arrange
             var batchId = Guid.NewGuid();
-            var batch = CreateBatch(batchId, ProcessingState.Transformed);
+            var batch = CreateBatch(ProcessingState.Transformed);
 
             var processedVenue = new ProcessedVenue
             {
@@ -260,13 +260,13 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
 
             var silverRecords = new List<SilverRecord>
             {
-                CreateSilverRecord(batchId.ToString(), EntityType.Venue, JsonSerializer.Serialize(processedVenue))
+                CreateSilverRecord(batchId, EntityType.Venue, JsonSerializer.Serialize(processedVenue))
             };
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Returns(batch);
 
-            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId, A<CancellationToken>._))
                 .Returns(silverRecords);
 
             A.CallTo(() => _mockRepository.GetVenuesBySlugAsync(A<IEnumerable<string>>._, A<CancellationToken>._))
@@ -290,7 +290,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
         {
             // Arrange
             var batchId = Guid.NewGuid();
-            var batch = CreateBatch(batchId, ProcessingState.Transformed);
+            var batch = CreateBatch(ProcessingState.Transformed);
 
             var comedian = new Comedian
             {
@@ -325,13 +325,13 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
 
             var silverRecords = new List<SilverRecord>
             {
-                CreateSilverRecord(batchId.ToString(), EntityType.Event, JsonSerializer.Serialize(processedEvent))
+                CreateSilverRecord(batchId, EntityType.Event, JsonSerializer.Serialize(processedEvent))
             };
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Returns(batch);
 
-            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId, A<CancellationToken>._))
                 .Returns(silverRecords);
 
             A.CallTo(() => _mockRepository.GetComediansBySlugAsync(A<IEnumerable<string>>._, A<CancellationToken>._))
@@ -368,22 +368,19 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
         {
             // Arrange
             var batchId = Guid.NewGuid();
-            var batch = CreateBatch(batchId, ProcessingState.Transformed);
+            var batch = CreateBatch(ProcessingState.Transformed);
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Returns(batch);
 
-            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId, A<CancellationToken>._))
                 .Returns(new List<SilverRecord>());
 
             // Act
             await _processor.ProcessBatchAsync(batchId, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => _mockBatchRepository.UpdateBatchStateById(batchId.ToString(), ProcessingState.Completed, A<CancellationToken>._))
-                .MustHaveHappenedOnceExactly();
-
-            A.CallTo(() => _mockBatchRepository.UpdateBatchStatusById(batchId.ToString(), ProcessingStatus.Completed, A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.UpdateBatchStateById(batchId, ProcessingState.Completed, A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }
 
@@ -392,12 +389,12 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
         {
             // Arrange
             var batchId = Guid.NewGuid();
-            var batch = CreateBatch(batchId, ProcessingState.Transformed);
+            var batch = CreateBatch(ProcessingState.Transformed);
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Returns(batch);
 
-            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId, A<CancellationToken>._))
                 .Returns(new List<SilverRecord>());
 
             // Act
@@ -406,8 +403,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
             // Assert
             A.CallTo(() => _mockMediator.Publish(
                 A<StateCompletedEvent>.That.Matches(e =>
-                    e.BatchId == batchId &&
-                    e.CompletedState == ProcessingState.Completed),
+                    e.BatchId == batchId),
                 A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }
@@ -417,7 +413,7 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
         {
             // Arrange
             var batchId = Guid.NewGuid();
-            var batch = CreateBatch(batchId, ProcessingState.Transformed);
+            var batch = CreateBatch(ProcessingState.Transformed);
 
             var processedAct = new ProcessedAct
             {
@@ -428,13 +424,13 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
 
             var silverRecords = new List<SilverRecord>
             {
-                CreateSilverRecord(batchId.ToString(), EntityType.Act, JsonSerializer.Serialize(processedAct))
+                CreateSilverRecord(batchId, EntityType.Act, JsonSerializer.Serialize(processedAct))
             };
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Returns(batch);
 
-            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId, A<CancellationToken>._))
                 .Returns(silverRecords);
 
             A.CallTo(() => _mockRepository.GetComediansBySlugAsync(A<IEnumerable<string>>._, A<CancellationToken>._))
@@ -458,15 +454,12 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
             var batchId = Guid.NewGuid();
             var expectedException = new Exception("Test exception");
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Throws(expectedException);
 
             // Act & Assert
             var act = async () => await _processor.ProcessBatchAsync(batchId, CancellationToken.None);
             await act.Should().ThrowAsync<Exception>().WithMessage("Test exception");
-
-            A.CallTo(() => _mockBatchRepository.UpdateBatchStatusById(batchId.ToString(), ProcessingStatus.Failed, A<CancellationToken>._))
-                .MustHaveHappenedOnceExactly();
         }
 
         [TestMethod, TestCategory("Unit")]
@@ -474,12 +467,12 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
         {
             // Arrange
             var batchId = Guid.NewGuid();
-            var batch = CreateBatch(batchId, ProcessingState.Transformed);
+            var batch = CreateBatch(ProcessingState.Transformed);
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Returns(batch);
 
-            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId, A<CancellationToken>._))
                 .Returns(new List<SilverRecord>());
 
             // Act
@@ -497,37 +490,35 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
         {
             // Arrange
             var batchId = Guid.NewGuid();
-            var batch = CreateBatch(batchId, ProcessingState.Transformed);
+            var batch = CreateBatch(ProcessingState.Transformed);
 
-            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.GetBatchById(batchId, A<CancellationToken>._))
                 .Returns(batch);
 
-            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId.ToString(), A<CancellationToken>._))
+            A.CallTo(() => _mockRepository.GetSilverRecordsByBatchId(batchId, A<CancellationToken>._))
                 .Returns(new List<SilverRecord>());
 
             // Act
             await _processor.ProcessBatchAsync(batchId, CancellationToken.None);
 
             // Assert
-            A.CallTo(() => _mockBatchRepository.UpdateBatchStateById(batchId.ToString(), ProcessingState.Completed, A<CancellationToken>._))
+            A.CallTo(() => _mockBatchRepository.UpdateBatchStateById(batchId, ProcessingState.Completed, A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
 
             A.CallTo(() => _mockMediator.Publish(
                 A<StateCompletedEvent>.That.Matches(e =>
-                    e.BatchId == batchId &&
-                    e.CompletedState == ProcessingState.Completed),
+                    e.BatchId == batchId),
                 A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }
 
-        private static Batch CreateBatch(Guid batchId, ProcessingState state)
+        private static Batch CreateBatch(ProcessingState state)
         {
             return new Batch
             {
                 Source = DataSource.Punchup,
                 SourceType = DataSourceType.PunchupTicketsPage,
                 State = state,
-                Status = ProcessingStatus.Processing,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "Test",
                 UpdatedAt = DateTimeOffset.UtcNow,
@@ -535,12 +526,12 @@ namespace ComedyPull.Application.Tests.Modules.DataProcessing.Processors
             };
         }
 
-        private static SilverRecord CreateSilverRecord(string batchId, EntityType entityType, string? data = null)
+        private static SilverRecord CreateSilverRecord(Guid batchId, EntityType entityType, string? data = null)
         {
             return new SilverRecord
             {
                 BatchId = batchId,
-                BronzeRecordId = Guid.NewGuid().ToString(),
+                BronzeRecordId = Guid.NewGuid(),
                 EntityType = entityType,
                 Status = ProcessingStatus.Processing,
                 Data = data ?? "{}",

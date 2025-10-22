@@ -1,12 +1,8 @@
-﻿using ComedyPull.Domain.Modules.DataProcessing;
+﻿using ComedyPull.Domain.Enums;
 
 namespace ComedyPull.Application.Modules.DataProcessing.Exceptions
 {
-    public class InvalidBatchStateException : Exception
-    {
-        public InvalidBatchStateException(string batchId, ProcessingState expectedState, ProcessingState actualState)
-            : base($"Invalid batch state encountered while processing batch {batchId}. Expected: {expectedState}. Actual: {actualState}")
-        {
-        }
-    }
+    public class InvalidBatchStateException(Guid batchId, ProcessingState expectedState, ProcessingState actualState)
+        : Exception(
+            $"Invalid batch state encountered while processing batch {batchId}. Expected: {expectedState}. Actual: {actualState}");
 }
