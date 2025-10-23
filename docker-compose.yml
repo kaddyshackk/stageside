@@ -1,8 +1,8 @@
 services:
   
-  api:
+  pipeline-service:
     build:
-      context: .
+      context: ./apps/pipeline-service
       dockerfile: Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
