@@ -3,11 +3,13 @@
 **/.env
 **/.git
 **/.gitignore
+**/.github
 **/.project
 **/.settings
 **/.toolstarget
 **/.vs
 **/.vscode
+**/.claude
 **/*.*proj.user
 **/*.dbmdl
 **/*.jfm
@@ -21,6 +23,10 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
+**/.turbo
+**/pnpm-lock.yaml
+**/package.json
+**/turbo.json
 LICENSE
 README.md
 !**/.gitignore

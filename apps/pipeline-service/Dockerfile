@@ -1,39 +1,45 @@
-# -- [ BUILD STAGE ] ----
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-ARG BUILD_CONFIGURATION=Release
+# -- [ RESTORE ] ----
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS restore
+
 WORKDIR /src
 
-# Copy project files and restore
 COPY ["ComedyPull.sln", "./"]
-COPY ["Api/Api.csproj", "Api/"]
-COPY ["Application/Application.csproj", "Application/"]
-COPY ["Application.Tests/Application.Tests.csproj", "Application.Tests/"]
-COPY ["Data/Data.csproj", "Data/"]
-COPY ["Domain/Domain.csproj", "Domain/"]
 COPY ["Directory.Build.props", "./"]
 COPY ["Directory.Packages.props", "./"]
-RUN dotnet restore "ComedyPull.sln"
+COPY ["Api/Api.csproj", "Api/"]
+COPY ["Api/packages.lock.json", "Api/"]
+COPY ["Application/Application.csproj", "Application/"]
+COPY ["Application/packages.lock.json", "Application/"]
+COPY ["Application.Tests/Application.Tests.csproj", "Application.Tests/"]
+COPY ["Application.Tests/packages.lock.json", "Application.Tests/"]
+COPY ["Data/Data.csproj", "Data/"]
+COPY ["Data/packages.lock.json", "Data/"]
+COPY ["Domain/Domain.csproj", "Domain/"]
+COPY ["Domain/packages.lock.json", "Domain/"]
 
-# Copy source code and build
-COPY . .
-WORKDIR "/src/Api"
-RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet restore "ComedyPull.sln" --locked-mode
 
-# -- [ PUBLISH STAGE ] ----
-FROM build AS publish
+# -- [ BUILD ] ----
+FROM restore AS build
+
 ARG BUILD_CONFIGURATION=Release
-WORKDIR "/src/Api"
-RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Install Playwright CLI tool and browsers in the build stage
+COPY . .
+
+RUN dotnet publish Api/Api.csproj -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+# -- [ Install Playwright ] ----
+FROM build AS playwright-install
+
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
 RUN dotnet tool install --global Microsoft.Playwright.CLI && \
     /root/.dotnet/tools/playwright install --with-deps chromium
 
-# -- [ PRODUCTION BUILD STAGE ] ----
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+## -- [ Install Playwright Deps ] ----
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS playwright-install-deps
 
-# Set Playwright browsers installation path
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 # Install system dependencies for Playwright browsers
@@ -58,15 +64,14 @@ RUN apt-get update && \
     libatspi2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
+# -- [ PACKAGE API ] ----
+FROM playwright-install-deps AS final
+
 WORKDIR /app
 
-# Copy published application
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
+COPY --from=playwright-install /ms-playwright /ms-playwright
 
-# Copy Playwright browsers from build stage
-COPY --from=publish /ms-playwright /ms-playwright
-
-# Expose ports
 EXPOSE 8080
 EXPOSE 8081
 
