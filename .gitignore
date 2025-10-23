@@ -1,12 +1,4 @@
 ﻿/.vs
-/Application.Tests/bin
-/Application/bin/Debug/net8.0
-/Application/obj
-/Application.Tests/obj
-/Core/bin/Debug/net8.0
-/Core/obj
-/Data/obj
-/Data/bin/Debug/net8.0
 **/bin/
 **/obj/
 **/TestResults/*
@@ -21,3 +13,4 @@
 .env.development
 .env.production
 .env
+.turbo

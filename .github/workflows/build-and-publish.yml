@@ -21,15 +21,18 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
-          
+          dotnet-version: '9.0.x'
+
       - name: Restore dependencies
+        working-directory: apps/pipeline-service
         run: dotnet restore
-        
+
       - name: Build
+        working-directory: apps/pipeline-service
         run: dotnet build --no-restore
-        
+
       - name: Test
+        working-directory: apps/pipeline-service
         run: dotnet test --no-build --verbosity normal --filter "TestCategory=Unit"
 
   build:
@@ -89,7 +92,7 @@ jobs:
           if [[ "${{ github.event_name }}" != "pull_request" ]]; then
             PUSH_FLAG="--push"
           fi
-          
+
           docker buildx build \
             --platform linux/amd64 \
             --tag ${{ steps.meta.outputs.tags }} \
@@ -97,4 +100,5 @@ jobs:
             --cache-from type=gha \
             --cache-to type=gha,mode=max \
             ${PUSH_FLAG} \
-            .
+            -f apps/pipeline-service/Dockerfile \
+            apps/pipeline-service
