@@ -500,6 +500,7 @@
           "Microsoft.Extensions.Configuration.EnvironmentVariables": "[9.0.0, )",
           "Microsoft.Extensions.Configuration.FileExtensions": "[9.0.0, )",
           "Microsoft.Extensions.Configuration.Json": "[9.0.0, )",
+          "Microsoft.Playwright": "[1.54.0, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.2, )"
         }
       },

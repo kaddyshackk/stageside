@@ -1,9 +1,11 @@
 using ComedyPull.Data.Contexts;
 using ComedyPull.Data.Services;
 using ComedyPull.Data.Utils;
+using ComedyPull.Domain.Interfaces.Processing;
 using ComedyPull.Domain.Interfaces.Service;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Playwright;
 
 namespace ComedyPull.Data.Extensions
 {
@@ -22,6 +24,10 @@ namespace ComedyPull.Data.Extensions
             // Services
             services.AddSingleton<ISitemapLoader, SitemapLoader>();
             services.AddSingleton<IQueueClient, RedisQueueClient>();
+            
+            // Web Browser Services
+            services.AddSingleton<IPlaywright>(provider => Playwright.CreateAsync().Result);
+            services.AddSingleton<IWebBrowser, PlaywrightWebBrowserAdapter>();
             
             // Context's
             services.AddDbContextFactory<ComedyPullContext>((_, options) =>
