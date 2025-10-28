@@ -1,9 +1,9 @@
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Models.Pipeline;
 
-namespace ComedyPull.Domain.Interfaces
+namespace ComedyPull.Domain.Interfaces.Processing
 {
     public interface ITransformer
     {
-        public IEnumerable<SilverRecord> Transform(BronzeRecord record);
+        public ICollection<ProcessedEntity> Transform(string data);
     }
 }

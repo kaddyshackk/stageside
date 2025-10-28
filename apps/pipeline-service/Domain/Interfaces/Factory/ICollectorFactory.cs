@@ -5,6 +5,6 @@ namespace ComedyPull.Domain.Interfaces.Factory
 {
     public interface ICollectorFactory
     {
-        public IDynamicCollector? GetPageCollector(ContentSku sku);
+        public IDynamicCollector? GetPageCollector(Sku sku);
     }
 }

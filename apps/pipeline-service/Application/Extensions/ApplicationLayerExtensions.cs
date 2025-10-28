@@ -28,6 +28,7 @@ namespace ComedyPull.Application.Extensions
             services.AddHostedService<CollectionService>();
             services.AddHostedService<DynamicCollectionService>();
             services.AddHostedService<TransformationService>();
+            services.AddHostedService<ProcessingService>();
         }
     }
 }

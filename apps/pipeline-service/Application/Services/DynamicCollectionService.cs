@@ -2,7 +2,7 @@
 using ComedyPull.Domain.Interfaces.Factory;
 using ComedyPull.Domain.Interfaces.Processing;
 using ComedyPull.Domain.Interfaces.Service;
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Models.Pipeline;
 using ComedyPull.Domain.Models.Queue;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -61,12 +61,14 @@ namespace ComedyPull.Application.Services
 
         private async Task WorkerAsync(CancellationToken stoppingToken)
         {
+            logger.LogInformation("Starting {Service}", nameof(DynamicCollectionService));
+            
             while (!stoppingToken.IsCancellationRequested)
             {
                 if (await queueClient.GetLengthAsync(Queues.DynamicCollection) > 0)
                 {
-                    var request = await queueClient.DequeueAsync(Queues.DynamicCollection);
-                    if (request == null)
+                    var context = await queueClient.DequeueAsync(Queues.DynamicCollection);
+                    if (context == null)
                     {
                         continue;
                     }
@@ -78,32 +80,25 @@ namespace ComedyPull.Application.Services
                     {
                         page = await _context!.NewPageAsync();
 
-                        var collector = collectorFactory.GetPageCollector(request.Sku);
+                        var collector = collectorFactory.GetPageCollector(context.Sku);
                         if (collector == null)
                         {
-                            logger.LogWarning("Found no collector that matches content sku {Sku}", request.Sku);
+                            logger.LogWarning("Found no collector that matches content sku {Sku}", context.Sku);
                             continue;
                         }
 
-                        var result = await collector.CollectPageAsync(request.Url, page);
+                        var result = await collector.CollectPageAsync(context.Metadata.CollectionUrl, page);
 
-                        var record = new BronzeRecord
-                        {
-                            BatchId = request.BatchId,
-                            Sku = request.Sku,
-                            Data = result,
-                            CreatedAt = DateTimeOffset.UtcNow,
-                            CreatedBy = "System",
-                            UpdatedAt = DateTimeOffset.UtcNow,
-                            UpdatedBy = "System",
-                        };
+                        context.RawData = result;
+                        context.Metadata.CollectedAt = DateTimeOffset.UtcNow;
+                        context.State = ProcessingState.Collected;
                         
-                        await queueClient.EnqueueAsync(Queues.Transformation, record);
+                        await queueClient.EnqueueAsync(Queues.Transformation, context);
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError(ex, "Error processing url {Url} from batch {BatchId}", request.Url,
-                            request.BatchId);
+                        logger.LogError(ex, "Error processing url {Url} from job execution {BatchId}", context.Metadata.CollectionUrl,
+                            context.JobExecutionId);
                     }
                     finally
                     {
@@ -114,6 +109,8 @@ namespace ComedyPull.Application.Services
 
                 await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
             }
+            
+            logger.LogInformation("Stopping {Service}", nameof(DynamicCollectionService));
         }
 
         /// <summary>

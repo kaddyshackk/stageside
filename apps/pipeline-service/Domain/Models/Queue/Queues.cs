@@ -5,9 +5,9 @@ namespace ComedyPull.Domain.Models.Queue
 {
     public static class Queues
     {
-        public static readonly QueueConfig<CollectionRequest> Collection = new(QueueKey.Collection.GetEnumDescription());
-        public static readonly QueueConfig<CollectionRequest> DynamicCollection = new(QueueKey.DynamicCollection.GetEnumDescription());
-        public static readonly QueueConfig<BronzeRecord> Transformation = new(QueueKey.Transformation.GetEnumDescription());
-        public static readonly QueueConfig<SilverRecord> Processing = new(QueueKey.Processing.GetEnumDescription());
+        public static readonly QueueConfig<PipelineContext> Collection = new(QueueKey.Collection.GetEnumDescription());
+        public static readonly QueueConfig<PipelineContext> DynamicCollection = new(QueueKey.DynamicCollection.GetEnumDescription());
+        public static readonly QueueConfig<PipelineContext> Transformation = new(QueueKey.Transformation.GetEnumDescription());
+        public static readonly QueueConfig<PipelineContext> Processing = new(QueueKey.Processing.GetEnumDescription());
     }
 }

@@ -20,11 +20,6 @@ namespace ComedyPull.Domain.Models.Pipeline
         public string? Slug { get; init; }
 
         /// <summary>
-        /// Gets the venue location/address.
-        /// </summary>
-        public string? Location { get; init; }
-
-        /// <summary>
         /// Gets the timestamp when this record was processed.
         /// </summary>
         public DateTimeOffset? ProcessedAt { get; init; }

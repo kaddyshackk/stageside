@@ -12,8 +12,6 @@ namespace ComedyPull.Data.Contexts
     public class ComedyPullContext(DbContextOptions<ComedyPullContext> options) : DbContext(options)
     {
         // All entities
-        public DbSet<BronzeRecord> BronzeRecords { get; set; }
-        public DbSet<SilverRecord> SilverRecords { get; set; }
         public DbSet<Act> Comedians { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<Venue> Venues { get; set; }
@@ -22,9 +20,7 @@ namespace ComedyPull.Data.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.ApplyConfiguration(new BronzeRecordConfiguration());
-            modelBuilder.ApplyConfiguration(new SilverRecordConfiguration());
+            
             modelBuilder.ApplyConfiguration(new ActConfiguration());
             modelBuilder.ApplyConfiguration(new EventConfiguration());
             modelBuilder.ApplyConfiguration(new VenueConfiguration());

@@ -7,8 +7,8 @@ namespace ComedyPull.Domain.Models.Pipeline
         [Description("Created")]
         Pending,
         
-        [Description("Ingested")]
-        Ingested,
+        [Description("Collected")]
+        Collected,
         
         [Description("Transformed")]
         Transformed,
