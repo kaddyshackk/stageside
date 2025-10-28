@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Modules.DataProcessing;
+using ComedyPull.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,11 +12,13 @@ namespace ComedyPull.Data.Configurations
 
             builder.ToTable("BronzeRecords");
             
+            builder.HasKey(x => x.Id);
+            
             builder.Property(x => x.BatchId)
                 .HasMaxLength(50)
                 .IsRequired();
             
-            builder.Property(r => r.Status)
+            builder.Property(r => r.State)
                 .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();

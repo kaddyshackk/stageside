@@ -2,7 +2,7 @@
 {
     public static class ApiLayerExtensions
     {
-        public static void AddApiServices(this IServiceCollection services, IConfiguration configuration)
+        public static void AddApiLayer(this IServiceCollection services)
         {
             services.AddEndpointsApiExplorer();
             services.AddHttpClient();

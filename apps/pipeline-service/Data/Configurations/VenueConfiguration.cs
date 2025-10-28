@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Modules.Common;
+using ComedyPull.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -7,7 +7,7 @@ namespace ComedyPull.Data.Configurations
     /// <summary>
     /// Configuration class for the Venues table.
     /// </summary>
-    public class VenueConfiguration : TraceableEntityConfiguration<Venue>
+    public class VenueConfiguration : BaseEntityConfiguration<Venue>
     {
         /// <summary>
         /// Configures the Venues table.
@@ -18,6 +18,8 @@ namespace ComedyPull.Data.Configurations
             base.Configure(builder);
             
             builder.ToTable("Venues");
+            
+            builder.HasKey(x => x.Id);
             
             builder.Property(v => v.Name)
                 .HasMaxLength(100)

@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Modules.Common;
+using ComedyPull.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -7,7 +7,7 @@ namespace ComedyPull.Data.Configurations
     /// <summary>
     /// Configuration class for the BaseEntity fields of a table.
     /// </summary>
-    public abstract class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T> where T : BaseEntity
+    public abstract class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T> where T : AuditableEntity
     {
         /// <summary>
         /// Configures the BaseEntity fields of a table.
@@ -15,8 +15,6 @@ namespace ComedyPull.Data.Configurations
         /// <param name="builder">The EntityTypeBuilder instance.</param>
         public virtual void Configure(EntityTypeBuilder<T> builder)
         {
-            builder.HasKey(e => e.Id);
-
             builder.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("NOW()")
                 .IsRequired();

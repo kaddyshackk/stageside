@@ -1,7 +1,7 @@
 using ComedyPull.Api.Extensions;
-using ComedyPull.Api.Modules.Public;
 using ComedyPull.Application.Extensions;
 using ComedyPull.Data.Extensions;
+using ComedyPull.Domain.Extensions;
 using Microsoft.Playwright;
 using Scalar.AspNetCore;
 using Serilog;
@@ -21,9 +21,10 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .Enrich.FromLogContext());
 
 builder.Services.AddOpenApi();
-builder.Services.AddApiServices(builder.Configuration);
-builder.Services.AddApplicationServices(builder.Configuration);
-builder.Services.AddDataServices(builder.Configuration);
+builder.Services.AddApiLayer();
+builder.Services.AddApplicationLayer(builder.Configuration);
+builder.Services.AddDataLayer(builder.Configuration);
+builder.Services.AddDomainLayer();
 
 // -- [ Configure Application ] ----
 
@@ -39,8 +40,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
-app.MapGroup("/api")
-    .AddPublicEndpoints();
 app.Run();
 
 return 0;

@@ -7,16 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Http" />
-    <PackageReference Include="Microsoft.Playwright" />
-    <PackageReference Include="Quartz" />
-    <PackageReference Include="Quartz.Extensions.Hosting" />
-    <PackageReference Include="Quartz.Serialization.Json" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Riok.Mapperly" />
     <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="StackExchange.Redis" />
   </ItemGroup>
 
   <ItemGroup>
