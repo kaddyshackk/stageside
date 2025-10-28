@@ -8,14 +8,14 @@ namespace ComedyPull.Data.Contexts
     /// <summary>
     /// Design-time factory for SchemaContext to support EF migrations.
     /// </summary>
-    public class ComedyPullContextFactory : IDesignTimeDbContextFactory<ComedyPullContext>
+    public class ComedyContextFactory : IDesignTimeDbContextFactory<ComedyContext>
     {
-        public ComedyPullContext CreateDbContext(string[] args)
+        public ComedyContext CreateDbContext(string[] args)
         {
             var configuration = BuildConfiguration();
-            var optionsBuilder = new DbContextOptionsBuilder<ComedyPullContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<ComedyContext>();
             DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(optionsBuilder, configuration);
-            return new ComedyPullContext(optionsBuilder.Options);
+            return new ComedyContext(optionsBuilder.Options);
         }
 
         private static IConfiguration BuildConfiguration()

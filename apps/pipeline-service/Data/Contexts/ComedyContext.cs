@@ -9,13 +9,13 @@ namespace ComedyPull.Data.Contexts
     /// This context is used only for migrations and schema management, not for runtime data access.
     /// </summary>
     /// <param name="options">Injected <see cref="DbContextOptions"/> instance.</param>
-    public class ComedyPullContext(DbContextOptions<ComedyPullContext> options) : DbContext(options)
+    public class ComedyContext(DbContextOptions<ComedyContext> options) : DbContext(options)
     {
         // All entities
-        public DbSet<Act> Comedians { get; set; }
+        public DbSet<Act> Acts { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<Venue> Venues { get; set; }
-        public DbSet<EventAct> ComedianEvents { get; set; }
+        public DbSet<EventAct> EventActs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

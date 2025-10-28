@@ -30,7 +30,7 @@ namespace ComedyPull.Data.Extensions
             services.AddSingleton<IWebBrowser, PlaywrightWebBrowserAdapter>();
             
             // Context's
-            services.AddDbContextFactory<ComedyPullContext>((_, options) =>
+            services.AddDbContextFactory<ComedyContext>((_, options) =>
             {
                 DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration);
             });
