@@ -3,19 +3,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace ComedyPull.Data.Contexts
+namespace ComedyPull.Data.Contexts.ComedyDb
 {
     /// <summary>
-    /// Design-time factory for SchemaContext to support EF migrations.
+    /// Design-time factory for ComedyDbContext to support EF migrations.
     /// </summary>
-    public class ComedyContextFactory : IDesignTimeDbContextFactory<ComedyContext>
+    public class ComedyDbContextFactory : IDesignTimeDbContextFactory<ComedyDbContext>
     {
-        public ComedyContext CreateDbContext(string[] args)
+        public ComedyDbContext CreateDbContext(string[] args)
         {
             var configuration = BuildConfiguration();
-            var optionsBuilder = new DbContextOptionsBuilder<ComedyContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<ComedyDbContext>();
             DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(optionsBuilder, configuration);
-            return new ComedyContext(optionsBuilder.Options);
+            return new ComedyDbContext(optionsBuilder.Options);
         }
 
         private static IConfiguration BuildConfiguration()

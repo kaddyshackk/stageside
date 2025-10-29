@@ -1,8 +1,9 @@
+using ComedyPull.Data.Models;
 using ComedyPull.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ComedyPull.Data.Configurations
+namespace ComedyPull.Data.Contexts.ComedyDb.Configurations
 {
     /// <summary>
     /// Configuration class for the Events table.

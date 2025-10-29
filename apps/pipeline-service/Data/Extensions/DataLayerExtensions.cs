@@ -1,4 +1,5 @@
-using ComedyPull.Data.Contexts;
+using ComedyPull.Data.Contexts.ComedyDb;
+using ComedyPull.Data.Contexts.PipelineDb;
 using ComedyPull.Data.Services;
 using ComedyPull.Data.Utils;
 using ComedyPull.Domain.Interfaces.Processing;
@@ -29,8 +30,13 @@ namespace ComedyPull.Data.Extensions
             services.AddSingleton<IPlaywright>(provider => Playwright.CreateAsync().Result);
             services.AddSingleton<IWebBrowser, PlaywrightWebBrowserAdapter>();
             
-            // Context's
-            services.AddDbContextFactory<ComedyContext>((_, options) =>
+            // Contexts
+            services.AddDbContextFactory<ComedyDbContext>((_, options) =>
+            {
+                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration);
+            });
+            
+            services.AddDbContextFactory<PipelineDbContext>((_, options) =>
             {
                 DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration);
             });

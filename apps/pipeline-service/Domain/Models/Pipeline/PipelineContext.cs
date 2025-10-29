@@ -2,7 +2,7 @@ namespace ComedyPull.Domain.Models.Pipeline
 {
     public record PipelineContext
     {
-        public required Guid Id { get; init; } = Guid.NewGuid();
+        public Guid Id { get; init; } = Guid.NewGuid();
         public required Guid JobExecutionId { get; init; } = Guid.NewGuid();
         public required Source Source { get; init; }
         public required Sku Sku { get; init; }

@@ -1,15 +1,15 @@
-﻿using ComedyPull.Data.Configurations;
+﻿using ComedyPull.Data.Contexts.ComedyDb.Configurations;
 using ComedyPull.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Contexts
+namespace ComedyPull.Data.Contexts.ComedyDb
 {
     /// <summary>
     /// Schema context - manages database migrations for all tables.
     /// This context is used only for migrations and schema management, not for runtime data access.
     /// </summary>
     /// <param name="options">Injected <see cref="DbContextOptions"/> instance.</param>
-    public class ComedyContext(DbContextOptions<ComedyContext> options) : DbContext(options)
+    public class ComedyDbContext(DbContextOptions<ComedyDbContext> options) : DbContext(options)
     {
         // All entities
         public DbSet<Act> Acts { get; set; }
