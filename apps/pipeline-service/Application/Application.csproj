@@ -12,7 +12,6 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Riok.Mapperly" />
     <PackageReference Include="Serilog.AspNetCore" />
-    <PackageReference Include="StackExchange.Redis" />
   </ItemGroup>
 
   <ItemGroup>

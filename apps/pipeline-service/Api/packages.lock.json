@@ -485,8 +485,7 @@
           "Microsoft.Extensions.Hosting.Abstractions": "[9.0.0, )",
           "Microsoft.Extensions.Http": "[9.0.0, )",
           "Riok.Mapperly": "[4.3.0-next.5, )",
-          "Serilog.AspNetCore": "[9.0.0, )",
-          "StackExchange.Redis": "[2.9.32, )"
+          "Serilog.AspNetCore": "[9.0.0, )"
         }
       },
       "data": {
@@ -501,7 +500,8 @@
           "Microsoft.Extensions.Configuration.FileExtensions": "[9.0.0, )",
           "Microsoft.Extensions.Configuration.Json": "[9.0.0, )",
           "Microsoft.Playwright": "[1.54.0, )",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.2, )"
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.2, )",
+          "StackExchange.Redis": "[2.9.32, )"
         }
       },
       "domain": {
