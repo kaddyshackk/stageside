@@ -36,9 +36,6 @@ namespace ComedyPull.Data.Contexts.PipelineDb.Configurations
             builder.Property(x => x.IsActive)
                 .IsRequired();
             
-            builder.Property(x => x.MaxConcurrency)
-                .IsRequired();
-            
             builder.Property(x => x.TimeoutMinutes)
                 .IsRequired();
             

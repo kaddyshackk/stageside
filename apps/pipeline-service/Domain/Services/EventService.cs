@@ -1,23 +1,27 @@
 using ComedyPull.Domain.Interfaces.Repository;
 using ComedyPull.Domain.Models;
 using ComedyPull.Domain.Models.Pipeline;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace ComedyPull.Domain.Services
 {
     public class EventService(
-        IEventRepository repository,
-        IEventActRepository eventActRepository,
-        IActRepository actRepository,
-        IVenueRepository venueRepository,
+        IServiceScopeFactory scopeFactory,
         ILogger<EventService> logger
     )
     {
         public async Task<BatchProcessResult<ProcessedEvent, Event>> ProcessEventsAsync(IEnumerable<ProcessedEvent> processedEvents)
         {
+            using var scope = scopeFactory.CreateScope();
+            var eventRepository = scope.ServiceProvider.GetRequiredService<IEventRepository>();
+            var eventActRepository = scope.ServiceProvider.GetRequiredService<IEventActRepository>();
+            var actRepository = scope.ServiceProvider.GetRequiredService<IActRepository>();
+            var venueRepository = scope.ServiceProvider.GetRequiredService<IVenueRepository>();
+            
             var events = processedEvents.ToList();
             var eventSlugs = events.Select(e => e.Slug).Distinct().ToList();
-            var existingEvents = await repository.GetEventsBySlugAsync(eventSlugs!);
+            var existingEvents = await eventRepository.GetEventsBySlugAsync(eventSlugs!);
             var existingEventsBySlug = existingEvents.ToDictionary(e => e.Slug, e => e);
             
             var comedianSlugs = events.Select(x => x.ComedianSlug!).Distinct().ToList();
@@ -113,13 +117,13 @@ namespace ComedyPull.Domain.Services
 
             if (newEvents.Count != 0)
             {
-                await repository.BulkCreateEventsAsync(newEvents);
+                await eventRepository.BulkCreateEventsAsync(newEvents);
                 logger.LogInformation("Created {Count} new events", newEvents.Count);
             }
 
             if (updatedEvents.Count != 0)
             {
-                await repository.BulkUpdateEventsAsync(updatedEvents);
+                await eventRepository.SaveChangesAsync();
                 logger.LogInformation("Updated {Count} existing events", updatedEvents.Count);
             }
 
@@ -134,7 +138,7 @@ namespace ComedyPull.Domain.Services
                 Created = newEvents,
                 Updated = updatedEvents,
                 Failed = failedEvents,
-                ProcessedCount = processedEvents.Count()
+                ProcessedCount = events.Count
             };
         }
     }

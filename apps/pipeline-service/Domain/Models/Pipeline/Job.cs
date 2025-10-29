@@ -8,10 +8,9 @@ namespace ComedyPull.Domain.Models.Pipeline
         public required string Name { get; set; }
         public required string CronExpression { get; set; }
         public required bool IsActive { get; set; }
-        public int MaxConcurrency { get; set; } = 1;
         public int TimeoutMinutes { get; set; } = 60;
-        public DateTime? LastExecuted { get; set; }
-        public DateTime? NextExecution { get; set; }
+        public DateTimeOffset? LastExecuted { get; set; }
+        public DateTimeOffset? NextExecution { get; set; }
 
         // Navigation properties
         public virtual ICollection<JobSitemap> Sitemaps { get; set; } = [];

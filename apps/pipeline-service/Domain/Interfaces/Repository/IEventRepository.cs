@@ -2,10 +2,29 @@ using ComedyPull.Domain.Models;
 
 namespace ComedyPull.Domain.Interfaces.Repository
 {
+    /// <summary>
+    /// Manages data access operations for <see cref="Event"/> entities.
+    /// </summary>
     public interface IEventRepository
     {
-        public Task<IEnumerable<Event>> GetEventsBySlugAsync(IEnumerable<string> slugs);
+        /// <summary>
+        /// Retrieves events matching the specified slug identifiers with change tracking. This method should be used
+        /// for update operations.
+        /// </summary>
+        /// <param name="slugs">The slug identifiers to match. Must not be null.</param>
+        /// <returns>A collection of matching events, or an empty collection if none found.</returns>
+        public Task<ICollection<Event>> GetEventsBySlugAsync(IEnumerable<string> slugs);
+        
+        /// <summary>
+        /// Creates multiple events in a single batch operation.
+        /// </summary>
+        /// <param name="events">The events to create. Must not contain null elements.</param>
         public Task BulkCreateEventsAsync(IEnumerable<Event> events);
-        public Task BulkUpdateEventsAsync(IEnumerable<Event> events);
+        
+        /// <summary>
+        /// Saves all changes made to currently tracked entities. Only applies to changes made during a single lifetime
+        /// of this repository. This method be used to implement efficient bulk updates.
+        /// </summary>
+        public Task SaveChangesAsync();
     }
 }

@@ -1,8 +1,10 @@
 using ComedyPull.Data.Contexts.ComedyDb;
 using ComedyPull.Data.Contexts.PipelineDb;
+using ComedyPull.Data.Repositories;
 using ComedyPull.Data.Services;
 using ComedyPull.Data.Utils;
 using ComedyPull.Domain.Interfaces.Processing;
+using ComedyPull.Domain.Interfaces.Repository;
 using ComedyPull.Domain.Interfaces.Service;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +31,13 @@ namespace ComedyPull.Data.Extensions
             // Web Browser Services
             services.AddSingleton<IPlaywright>(provider => Playwright.CreateAsync().Result);
             services.AddSingleton<IWebBrowser, PlaywrightWebBrowserAdapter>();
+            
+            // Repositories
+            services.AddScoped<ISchedulingRepository, SchedulingRepository>();
+            services.AddScoped<IActRepository, ActRepository>();
+            services.AddScoped<IVenueRepository, VenueRepository>();
+            services.AddScoped<IEventRepository, EventRepository>();
+            services.AddScoped<IEventActRepository, EventActRepository>();
             
             // Contexts
             services.AddDbContextFactory<ComedyDbContext>((_, options) =>

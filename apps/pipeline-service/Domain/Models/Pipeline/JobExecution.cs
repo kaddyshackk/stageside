@@ -4,8 +4,8 @@ namespace ComedyPull.Domain.Models.Pipeline
     {
         public Guid Id { get; set; }
         public required Guid JobId { get; set; }
-        public required DateTimeOffset StartedAt { get; set; }
-        public JobExecutionStatus Status { get; set; } = JobExecutionStatus.Running;
+        public JobExecutionStatus Status { get; set; } = JobExecutionStatus.Scheduled;
+        public DateTimeOffset? StartedAt { get; set; }
         public DateTimeOffset? CompletedAt { get; set; }
         public string? ErrorMessage { get; set; }
         public int ProcessedUrls { get; set; }

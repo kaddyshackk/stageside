@@ -1,13 +1,17 @@
 using ComedyPull.Domain.Interfaces.Repository;
 using ComedyPull.Domain.Models;
 using ComedyPull.Domain.Models.Pipeline;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ComedyPull.Domain.Services
 {
-    public class VenueService(IVenueRepository repository)
+    public class VenueService(IServiceScopeFactory scopeFactory)
     {
         public async Task<BatchProcessResult<ProcessedVenue, Venue>> ProcessVenuesAsync(IEnumerable<ProcessedVenue> processedVenues)
         {
+            using var scope = scopeFactory.CreateScope();
+            var repository = scope.ServiceProvider.GetRequiredService<IVenueRepository>();
+
             var venues = processedVenues.ToList();
             var slugs = venues.Select(s => s.Slug).Distinct().Where(s => !string.IsNullOrEmpty(s));
             var existingVenues = await repository.GetVenuesBySlugAsync(slugs!);
@@ -50,7 +54,7 @@ namespace ComedyPull.Domain.Services
                 await repository.BulkCreateVenuesAsync(toCreate);
             
             if (toUpdate.Count != 0)
-                await repository.BulkUpdateVenuesAsync(toUpdate);
+                await repository.SaveChangesAsync();
 
             return new BatchProcessResult<ProcessedVenue, Venue>
             {
