@@ -9,31 +9,31 @@ namespace ComedyPull.Data.Repositories
     public class ActRepository(ComedyDbContext context) : IActRepository
     {
         /// inheritdoc
-        public async Task<ICollection<Act>> ReadActsBySlugAsync(IEnumerable<string> slugs)
+        public async Task<ICollection<Act>> ReadActsBySlugAsync(IEnumerable<string> slugs, CancellationToken stoppingToken)
         {
             var enumerable = slugs.ToList();
             if (enumerable.Count == 0)
                 return [];
-            return await context.Acts.AsNoTracking().Where(a => enumerable.Contains(a.Slug)).ToListAsync();
+            return await context.Acts.AsNoTracking().Where(a => enumerable.Contains(a.Slug)).ToListAsync(stoppingToken);
         }
 
         /// inheritdoc
-        public async Task<ICollection<Act>> GetActsBySlugAsync(IEnumerable<string> slugs)
+        public async Task<ICollection<Act>> GetActsBySlugAsync(IEnumerable<string> slugs, CancellationToken stoppingToken)
         {
             var enumerable = slugs.ToList();
             if (enumerable.Count == 0)
                 return [];
-            return await context.Acts.Where(a => enumerable.Contains(a.Slug)).ToListAsync();
+            return await context.Acts.Where(a => enumerable.Contains(a.Slug)).ToListAsync(stoppingToken);
         }
 
         /// inheritdoc
-        public async Task BulkCreateActsAsync(IEnumerable<Act> acts)
+        public async Task BulkCreateActsAsync(IEnumerable<Act> acts, CancellationToken stoppingToken)
         {
             context.ChangeTracker.AutoDetectChangesEnabled = false;
             try
             {
                 context.Acts.AddRange(acts);
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(stoppingToken);
             }
             finally
             {
@@ -42,9 +42,9 @@ namespace ComedyPull.Data.Repositories
         }
 
         /// inheritdoc
-        public async Task SaveChangesAsync()
+        public async Task SaveChangesAsync(CancellationToken stoppingToken)
         {
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(stoppingToken);
         }
     }
 }

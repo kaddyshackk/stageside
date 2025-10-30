@@ -30,7 +30,7 @@ namespace ComedyPull.Application.Services
                         .Select(e => e.Data)
                         .Cast<ProcessedAct>();
                     
-                    await actService.ProcessActsAsync(acts);
+                    await actService.ProcessActsAsync(acts, stoppingToken);
                     
                     // Process Venues
                     var venues = context.ProcessedEntities
@@ -38,7 +38,7 @@ namespace ComedyPull.Application.Services
                         .Select(e => e.Data)
                         .Cast<ProcessedVenue>();
 
-                    await venueService.ProcessVenuesAsync(venues);
+                    await venueService.ProcessVenuesAsync(venues, stoppingToken);
                     
                     // Process Events
                     var events = context.ProcessedEntities
@@ -46,7 +46,7 @@ namespace ComedyPull.Application.Services
                         .Select(e => e.Data)
                         .Cast<ProcessedEvent>();
 
-                    await eventService.ProcessEventsAsync(events);
+                    await eventService.ProcessEventsAsync(events, stoppingToken);
                 }
             }
             logger.LogInformation("Stopping {Service}", nameof(ProcessingService));

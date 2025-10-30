@@ -7,14 +7,14 @@ namespace ComedyPull.Domain.Services
 {
     public class VenueService(IServiceScopeFactory scopeFactory)
     {
-        public async Task<BatchProcessResult<ProcessedVenue, Venue>> ProcessVenuesAsync(IEnumerable<ProcessedVenue> processedVenues)
+        public async Task<BatchProcessResult<ProcessedVenue, Venue>> ProcessVenuesAsync(IEnumerable<ProcessedVenue> processedVenues, CancellationToken stoppingToken)
         {
             using var scope = scopeFactory.CreateScope();
             var repository = scope.ServiceProvider.GetRequiredService<IVenueRepository>();
 
             var venues = processedVenues.ToList();
             var slugs = venues.Select(s => s.Slug).Distinct().Where(s => !string.IsNullOrEmpty(s));
-            var existingVenues = await repository.GetVenuesBySlugAsync(slugs!);
+            var existingVenues = await repository.GetVenuesBySlugAsync(slugs!, stoppingToken);
             var existingBySlug = existingVenues.ToDictionary(s => s.Slug, s => s);
 
             var toCreate = new List<Venue>();
@@ -51,10 +51,10 @@ namespace ComedyPull.Domain.Services
             }
             
             if (toCreate.Count != 0)
-                await repository.BulkCreateVenuesAsync(toCreate);
+                await repository.BulkCreateVenuesAsync(toCreate, stoppingToken);
             
             if (toUpdate.Count != 0)
-                await repository.SaveChangesAsync();
+                await repository.SaveChangesAsync(stoppingToken);
 
             return new BatchProcessResult<ProcessedVenue, Venue>
             {

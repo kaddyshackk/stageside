@@ -11,6 +11,6 @@ namespace ComedyPull.Domain.Interfaces.Repository
         /// Creates multiple <see cref="EventAct"/> relationship entities in a single operation.
         /// </summary>
         /// <param name="eventActs">The EventActs to create.</param>
-        public Task BulkCreateEventActsAsync(IEnumerable<EventAct> eventActs);
+        public Task BulkCreateEventActsAsync(IEnumerable<EventAct> eventActs, CancellationToken stoppingToken);
     }
 }

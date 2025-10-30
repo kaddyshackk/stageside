@@ -7,14 +7,14 @@ namespace ComedyPull.Domain.Services
 {
     public class ActService(IServiceScopeFactory scopeFactory)
     {
-        public async Task<BatchProcessResult<ProcessedAct, Act>> ProcessActsAsync(IEnumerable<ProcessedAct> processedActs)
+        public async Task<BatchProcessResult<ProcessedAct, Act>> ProcessActsAsync(IEnumerable<ProcessedAct> processedActs, CancellationToken stoppingToken)
         {
             using var scope = scopeFactory.CreateScope();
             var repository = scope.ServiceProvider.GetRequiredService<IActRepository>();
             
             var acts = processedActs.ToList();
             var slugs = acts.Select(s => s.Slug).Distinct().Where(s => !string.IsNullOrEmpty(s));
-            var existingActs = await repository.GetActsBySlugAsync(slugs!);
+            var existingActs = await repository.GetActsBySlugAsync(slugs!, stoppingToken);
             var existingBySlug = existingActs.ToDictionary(s => s.Slug, s => s);
 
             var toCreate = new List<Act>();
@@ -58,10 +58,10 @@ namespace ComedyPull.Domain.Services
             }
             
             if (toCreate.Count != 0)
-                await repository.BulkCreateActsAsync(toCreate);
+                await repository.BulkCreateActsAsync(toCreate, stoppingToken);
             
             if (toUpdate.Count != 0)
-                await repository.SaveChangesAsync();
+                await repository.SaveChangesAsync(stoppingToken);
 
             return new BatchProcessResult<ProcessedAct, Act>
             {

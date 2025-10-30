@@ -11,7 +11,7 @@ namespace ComedyPull.Domain.Services
         ILogger<EventService> logger
     )
     {
-        public async Task<BatchProcessResult<ProcessedEvent, Event>> ProcessEventsAsync(IEnumerable<ProcessedEvent> processedEvents)
+        public async Task<BatchProcessResult<ProcessedEvent, Event>> ProcessEventsAsync(IEnumerable<ProcessedEvent> processedEvents, CancellationToken stoppingToken)
         {
             using var scope = scopeFactory.CreateScope();
             var eventRepository = scope.ServiceProvider.GetRequiredService<IEventRepository>();
@@ -21,16 +21,16 @@ namespace ComedyPull.Domain.Services
             
             var events = processedEvents.ToList();
             var eventSlugs = events.Select(e => e.Slug).Distinct().ToList();
-            var existingEvents = await eventRepository.GetEventsBySlugAsync(eventSlugs!);
+            var existingEvents = await eventRepository.GetEventsBySlugAsync(eventSlugs!, stoppingToken);
             var existingEventsBySlug = existingEvents.ToDictionary(e => e.Slug, e => e);
             
             var comedianSlugs = events.Select(x => x.ComedianSlug!).Distinct().ToList();
             var venueSlugs = events.Select(e => e.VenueSlug!).Distinct().ToList();
 
-            var acts = await actRepository.GetActsBySlugAsync(comedianSlugs);
+            var acts = await actRepository.GetActsBySlugAsync(comedianSlugs, stoppingToken);
             var actsBySlug = acts.ToDictionary(c => c.Slug, c => c);
 
-            var venues = await venueRepository.GetVenuesBySlugAsync(venueSlugs);
+            var venues = await venueRepository.GetVenuesBySlugAsync(venueSlugs, stoppingToken);
             var venuesBySlug = venues.ToDictionary(v => v.Slug, v => v);
 
             var newEvents = new List<Event>();
@@ -117,19 +117,19 @@ namespace ComedyPull.Domain.Services
 
             if (newEvents.Count != 0)
             {
-                await eventRepository.BulkCreateEventsAsync(newEvents);
+                await eventRepository.BulkCreateEventsAsync(newEvents, stoppingToken);
                 logger.LogInformation("Created {Count} new events", newEvents.Count);
             }
 
             if (updatedEvents.Count != 0)
             {
-                await eventRepository.SaveChangesAsync();
+                await eventRepository.SaveChangesAsync(stoppingToken);
                 logger.LogInformation("Updated {Count} existing events", updatedEvents.Count);
             }
 
             if (newEventActs.Count != 0)
             {
-                await eventActRepository.BulkCreateEventActsAsync(newEventActs);
+                await eventActRepository.BulkCreateEventActsAsync(newEventActs, stoppingToken);
                 logger.LogInformation("Created {Count} comedian-event relationships", newEventActs.Count);
             }
 

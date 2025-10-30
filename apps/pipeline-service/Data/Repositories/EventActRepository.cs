@@ -8,13 +8,13 @@ namespace ComedyPull.Data.Repositories
     public class EventActRepository(ComedyDbContext context) : IEventActRepository
     {
         /// inheritdoc
-        public async Task BulkCreateEventActsAsync(IEnumerable<EventAct> eventActs)
+        public async Task BulkCreateEventActsAsync(IEnumerable<EventAct> eventActs, CancellationToken stoppingToken)
         {
             context.ChangeTracker.AutoDetectChangesEnabled = false;
             try
             {
                 context.EventActs.AddRange(eventActs);
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(stoppingToken);
             }
             finally
             {
