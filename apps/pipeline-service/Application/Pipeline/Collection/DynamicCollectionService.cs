@@ -1,5 +1,4 @@
-﻿using ComedyPull.Application.Options;
-using ComedyPull.Domain.Interfaces.Factory;
+﻿using ComedyPull.Domain.Interfaces.Factory;
 using ComedyPull.Domain.Interfaces.Processing;
 using ComedyPull.Domain.Interfaces.Service;
 using ComedyPull.Domain.Models.Pipeline;
@@ -8,17 +7,17 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace ComedyPull.Application.Services
+namespace ComedyPull.Application.Pipeline.Collection
 {
     public class DynamicCollectionService(
         IQueueClient queueClient,
         ICollectorFactory collectorFactory,
         IWebBrowser webBrowser,
-        IOptions<DataPipelineOptions> options,
+        IOptions<DynamicCollectionOptions> options,
         ILogger<DynamicCollectionService> logger
         ) : BackgroundService
     {
-        private readonly SemaphoreSlim _semaphore = new(options.Value.Concurrency);
+        private readonly SemaphoreSlim _semaphore = new(options.Value.WebBrowserConcurrency);
         private bool _disposed;
 
         private IWebBrowserInstance? _browser;
@@ -50,9 +49,9 @@ namespace ComedyPull.Application.Services
         {
             await InitializeAsync();
             
-            logger.LogInformation("Starting PlaywrightScraper workers with concurrency {Concurrency}", options.Value.Concurrency);
+            logger.LogInformation("Starting PlaywrightScraper workers with concurrency {Concurrency}", options.Value.WebBrowserConcurrency);
             
-            var workers = Enumerable.Range(0, options.Value.Concurrency)
+            var workers = Enumerable.Range(0, options.Value.WebBrowserConcurrency)
                 .Select(_ => WorkerAsync(stoppingToken))
                 .ToArray();
 
@@ -62,7 +61,6 @@ namespace ComedyPull.Application.Services
         private async Task WorkerAsync(CancellationToken stoppingToken)
         {
             logger.LogInformation("Starting {Service}", nameof(DynamicCollectionService));
-            
             while (!stoppingToken.IsCancellationRequested)
             {
                 if (await queueClient.GetLengthAsync(Queues.DynamicCollection) > 0)
@@ -106,10 +104,11 @@ namespace ComedyPull.Application.Services
                         _semaphore.Release();
                     }
                 }
-
-                await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+                else
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(options.Value.PollIntervalSeconds), stoppingToken);
+                }
             }
-            
             logger.LogInformation("Stopping {Service}", nameof(DynamicCollectionService));
         }
 

@@ -3,18 +3,13 @@ using ComedyPull.Domain.Interfaces.Processing;
 using ComedyPull.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ComedyPull.Application.Services
+namespace ComedyPull.Application.Pipeline.Collection
 {
-    public class ServiceFactory(IServiceProvider serviceProvider) : ICollectorFactory, ITransformerFactory
+    public class CollectorFactory(IServiceProvider serviceProvider) : ICollectorFactory
     {
         public IDynamicCollector? GetPageCollector(Sku sku)
         {
             return serviceProvider.GetKeyedService<IDynamicCollector>(sku);
-        }
-
-        public ITransformer? GetTransformer(Sku sku)
-        {
-            return serviceProvider.GetKeyedService<ITransformer>(sku);
         }
     }
 }

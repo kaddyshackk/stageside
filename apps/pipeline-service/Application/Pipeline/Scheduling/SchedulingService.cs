@@ -5,13 +5,15 @@ using ComedyPull.Domain.Models.Queue;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
-namespace ComedyPull.Application.Services
+namespace ComedyPull.Application.Pipeline.Scheduling
 {
     public class SchedulingService(
         IServiceScopeFactory scopeFactory,
         ISitemapLoader sitemapLoader,
         IQueueClient queueClient,
+        IOptions<SchedulingOptions> options,
         ILogger<SchedulingService> logger) : BackgroundService
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -49,7 +51,7 @@ namespace ComedyPull.Application.Services
                     }
                 }
                 
-                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(options.Value.PollingIntervalSeconds), stoppingToken);
             }
         }
 

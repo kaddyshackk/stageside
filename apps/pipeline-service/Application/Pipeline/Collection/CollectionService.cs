@@ -4,21 +4,22 @@ using ComedyPull.Domain.Models.Pipeline;
 using ComedyPull.Domain.Models.Queue;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
-namespace ComedyPull.Application.Services
+namespace ComedyPull.Application.Pipeline.Collection
 {
     /// <summary>
     /// This service is responsible for pulling resource requests from the queue and delegating to collectors.
     /// </summary>
     public class CollectionService(
         IQueueClient queueClient,
+        IOptions<CollectionOptions> options,
         ILogger<CollectionService> logger)
         : BackgroundService
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             logger.LogInformation("Starting {Service}", nameof(CollectionService));
-            
             while (!stoppingToken.IsCancellationRequested)
             {
                 if (await queueClient.GetLengthAsync(Queues.Collection) > 0)
@@ -41,10 +42,11 @@ namespace ComedyPull.Application.Services
                         default:
                             throw new NotSupportedException($"Collection type {context} not supported");
                     }
-                    
                 }
-                
-                await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+                else
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(options.Value.PollIntervalSeconds), stoppingToken);
+                }
             }
             logger.LogInformation("Stopping {Service}", nameof(CollectionService));
         }

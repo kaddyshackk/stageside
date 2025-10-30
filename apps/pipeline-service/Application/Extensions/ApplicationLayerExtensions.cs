@@ -1,5 +1,7 @@
-using ComedyPull.Application.Options;
-using ComedyPull.Application.Services;
+using ComedyPull.Application.Pipeline.Collection;
+using ComedyPull.Application.Pipeline.Processing;
+using ComedyPull.Application.Pipeline.Scheduling;
+using ComedyPull.Application.Pipeline.Transformation;
 using ComedyPull.Domain.Interfaces.Factory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,12 +18,15 @@ namespace ComedyPull.Application.Extensions
         public static void AddApplicationLayer(this IServiceCollection services, IConfiguration configuration)
         {
             // Options
-            services.Configure<DataPipelineOptions>(configuration.GetSection("DataPipelineOptions"));
-            
+            services.Configure<CollectionOptions>(configuration.GetSection("Pipeline:Collection"));
+            services.Configure<TransformationOptions>(configuration.GetSection("Pipeline:Transformation"));
+            services.Configure<ProcessingOptions>(configuration.GetSection("Pipeline:Processing"));
+            services.Configure<SchedulingOptions>(configuration.GetSection("Pipeline:Scheduling"));
+            services.Configure<DynamicCollectionOptions>(configuration.GetSection("Pipeline:DynamicCollection"));
+
             // Service Factories
-            services.AddSingleton<ServiceFactory>();
-            services.AddSingleton<ICollectorFactory>(provider => provider.GetRequiredService<ServiceFactory>());
-            services.AddSingleton<ITransformerFactory>(provider => provider.GetRequiredService<ServiceFactory>());
+            services.AddSingleton<ICollectorFactory, CollectorFactory>();
+            services.AddSingleton<ITransformerFactory, TransformerFactory>();
 
             // Pipeline services
             services.AddHostedService<SchedulingService>();
