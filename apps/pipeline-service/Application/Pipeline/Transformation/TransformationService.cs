@@ -10,6 +10,8 @@ namespace ComedyPull.Application.Pipeline.Transformation
 {
     public class TransformationService(
         IQueueClient queueClient,
+        IQueueHealthMonitor queueHealthMonitor,
+        IBackPressureManager backPressureManager,
         ITransformerFactory transformerFactory,
         IOptions<TransformationOptions> options,
         ILogger<TransformationService> logger
@@ -20,43 +22,83 @@ namespace ComedyPull.Application.Pipeline.Transformation
             logger.LogInformation("Starting {Service}", nameof(TransformationService));
             while (!stoppingToken.IsCancellationRequested)
             {
-                var batch = await queueClient.DequeueBatchAsync(
-                    Queues.Transformation,
-                    maxCount: options.Value.BatchMaxSize,
-                    maxWait: TimeSpan.FromSeconds(options.Value.BatchMaxWaitSeconds),
-                    pollingWait: TimeSpan.FromSeconds(options.Value.PollingWaitSeconds),
-                    cancellationToken: stoppingToken);
-
-                if (batch.Count > 0)
+                try
                 {
-                    foreach (var context in batch)
+                    if (await backPressureManager.ShouldApplyBackPressureAsync(Queues.Processing))
                     {
-                        var transformer = transformerFactory.GetTransformer(context.Sku);
-                        if (transformer == null)
-                        {
-                            logger.LogWarning("Found no transformer that matched content sku {Sku}", context.Sku);
-                            continue;
-                        }
-
-                        try
-                        {
-                            context.ProcessedEntities = transformer.Transform(context.RawData);
-                            context.State = ProcessingState.Transformed;
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.LogError(ex, "Failed to deserialize PunchupRecord from context {ContextId}",
-                                context.Id);
-                            context.State = ProcessingState.Failed;
-                        }
+                        logger.LogWarning("Processing queue overloaded. Applying back pressure delay.");
+                        continue;
                     }
 
-                    await queueClient.EnqueueBatchAsync(Queues.Processing, batch);
-                }
+                    var adaptiveBatchSize = await backPressureManager.CalculateAdaptiveBatchSizeAsync(
+                        Queues.Transformation,
+                        options.Value.MinBatchSize,
+                        options.Value.MaxBatchSize);
+                    
+                    var transformationStartTime = DateTime.UtcNow;
 
-                await Task.Delay(TimeSpan.FromSeconds(options.Value.BatchDelaySeconds), stoppingToken);
+                    var batch = await queueClient.DequeueBatchAsync(
+                        Queues.Transformation,
+                        maxCount: adaptiveBatchSize,
+                        stoppingToken: stoppingToken);
+                    if (batch.Count <= 0) continue;
+                    
+                    logger.LogInformation("Transforming batch of {BatchSize} items (adaptive size: {AdaptiveSize})",
+                        batch.Count, adaptiveBatchSize);
+
+                    await TransformBatchAsync(batch, stoppingToken);
+
+                    var transformationTime = DateTime.UtcNow - transformationStartTime;
+                    await queueHealthMonitor.RecordDequeueAsync(Queues.Transformation, batch.Count,
+                        transformationTime);
+
+                    var successfulItems = batch.Where(c => c.State == ProcessingState.Transformed).ToList();
+                    if (successfulItems.Count <= 0) continue;
+                    
+                    await queueClient.EnqueueBatchAsync(Queues.Processing, successfulItems);
+                    await queueHealthMonitor.RecordEnqueueAsync(Queues.Processing, successfulItems.Count);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error in transformation service execution");
+                    await queueHealthMonitor.RecordErrorAsync(Queues.Transformation);
+                }
+                finally
+                {
+                    var delaySeconds = await backPressureManager.CalculateAdaptiveDelayAsync(Queues.Processing,
+                        options.Value.DelayIntervalSeconds);
+                    await Task.Delay(TimeSpan.FromSeconds(delaySeconds), stoppingToken);
+                }
             }
             logger.LogInformation("Stopping {Service}", nameof(TransformationService));
+        }
+
+
+        private async Task TransformBatchAsync(ICollection<PipelineContext> batch, CancellationToken stoppingToken)
+        {
+            foreach (var context in batch)
+            {
+                var transformer = transformerFactory.GetTransformer(context.Sku);
+                if (transformer == null)
+                {
+                    logger.LogWarning("Found no transformer that matched content sku {Sku}", context.Sku);
+                    context.State = ProcessingState.Failed;
+                    continue;
+                }
+
+                try
+                {
+                    context.ProcessedEntities = transformer.Transform(context.RawData);
+                    context.State = ProcessingState.Transformed;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to transform context {ContextId} with sku {Sku}",
+                        context.Id, context.Sku);
+                    context.State = ProcessingState.Failed;
+                    await queueHealthMonitor.RecordErrorAsync(Queues.Transformation);
+                }
+            }
         }
     }
 }

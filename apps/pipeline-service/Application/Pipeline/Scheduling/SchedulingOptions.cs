@@ -2,6 +2,6 @@
 {
     public class SchedulingOptions
     {
-        public int PollingIntervalSeconds { get; init; }
+        public int DelayIntervalSeconds { get; init; }
     }
 }

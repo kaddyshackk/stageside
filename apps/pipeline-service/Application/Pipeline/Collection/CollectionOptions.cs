@@ -2,6 +2,6 @@
 {
     public class CollectionOptions
     {
-        public int PollIntervalSeconds { get; init; }
+        public int DelayIntervalSeconds { get; init; }
     }
 }

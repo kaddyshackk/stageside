@@ -13,6 +13,8 @@ namespace ComedyPull.Application.Pipeline.Scheduling
         IServiceScopeFactory scopeFactory,
         ISitemapLoader sitemapLoader,
         IQueueClient queueClient,
+        IQueueHealthMonitor queueHealthMonitor,
+        IBackPressureManager backPressureManager,
         IOptions<SchedulingOptions> options,
         ILogger<SchedulingService> logger) : BackgroundService
     {
@@ -20,38 +22,64 @@ namespace ComedyPull.Application.Pipeline.Scheduling
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                using var scope = scopeFactory.CreateScope();
-                var repository = scope.ServiceProvider.GetRequiredService<ISchedulingRepository>();
-                var dueJobs = await repository.GetJobsDueForExecutionAsync(stoppingToken);
-                
-                foreach (var job in dueJobs)
+                try
                 {
-                    var execution = await repository.CreateJobExecutionAsync(job.Id, stoppingToken);
-                    var sitemaps = await repository.GetJobSitemapsAsync(job.Id, stoppingToken);
-                    try
+                    if (await backPressureManager.ShouldApplyBackPressureAsync(Queues.Collection))
                     {
-                        var urls = await GetSitemapUrlsAsync(sitemaps);
-                        var pipelineContexts = urls.Select(url => new PipelineContext
-                        {
-                            JobExecutionId = execution.Id,
-                            Source = job.Source,
-                            Sku = job.Sku,
-                            Metadata = new PipelineMetadata { CollectionUrl = url }
-                        }).ToList();
-
-                        await queueClient.EnqueueBatchAsync(Queues.Collection, pipelineContexts);
-
-                        await repository.UpdateJobExecutionAsScheduledAsync(execution.Id, stoppingToken);
+                        logger.LogWarning("Collection queue overloaded, delaying for another interval.");
+                        continue;
                     }
-                    catch (Exception e)
+
+                    using var scope = scopeFactory.CreateScope();
+                    var repository = scope.ServiceProvider.GetRequiredService<ISchedulingRepository>();
+
+                    var nextJob = await repository.GetNextJobAsync(stoppingToken);
+                    if (nextJob == null)
                     {
-                        logger.LogError("Job execution failed: {Message}", e.Message);
-                        await repository.UpdateJobExecutionAsFailedAsync(execution.Id, e.Message, stoppingToken);
-                        throw;
+                        continue;
                     }
+
+                    logger.LogInformation("Processing job [{Jobname}]", nextJob.Name);
+
+                    await ProcessJobAsync(repository, nextJob, stoppingToken);
                 }
-                
-                await Task.Delay(TimeSpan.FromSeconds(options.Value.PollingIntervalSeconds), stoppingToken);
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error in scheduling service execution");
+                }
+                finally
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(options.Value.DelayIntervalSeconds), stoppingToken);
+                }
+            }
+        }
+
+        private async Task ProcessJobAsync(ISchedulingRepository repository, Job job, CancellationToken stoppingToken)
+        {
+            var execution = await repository.CreateJobExecutionAsync(job.Id, stoppingToken);
+            var sitemaps = await repository.GetJobSitemapsAsync(job.Id, stoppingToken);
+            try
+            {
+                var urls = await GetSitemapUrlsAsync(sitemaps);
+                var pipelineContexts = urls.Select(url => new PipelineContext
+                {
+                    JobExecutionId = execution.Id,
+                    Source = job.Source,
+                    Sku = job.Sku,
+                    Metadata = new PipelineMetadata { CollectionUrl = url }
+                }).ToList();
+
+                await queueClient.EnqueueBatchAsync(Queues.Collection, pipelineContexts);
+                await queueHealthMonitor.RecordEnqueueAsync(Queues.Collection, pipelineContexts.Count);
+
+                await repository.UpdateJobExecutionAsScheduledAsync(execution.Id, stoppingToken);
+                logger.LogInformation("Scheduled job {JobId} with {UrlCount} URLs", job.Id, pipelineContexts.Count);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Job execution {ExecutionId} failed: {Message}", execution.Id, e.Message);
+                await repository.UpdateJobExecutionAsFailedAsync(execution.Id, e.Message, stoppingToken);
+                await queueHealthMonitor.RecordErrorAsync(Queues.Collection);
             }
         }
 

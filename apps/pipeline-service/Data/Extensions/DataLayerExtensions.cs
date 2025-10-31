@@ -27,6 +27,7 @@ namespace ComedyPull.Data.Extensions
             // Services
             services.AddSingleton<ISitemapLoader, SitemapLoader>();
             services.AddSingleton<IQueueClient, RedisQueueClient>();
+            services.AddSingleton<IQueueHealthMonitor, QueueHealthMonitor>();
             
             // Web Browser Services
             services.AddSingleton<IPlaywright>(provider => Playwright.CreateAsync().Result);

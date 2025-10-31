@@ -1,0 +1,74 @@
+using ComedyPull.Domain.Interfaces.Service;
+using ComedyPull.Domain.Models.Queue;
+using Microsoft.Extensions.Options;
+
+namespace ComedyPull.Application.Pipeline
+{
+    public class BackPressureService(IQueueHealthMonitor queueHealthMonitor, IOptions<BackPressureOptions> options) : IBackPressureManager
+    {
+        public async Task<int> CalculateAdaptiveBatchSizeAsync<T>(
+            QueueConfig<T> queue,
+            int minBatchSize,
+            int maxBatchSize)
+        {
+            if (!options.Value.EnableAdaptiveBatching)
+                return maxBatchSize;
+
+            var threshold = GetQueueThresholds(queue);
+
+            var queueStatus = await queueHealthMonitor.GetQueueStatusAsync(
+                queue, threshold.Warning, threshold.Critical);
+
+            return queueStatus switch
+            {
+                QueueHealthStatus.Healthy => maxBatchSize,
+                QueueHealthStatus.Warning => Math.Max(maxBatchSize / 2, minBatchSize),
+                QueueHealthStatus.Critical => Math.Max(maxBatchSize / 4, minBatchSize),
+                QueueHealthStatus.Overloaded => minBatchSize,
+                _ => maxBatchSize
+            };
+        }
+
+        public async Task<int> CalculateAdaptiveDelayAsync<T>(
+            QueueConfig<T> queue,
+            int delaySeconds)
+        {
+            var threshold = GetQueueThresholds(queue);
+            var queueStatus = await queueHealthMonitor.GetQueueStatusAsync(
+                queue, threshold.Warning, threshold.Critical);
+
+            return queueStatus switch
+            {
+                QueueHealthStatus.Healthy => delaySeconds,
+                QueueHealthStatus.Warning => delaySeconds * 2,
+                QueueHealthStatus.Critical => delaySeconds * 4,
+                QueueHealthStatus.Overloaded => delaySeconds * 8,
+                _ => delaySeconds
+            };
+        }
+
+        public async Task<bool> ShouldApplyBackPressureAsync<T>(QueueConfig<T> queue)
+        {
+            if (!options.Value.EnableBackPressure)
+                return false;
+            var threshold = GetQueueThresholds(queue);
+            return !await queueHealthMonitor.IsQueueHealthyAsync(queue, threshold.Normal);
+        }
+
+        public async Task<QueueHealthStatus> GetQueueHealthStatusAsync<T>(QueueConfig<T> queue)
+        {
+            var threshold = GetQueueThresholds(queue);
+            return await queueHealthMonitor.GetQueueStatusAsync(queue, threshold.Warning, threshold.Critical);
+        }
+
+        private QueueThresholds GetQueueThresholds<T>(QueueConfig<T> queue)
+        {
+            options.Value.QueueThresholds.TryGetValue(queue.Key, out var threshold);
+            if (threshold is null)
+            {
+                throw new NullReferenceException($"Queue threshold not found for {queue.Key}");
+            }
+            return threshold;
+        }
+    }
+}

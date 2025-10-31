@@ -11,6 +11,8 @@ namespace ComedyPull.Application.Pipeline.Collection
 {
     public class DynamicCollectionService(
         IQueueClient queueClient,
+        IQueueHealthMonitor queueHealthMonitor,
+        IBackPressureManager backPressureManager,
         ICollectorFactory collectorFactory,
         IWebBrowser webBrowser,
         IOptions<DynamicCollectionOptions> options,
@@ -63,14 +65,26 @@ namespace ComedyPull.Application.Pipeline.Collection
             logger.LogInformation("Starting {Service}", nameof(DynamicCollectionService));
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (await queueClient.GetLengthAsync(Queues.DynamicCollection) > 0)
+                try
                 {
+                    if (await backPressureManager.ShouldApplyBackPressureAsync(Queues.Transformation))
+                    {
+                        logger.LogWarning("Transformation queue overloaded, delaying for another interval.");
+                        continue;
+                    }
+
+                    if (await queueClient.GetLengthAsync(Queues.DynamicCollection) == 0)
+                    {
+                        continue;
+                    }
+
                     var context = await queueClient.DequeueAsync(Queues.DynamicCollection);
                     if (context == null)
                     {
                         continue;
                     }
 
+                    var collectionStartTime = DateTime.UtcNow;
                     await _semaphore.WaitAsync(stoppingToken);
 
                     IWebPage page = null!;
@@ -82,6 +96,8 @@ namespace ComedyPull.Application.Pipeline.Collection
                         if (collector == null)
                         {
                             logger.LogWarning("Found no collector that matches content sku {Sku}", context.Sku);
+                            context.State = ProcessingState.Failed;
+                            await queueHealthMonitor.RecordErrorAsync(Queues.DynamicCollection);
                             continue;
                         }
 
@@ -90,13 +106,20 @@ namespace ComedyPull.Application.Pipeline.Collection
                         context.RawData = result;
                         context.Metadata.CollectedAt = DateTimeOffset.UtcNow;
                         context.State = ProcessingState.Collected;
-                        
+
+                        var collectionTime = DateTime.UtcNow - collectionStartTime;
+                        await queueHealthMonitor.RecordDequeueAsync(Queues.DynamicCollection, 1, collectionTime);
+
                         await queueClient.EnqueueAsync(Queues.Transformation, context);
+                        await queueHealthMonitor.RecordEnqueueAsync(Queues.Transformation);
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError(ex, "Error processing url {Url} from job execution {BatchId}", context.Metadata.CollectionUrl,
+                        logger.LogError(ex, "Error processing url {Url} from job execution {BatchId}",
+                            context.Metadata.CollectionUrl,
                             context.JobExecutionId);
+                        context.State = ProcessingState.Failed;
+                        await queueHealthMonitor.RecordErrorAsync(Queues.DynamicCollection);
                     }
                     finally
                     {
@@ -104,9 +127,16 @@ namespace ComedyPull.Application.Pipeline.Collection
                         _semaphore.Release();
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(options.Value.PollIntervalSeconds), stoppingToken);
+                    logger.LogError(ex, "Error in dynamic collection worker");
+                    await queueHealthMonitor.RecordErrorAsync(Queues.DynamicCollection);
+                }
+                finally
+                {
+                    var delaySeconds = await backPressureManager.CalculateAdaptiveDelayAsync(Queues.Transformation,
+                        options.Value.DelayIntervalSeconds);
+                    await Task.Delay(TimeSpan.FromSeconds(delaySeconds), stoppingToken);
                 }
             }
             logger.LogInformation("Stopping {Service}", nameof(DynamicCollectionService));

@@ -13,9 +13,7 @@ namespace ComedyPull.Domain.Interfaces.Service
         Task<ICollection<T>> DequeueBatchAsync<T>(
             QueueConfig<T> config,
             int maxCount,
-            TimeSpan? maxWait = null,
-            TimeSpan? pollingWait = null,
-            CancellationToken cancellationToken = default);
+            CancellationToken stoppingToken);
 
         Task<long> GetLengthAsync<T>(QueueConfig<T> config);
 

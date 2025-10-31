@@ -13,6 +13,8 @@ namespace ComedyPull.Application.Pipeline.Collection
     /// </summary>
     public class CollectionService(
         IQueueClient queueClient,
+        IQueueHealthMonitor queueHealthMonitor,
+        IBackPressureManager backPressureManager,
         IOptions<CollectionOptions> options,
         ILogger<CollectionService> logger)
         : BackgroundService
@@ -22,33 +24,47 @@ namespace ComedyPull.Application.Pipeline.Collection
             logger.LogInformation("Starting {Service}", nameof(CollectionService));
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (await queueClient.GetLengthAsync(Queues.Collection) > 0)
+                try
                 {
+                    if (await queueClient.GetLengthAsync(Queues.Collection) <= 0) continue;
+                    
                     var context = await queueClient.DequeueAsync(Queues.Collection);
-                    if (context == null)
+                    if (context == null) continue;
+
+                    var targetQueue = GetTargetQueue(SkuConfiguration.GetCollectionType(context.Sku));
+
+                    if (await backPressureManager.ShouldApplyBackPressureAsync(targetQueue))
                     {
+                        await queueClient.EnqueueAsync(Queues.Collection, context);
                         continue;
                     }
 
-                    switch (SkuConfiguration.GetCollectionType(context.Sku))
-                    {
-                        case CollectionType.Dynamic:
-                            await queueClient.EnqueueAsync(Queues.DynamicCollection, context);
-                            break;
-                        case CollectionType.Static:
-                            throw new NotImplementedException("Static collector not implemented yet");
-                        case CollectionType.Api:
-                            throw new NotImplementedException("API collector not implemented yet");
-                        default:
-                            throw new NotSupportedException($"Collection type {context} not supported");
-                    }
+                    await queueHealthMonitor.RecordDequeueAsync(Queues.Collection);
+                    await queueClient.EnqueueAsync(targetQueue, context);
+                    await queueHealthMonitor.RecordEnqueueAsync(targetQueue);
                 }
-                else
+                catch (Exception ex)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(options.Value.PollIntervalSeconds), stoppingToken);
+                    logger.LogError(ex, "Error in collection service execution");
+                    await queueHealthMonitor.RecordErrorAsync(Queues.Collection);
+                }
+                finally
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(options.Value.DelayIntervalSeconds), stoppingToken);
                 }
             }
             logger.LogInformation("Stopping {Service}", nameof(CollectionService));
+        }
+
+        private static QueueConfig<PipelineContext> GetTargetQueue(CollectionType collectionType)
+        {
+            return collectionType switch
+            {
+                CollectionType.Dynamic => Queues.DynamicCollection,
+                CollectionType.Static => throw new NotImplementedException("Static collector not implemented yet"),
+                CollectionType.Api => throw new NotImplementedException("API collector not implemented yet"),
+                _ => throw new NotSupportedException($"Collection type {collectionType} not supported")
+            };
         }
     }
 }

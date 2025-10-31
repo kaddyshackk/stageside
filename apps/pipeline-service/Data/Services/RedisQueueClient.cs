@@ -1,11 +1,13 @@
 using System.Text.Json;
+using ComedyPull.Application.Pipeline;
 using ComedyPull.Domain.Interfaces.Service;
 using ComedyPull.Domain.Models.Queue;
+using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
 namespace ComedyPull.Data.Services
 {
-    public class RedisQueueClient(IConnectionMultiplexer redis) : IQueueClient
+    public class RedisQueueClient(IConnectionMultiplexer redis, IOptions<QueueOptions> options) : IQueueClient
     {
         private readonly IDatabase _db = redis.GetDatabase();
         private readonly JsonSerializerOptions _jsonOptions = new()
@@ -39,20 +41,17 @@ namespace ComedyPull.Data.Services
         public async Task<ICollection<T>> DequeueBatchAsync<T>(
             QueueConfig<T> config,
             int maxCount,
-            TimeSpan? maxWait = null,
-            TimeSpan? pollingWait = null,
-            CancellationToken cancellationToken = default)
+            CancellationToken stoppingToken)
         {
             if (maxCount <= 0)
                 return [];
 
-            var pollingDelay = pollingWait ?? TimeSpan.FromMilliseconds(100);
+            var pollingDelay = TimeSpan.FromMilliseconds(options.Value.BatchDequeueDelayIntervalMilliseconds);
+            var maxWait = TimeSpan.FromSeconds(options.Value.BatchDequeueMaxWaitSeconds);
             var results = new List<T>();
-            var deadline = maxWait.HasValue
-                ? DateTime.UtcNow.Add(maxWait.Value)
-                : DateTime.MaxValue;
+            var deadline = DateTime.UtcNow.Add(maxWait);
 
-            while (results.Count < maxCount && DateTime.UtcNow < deadline && !cancellationToken.IsCancellationRequested)
+            while (results.Count < maxCount && DateTime.UtcNow < deadline && !stoppingToken.IsCancellationRequested)
             {
                 var remaining = maxCount - results.Count;
                 var queueLength = await _db.ListLengthAsync(config.Key);
@@ -60,12 +59,12 @@ namespace ComedyPull.Data.Services
 
                 if (toDequeue == 0)
                 {
-                    if (!maxWait.HasValue || results.Count > 0)
+                    if (results.Count > 0)
                         break;
 
                     try
                     {
-                        await Task.Delay(pollingDelay, cancellationToken);
+                        await Task.Delay(pollingDelay, stoppingToken);
                     }
                     catch (TaskCanceledException)
                     {
@@ -95,12 +94,11 @@ namespace ComedyPull.Data.Services
                         results.Add(item);
                 }
 
-                // If we got items but not enough and have a timeout, wait a bit before checking again
-                if (results.Count < maxCount && maxWait.HasValue && DateTime.UtcNow < deadline)
+                if (results.Count < maxCount && DateTime.UtcNow < deadline)
                 {
                     try
                     {
-                        await Task.Delay(pollingDelay, cancellationToken);
+                        await Task.Delay(pollingDelay, stoppingToken);
                     }
                     catch (TaskCanceledException)
                     {

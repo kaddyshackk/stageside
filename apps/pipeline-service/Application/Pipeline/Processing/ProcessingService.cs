@@ -11,6 +11,8 @@ namespace ComedyPull.Application.Pipeline.Processing
 {
     public class ProcessingService(
         IQueueClient queueClient,
+        IQueueHealthMonitor queueHealthMonitor,
+        IBackPressureManager backPressureManager,
         ActService actService,
         VenueService venueService,
         EventService eventService,
@@ -22,46 +24,84 @@ namespace ComedyPull.Application.Pipeline.Processing
             logger.LogInformation("Starting {Service}", nameof(ProcessingService));
             while (!stoppingToken.IsCancellationRequested)
             {
-                var batch = await queueClient.DequeueBatchAsync(
-                    Queues.Processing,
-                    maxCount: options.Value.BatchMaxSize,
-                    maxWait: TimeSpan.FromSeconds(options.Value.BatchMaxWaitSeconds),
-                    pollingWait: TimeSpan.FromSeconds(options.Value.PollingWaitSeconds),
-                    cancellationToken: stoppingToken);
-
-                if (batch.Count > 0)
+                try
                 {
-                    foreach (var context in batch.ToList())
-                    {
-                        // Process Acts
-                        var acts = context.ProcessedEntities
-                            .Where(e => e.Type == EntityType.Act)
-                            .Select(e => e.Data)
-                            .Cast<ProcessedAct>();
+                    var adaptiveBatchSize = await backPressureManager.CalculateAdaptiveBatchSizeAsync(
+                        Queues.Processing,
+                        options.Value.MinBatchSize,
+                        options.Value.MaxBatchSize);
 
-                        await actService.ProcessActsAsync(acts, stoppingToken);
+                    var processingStartTime = DateTime.UtcNow;
 
-                        // Process Venues
-                        var venues = context.ProcessedEntities
-                            .Where(e => e.Type == EntityType.Venue)
-                            .Select(e => e.Data)
-                            .Cast<ProcessedVenue>();
+                    var batch = await queueClient.DequeueBatchAsync(
+                        Queues.Processing,
+                        maxCount: adaptiveBatchSize,
+                        stoppingToken: stoppingToken);
 
-                        await venueService.ProcessVenuesAsync(venues, stoppingToken);
+                    if (batch.Count <= 0) continue;
+                    
+                    logger.LogInformation("Processing batch of {BatchSize} items (adaptive size: {AdaptiveSize})",
+                        batch.Count, adaptiveBatchSize);
 
-                        // Process Events
-                        var events = context.ProcessedEntities
-                            .Where(e => e.Type == EntityType.Venue)
-                            .Select(e => e.Data)
-                            .Cast<ProcessedEvent>();
+                    await ProcessBatchAsync(batch, stoppingToken);
 
-                        await eventService.ProcessEventsAsync(events, stoppingToken);
-                    }
+                    var processingTime = DateTime.UtcNow - processingStartTime;
+                    await queueHealthMonitor.RecordDequeueAsync(Queues.Processing, batch.Count, processingTime);
                 }
-
-                await Task.Delay(TimeSpan.FromSeconds(options.Value.BatchDelaySeconds), stoppingToken);
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error processing batch in {Service}", nameof(ProcessingService));
+                    await queueHealthMonitor.RecordErrorAsync(Queues.Processing);
+                }
+                finally
+                {
+                    var delaySeconds = await backPressureManager.CalculateAdaptiveDelayAsync(Queues.Processing,
+                        options.Value.DelayIntervalSeconds);
+                    await Task.Delay(TimeSpan.FromSeconds(delaySeconds), stoppingToken);
+                }
             }
             logger.LogInformation("Stopping {Service}", nameof(ProcessingService));
+        }
+        
+        private async Task ProcessBatchAsync(ICollection<PipelineContext> batch, CancellationToken stoppingToken)
+        {
+            foreach (var context in batch.ToList())
+            {
+                try
+                {
+                    // Process Acts
+                    var acts = context.ProcessedEntities
+                        .Where(e => e.Type == EntityType.Act)
+                        .Select(e => e.Data)
+                        .Cast<ProcessedAct>();
+
+                    await actService.ProcessActsAsync(acts, stoppingToken);
+
+                    // Process Venues
+                    var venues = context.ProcessedEntities
+                        .Where(e => e.Type == EntityType.Venue)
+                        .Select(e => e.Data)
+                        .Cast<ProcessedVenue>();
+
+                    await venueService.ProcessVenuesAsync(venues, stoppingToken);
+
+                    // Process Events
+                    var events = context.ProcessedEntities
+                        .Where(e => e.Type == EntityType.Event)
+                        .Select(e => e.Data)
+                        .Cast<ProcessedEvent>();
+
+                    await eventService.ProcessEventsAsync(events, stoppingToken);
+                    
+                    context.State = ProcessingState.Completed;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error processing context {ContextId}", context.Id);
+                    context.State = ProcessingState.Failed;
+                    await queueHealthMonitor.RecordErrorAsync(Queues.Processing);
+                }
+            }
         }
     }
 }

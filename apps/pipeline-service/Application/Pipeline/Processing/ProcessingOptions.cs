@@ -1,11 +1,9 @@
-﻿namespace ComedyPull.Application.Pipeline.Processing
+namespace ComedyPull.Application.Pipeline.Processing
 {
     public class ProcessingOptions
     {
-        public int BatchMaxSize { get; init; }
-
-        public int BatchMaxWaitSeconds { get; init; }
-        public int BatchDelaySeconds { get; init; }
-        public int PollingWaitSeconds { get; init; }
+        public int DelayIntervalSeconds { get; init; }
+        public int MinBatchSize { get; init; }
+        public int MaxBatchSize { get; init; }
     }
 }

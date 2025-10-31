@@ -10,35 +10,32 @@ namespace ComedyPull.Data.Repositories
     public class SchedulingRepository(PipelineDbContext context) : ISchedulingRepository
     {
         /// inheritdoc
-        public async Task<ICollection<Job>> GetJobsDueForExecutionAsync(CancellationToken stoppingToken)
+        public async Task<Job?> GetNextJobAsync(CancellationToken stoppingToken)
         {
             var now = DateTimeOffset.UtcNow;
 
-            var jobs = await context.Jobs
+            var job = await context.Jobs
                 .Include(j => j.Executions)
-                .Where(j => j.IsActive)
-                .ToListAsync(stoppingToken);
+                .FirstOrDefaultAsync(j => j.IsActive, stoppingToken);
 
-            var dueJobs = new List<Job>();
+            if (job == null) return null;
 
-            foreach (var job in jobs)
-            {
-                var lastExecution = job.Executions
-                    .Where(e => e.Status is JobExecutionStatus.Completed or JobExecutionStatus.Failed)
-                    .OrderByDescending(e => e.CreatedAt)
-                    .FirstOrDefault();
+            var lastExecution = job.Executions
+                .Where(e => e.Status is JobExecutionStatus.Completed or JobExecutionStatus.Failed)
+                .OrderByDescending(e => e.CreatedAt)
+                .FirstOrDefault();
 
-                var lastRunTime = lastExecution?.CreatedAt ?? DateTimeOffset.MinValue;
+            var lastRunTime = lastExecution?.CreatedAt ?? DateTimeOffset.MinValue;
                 
-                var cronExpression = CronExpression.Parse(job.CronExpression);
-                var nextOccurence = cronExpression.GetNextOccurrence(lastRunTime, TimeZoneInfo.Utc);
+            var cronExpression = CronExpression.Parse(job.CronExpression);
+            var nextOccurence = cronExpression.GetNextOccurrence(lastRunTime, TimeZoneInfo.Utc);
 
-                if (nextOccurence.HasValue && nextOccurence.Value <= now)
-                {
-                    dueJobs.Add(job);
-                }
+            if (nextOccurence.HasValue && nextOccurence.Value <= now)
+            {
+                return job;
             }
-            return dueJobs;
+
+            return null;
         }
 
         /// inheritdoc

@@ -8,11 +8,11 @@ namespace ComedyPull.Domain.Interfaces.Repository
     public interface ISchedulingRepository
     {
         /// <summary>
-        /// Retrieves jobs that are due for immediate execution.
+        /// Retrieves the next job that is due for execution.
         /// </summary>
         /// <param name="stoppingToken">A cancellation token to stop the request.</param>
-        /// <returns>A collection of jobs that are due for execution, or an empty collection if there are none.</returns>
-        public Task<ICollection<Job>> GetJobsDueForExecutionAsync(CancellationToken stoppingToken);
+        /// <returns>The next job that is due for execution.</returns>
+        public Task<Job?> GetNextJobAsync(CancellationToken stoppingToken);
         
         /// <summary>
         /// Retrieves sitemaps for a specified <see cref="Job"/>.
