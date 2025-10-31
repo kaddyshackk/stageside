@@ -11,7 +11,6 @@ namespace ComedyPull.Application.Pipeline.Collection
 {
     public class DynamicCollectionService(
         IQueueClient queueClient,
-        IQueueHealthMonitor queueHealthMonitor,
         IBackPressureManager backPressureManager,
         ICollectorFactory collectorFactory,
         IWebBrowser webBrowser,
@@ -97,7 +96,6 @@ namespace ComedyPull.Application.Pipeline.Collection
                         {
                             logger.LogWarning("Found no collector that matches content sku {Sku}", context.Sku);
                             context.State = ProcessingState.Failed;
-                            await queueHealthMonitor.RecordErrorAsync(Queues.DynamicCollection);
                             continue;
                         }
 
@@ -107,11 +105,7 @@ namespace ComedyPull.Application.Pipeline.Collection
                         context.Metadata.CollectedAt = DateTimeOffset.UtcNow;
                         context.State = ProcessingState.Collected;
 
-                        var collectionTime = DateTime.UtcNow - collectionStartTime;
-                        await queueHealthMonitor.RecordDequeueAsync(Queues.DynamicCollection, 1, collectionTime);
-
                         await queueClient.EnqueueAsync(Queues.Transformation, context);
-                        await queueHealthMonitor.RecordEnqueueAsync(Queues.Transformation);
                     }
                     catch (Exception ex)
                     {
@@ -119,7 +113,6 @@ namespace ComedyPull.Application.Pipeline.Collection
                             context.Metadata.CollectionUrl,
                             context.JobExecutionId);
                         context.State = ProcessingState.Failed;
-                        await queueHealthMonitor.RecordErrorAsync(Queues.DynamicCollection);
                     }
                     finally
                     {
@@ -130,7 +123,6 @@ namespace ComedyPull.Application.Pipeline.Collection
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Error in dynamic collection worker");
-                    await queueHealthMonitor.RecordErrorAsync(Queues.DynamicCollection);
                 }
                 finally
                 {

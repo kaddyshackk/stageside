@@ -11,7 +11,6 @@ namespace ComedyPull.Application.Pipeline.Processing
 {
     public class ProcessingService(
         IQueueClient queueClient,
-        IQueueHealthMonitor queueHealthMonitor,
         IBackPressureManager backPressureManager,
         ActService actService,
         VenueService venueService,
@@ -44,14 +43,10 @@ namespace ComedyPull.Application.Pipeline.Processing
                         batch.Count, adaptiveBatchSize);
 
                     await ProcessBatchAsync(batch, stoppingToken);
-
-                    var processingTime = DateTime.UtcNow - processingStartTime;
-                    await queueHealthMonitor.RecordDequeueAsync(Queues.Processing, batch.Count, processingTime);
                 }
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Error processing batch in {Service}", nameof(ProcessingService));
-                    await queueHealthMonitor.RecordErrorAsync(Queues.Processing);
                 }
                 finally
                 {
@@ -99,7 +94,6 @@ namespace ComedyPull.Application.Pipeline.Processing
                 {
                     logger.LogError(ex, "Error processing context {ContextId}", context.Id);
                     context.State = ProcessingState.Failed;
-                    await queueHealthMonitor.RecordErrorAsync(Queues.Processing);
                 }
             }
         }

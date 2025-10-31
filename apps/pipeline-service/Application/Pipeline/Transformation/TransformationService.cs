@@ -10,7 +10,6 @@ namespace ComedyPull.Application.Pipeline.Transformation
 {
     public class TransformationService(
         IQueueClient queueClient,
-        IQueueHealthMonitor queueHealthMonitor,
         IBackPressureManager backPressureManager,
         ITransformerFactory transformerFactory,
         IOptions<TransformationOptions> options,
@@ -48,20 +47,14 @@ namespace ComedyPull.Application.Pipeline.Transformation
 
                     await TransformBatchAsync(batch, stoppingToken);
 
-                    var transformationTime = DateTime.UtcNow - transformationStartTime;
-                    await queueHealthMonitor.RecordDequeueAsync(Queues.Transformation, batch.Count,
-                        transformationTime);
-
                     var successfulItems = batch.Where(c => c.State == ProcessingState.Transformed).ToList();
                     if (successfulItems.Count <= 0) continue;
                     
                     await queueClient.EnqueueBatchAsync(Queues.Processing, successfulItems);
-                    await queueHealthMonitor.RecordEnqueueAsync(Queues.Processing, successfulItems.Count);
                 }
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Error in transformation service execution");
-                    await queueHealthMonitor.RecordErrorAsync(Queues.Transformation);
                 }
                 finally
                 {
@@ -96,7 +89,6 @@ namespace ComedyPull.Application.Pipeline.Transformation
                     logger.LogError(ex, "Failed to transform context {ContextId} with sku {Sku}",
                         context.Id, context.Sku);
                     context.State = ProcessingState.Failed;
-                    await queueHealthMonitor.RecordErrorAsync(Queues.Transformation);
                 }
             }
         }

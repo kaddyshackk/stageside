@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 
 namespace ComedyPull.Application.Pipeline
 {
-    public class BackPressureService(IQueueHealthMonitor queueHealthMonitor, IOptions<BackPressureOptions> options) : IBackPressureManager
+    public class BackPressureService(IQueueHealthChecker queueHealthChecker, IOptions<BackPressureOptions> options) : IBackPressureManager
     {
         public async Task<int> CalculateAdaptiveBatchSizeAsync<T>(
             QueueConfig<T> queue,
@@ -16,7 +16,7 @@ namespace ComedyPull.Application.Pipeline
 
             var threshold = GetQueueThresholds(queue);
 
-            var queueStatus = await queueHealthMonitor.GetQueueStatusAsync(
+            var queueStatus = await queueHealthChecker.GetQueueStatusAsync(
                 queue, threshold.Warning, threshold.Critical);
 
             return queueStatus switch
@@ -34,7 +34,7 @@ namespace ComedyPull.Application.Pipeline
             int delaySeconds)
         {
             var threshold = GetQueueThresholds(queue);
-            var queueStatus = await queueHealthMonitor.GetQueueStatusAsync(
+            var queueStatus = await queueHealthChecker.GetQueueStatusAsync(
                 queue, threshold.Warning, threshold.Critical);
 
             return queueStatus switch
@@ -52,13 +52,13 @@ namespace ComedyPull.Application.Pipeline
             if (!options.Value.EnableBackPressure)
                 return false;
             var threshold = GetQueueThresholds(queue);
-            return !await queueHealthMonitor.IsQueueHealthyAsync(queue, threshold.Normal);
+            return !await queueHealthChecker.IsQueueHealthyAsync(queue, threshold.Normal);
         }
 
         public async Task<QueueHealthStatus> GetQueueHealthStatusAsync<T>(QueueConfig<T> queue)
         {
             var threshold = GetQueueThresholds(queue);
-            return await queueHealthMonitor.GetQueueStatusAsync(queue, threshold.Warning, threshold.Critical);
+            return await queueHealthChecker.GetQueueStatusAsync(queue, threshold.Warning, threshold.Critical);
         }
 
         private QueueThresholds GetQueueThresholds<T>(QueueConfig<T> queue)

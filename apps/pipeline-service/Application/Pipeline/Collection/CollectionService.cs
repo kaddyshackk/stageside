@@ -13,7 +13,6 @@ namespace ComedyPull.Application.Pipeline.Collection
     /// </summary>
     public class CollectionService(
         IQueueClient queueClient,
-        IQueueHealthMonitor queueHealthMonitor,
         IBackPressureManager backPressureManager,
         IOptions<CollectionOptions> options,
         ILogger<CollectionService> logger)
@@ -39,14 +38,11 @@ namespace ComedyPull.Application.Pipeline.Collection
                         continue;
                     }
 
-                    await queueHealthMonitor.RecordDequeueAsync(Queues.Collection);
                     await queueClient.EnqueueAsync(targetQueue, context);
-                    await queueHealthMonitor.RecordEnqueueAsync(targetQueue);
                 }
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Error in collection service execution");
-                    await queueHealthMonitor.RecordErrorAsync(Queues.Collection);
                 }
                 finally
                 {

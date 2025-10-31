@@ -13,7 +13,6 @@ namespace ComedyPull.Application.Pipeline.Scheduling
         IServiceScopeFactory scopeFactory,
         ISitemapLoader sitemapLoader,
         IQueueClient queueClient,
-        IQueueHealthMonitor queueHealthMonitor,
         IBackPressureManager backPressureManager,
         IOptions<SchedulingOptions> options,
         ILogger<SchedulingService> logger) : BackgroundService
@@ -70,7 +69,6 @@ namespace ComedyPull.Application.Pipeline.Scheduling
                 }).ToList();
 
                 await queueClient.EnqueueBatchAsync(Queues.Collection, pipelineContexts);
-                await queueHealthMonitor.RecordEnqueueAsync(Queues.Collection, pipelineContexts.Count);
 
                 await repository.UpdateJobExecutionAsScheduledAsync(execution.Id, stoppingToken);
                 logger.LogInformation("Scheduled job {JobId} with {UrlCount} URLs", job.Id, pipelineContexts.Count);
@@ -79,7 +77,6 @@ namespace ComedyPull.Application.Pipeline.Scheduling
             {
                 logger.LogError(e, "Job execution {ExecutionId} failed: {Message}", execution.Id, e.Message);
                 await repository.UpdateJobExecutionAsFailedAsync(execution.Id, e.Message, stoppingToken);
-                await queueHealthMonitor.RecordErrorAsync(Queues.Collection);
             }
         }
 
