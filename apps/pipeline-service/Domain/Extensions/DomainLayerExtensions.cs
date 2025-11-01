@@ -1,4 +1,3 @@
-using ComedyPull.Domain.Interfaces;
 using ComedyPull.Domain.Interfaces.Processing;
 using ComedyPull.Domain.Models;
 using ComedyPull.Domain.Services;
@@ -15,6 +14,7 @@ namespace ComedyPull.Domain.Extensions
             services.AddSingleton<ActService>();
             services.AddSingleton<VenueService>();
             services.AddSingleton<EventService>();
+            services.AddSingleton<JobService>();
             
             // Sources
             AddPunchupSource(services);

@@ -3,9 +3,9 @@ using ComedyPull.Domain.Models.Pipeline;
 namespace ComedyPull.Domain.Interfaces.Repository
 {
     /// <summary>
-    /// Manages data access operations for scheduling. Specifically manages <see cref="Job"/>, <see cref="JobExecution"/>, and <see cref="JobSitemap"/> entities.
+    /// Manages data access operations for scheduling entities, including <see cref="Job"/>, <see cref="JobExecution"/>, and <see cref="JobSitemap"/> entities.
     /// </summary>
-    public interface ISchedulingRepository
+    public interface IJobRepository
     {
         /// <summary>
         /// Retrieves the next job that is due for execution.

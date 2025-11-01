@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ComedyPull.Data.Repositories
 {
     /// inheritdoc
-    public class SchedulingRepository(PipelineDbContext context) : ISchedulingRepository
+    public class JobRepository(PipelineDbContext context) : IJobRepository
     {
         /// inheritdoc
         public async Task<Job?> GetNextJobAsync(CancellationToken stoppingToken)

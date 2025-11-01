@@ -34,7 +34,7 @@ namespace ComedyPull.Data.Extensions
             services.AddSingleton<IWebBrowser, PlaywrightWebBrowserAdapter>();
             
             // Repositories
-            services.AddScoped<ISchedulingRepository, SchedulingRepository>();
+            services.AddScoped<IJobRepository, JobRepository>();
             services.AddScoped<IActRepository, ActRepository>();
             services.AddScoped<IVenueRepository, VenueRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
