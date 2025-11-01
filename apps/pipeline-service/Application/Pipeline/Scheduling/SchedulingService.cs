@@ -1,6 +1,6 @@
 using ComedyPull.Domain.Interfaces.Service;
+using ComedyPull.Domain.Jobs.Services;
 using ComedyPull.Domain.Models.Queue;
-using ComedyPull.Domain.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,7 +9,7 @@ using Serilog.Context;
 namespace ComedyPull.Application.Pipeline.Scheduling
 {
     public class SchedulingService(
-        JobService jobService,
+        JobDispatchService jobDispatchService,
         IBackPressureManager backPressureManager,
         IOptions<SchedulingOptions> options,
         ILogger<SchedulingService> logger) : BackgroundService
@@ -29,7 +29,7 @@ namespace ComedyPull.Application.Pipeline.Scheduling
                             continue;
                         }
 
-                        await jobService.DispatchNextJobAsync(stoppingToken);
+                        await jobDispatchService.DispatchNextJobAsync(stoppingToken);
                     }
                     catch (Exception ex)
                     {
@@ -43,7 +43,5 @@ namespace ComedyPull.Application.Pipeline.Scheduling
                 logger.LogInformation("Stopped {ServiceName}", nameof(SchedulingService));
             }
         }
-
-
     }
 }

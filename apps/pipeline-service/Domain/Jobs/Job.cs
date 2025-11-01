@@ -1,4 +1,6 @@
-namespace ComedyPull.Domain.Models.Pipeline
+using ComedyPull.Domain.Models;
+
+namespace ComedyPull.Domain.Jobs
 {
     public record Job : AuditableEntity
     {

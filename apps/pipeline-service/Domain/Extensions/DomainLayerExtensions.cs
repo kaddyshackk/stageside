@@ -1,4 +1,5 @@
 using ComedyPull.Domain.Interfaces.Processing;
+using ComedyPull.Domain.Jobs.Services;
 using ComedyPull.Domain.Models;
 using ComedyPull.Domain.Services;
 using ComedyPull.Domain.Sources.Punchup;
@@ -11,10 +12,13 @@ namespace ComedyPull.Domain.Extensions
         public static void AddDomainLayer(this IServiceCollection services)
         {
             // Services
+            services.AddSingleton<JobService>();
+            services.AddSingleton<JobExecutionService>();
+            services.AddSingleton<JobSitemapService>();
+            services.AddSingleton<JobDispatchService>();
             services.AddSingleton<ActService>();
             services.AddSingleton<VenueService>();
             services.AddSingleton<EventService>();
-            services.AddSingleton<JobService>();
             
             // Sources
             AddPunchupSource(services);

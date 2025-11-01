@@ -1,11 +1,13 @@
 using ComedyPull.Data.Contexts.ComedyDb;
 using ComedyPull.Data.Contexts.PipelineDb;
+using ComedyPull.Data.Jobs;
 using ComedyPull.Data.Repositories;
 using ComedyPull.Data.Services;
 using ComedyPull.Data.Utils;
 using ComedyPull.Domain.Interfaces.Processing;
 using ComedyPull.Domain.Interfaces.Repository;
 using ComedyPull.Domain.Interfaces.Service;
+using ComedyPull.Domain.Jobs.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
@@ -35,6 +37,8 @@ namespace ComedyPull.Data.Extensions
             
             // Repositories
             services.AddScoped<IJobRepository, JobRepository>();
+            services.AddScoped<IJobExecutionRepository, JobExecutionRepository>();
+            services.AddScoped<IJobSitemapRepository, JobSitemapRepository>();
             services.AddScoped<IActRepository, ActRepository>();
             services.AddScoped<IVenueRepository, VenueRepository>();
             services.AddScoped<IEventRepository, EventRepository>();

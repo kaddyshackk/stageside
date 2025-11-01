@@ -1,8 +1,8 @@
-namespace ComedyPull.Domain.Models.Pipeline
+namespace ComedyPull.Domain.Jobs
 {
     public enum JobExecutionStatus
     {
-        Scheduled,
+        Executed,
         Completed,
         Failed,
         Cancelled

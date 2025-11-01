@@ -13,7 +13,7 @@ namespace ComedyPull.Domain.Interfaces.Model
         /// <summary>
         /// Gets or sets the user who created the entity.
         /// </summary>
-        string CreatedBy { get; set; }
+        string? CreatedBy { get; set; }
         
         /// <summary>
         /// Gets or sets the time the entity was updated.
@@ -23,6 +23,6 @@ namespace ComedyPull.Domain.Interfaces.Model
         /// <summary>
         /// Gets or sets the user who last updated the entity.
         /// </summary>
-        string UpdatedBy { get; set; }
+        string? UpdatedBy { get; set; }
     }
 }

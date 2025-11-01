@@ -1,5 +1,5 @@
 using ComedyPull.Data.Contexts.PipelineDb.Configurations;
-using ComedyPull.Domain.Models.Pipeline;
+using ComedyPull.Domain.Jobs;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComedyPull.Data.Contexts.PipelineDb

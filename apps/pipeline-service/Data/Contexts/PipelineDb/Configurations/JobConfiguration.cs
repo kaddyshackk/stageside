@@ -1,5 +1,5 @@
 using ComedyPull.Data.Models;
-using ComedyPull.Domain.Models.Pipeline;
+using ComedyPull.Domain.Jobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -30,17 +30,18 @@ namespace ComedyPull.Data.Contexts.PipelineDb.Configurations
                 .IsRequired();
 
             builder.Property(x => x.CronExpression)
-                .HasMaxLength(50)
-                .IsRequired();
+                .HasMaxLength(50);
             
             builder.Property(x => x.IsActive)
                 .IsRequired();
-            
-            builder.Property(x => x.LastExecuted)
-                .IsRequired();
+
+            builder.Property(x => x.LastExecuted);
             
             builder.Property(x => x.NextExecution)
                 .IsRequired();
+            
+            builder.HasIndex(x => x.NextExecution);
+            builder.HasIndex(x => new { x.IsActive, x.NextExecution });
         }
     }
 }

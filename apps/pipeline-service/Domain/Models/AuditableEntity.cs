@@ -10,21 +10,21 @@ namespace ComedyPull.Domain.Models
         /// <summary>
         /// Gets or sets the time the entity was created.
         /// </summary>
-        public required DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         
         /// <summary>
         /// Gets or sets the user who created the entity.
         /// </summary>
-        public required string CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
         
         /// <summary>
         /// Gets or sets the time the entity was updated.
         /// </summary>
-        public required DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 
         /// <summary>
         /// Gets or sets the user who last updated the entity.
         /// </summary>
-        public required string UpdatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
     }
 }
