@@ -6,6 +6,7 @@ using ComedyPull.Domain.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog.Context;
 
 namespace ComedyPull.Application.Pipeline.Processing
 {
@@ -20,80 +21,88 @@ namespace ComedyPull.Application.Pipeline.Processing
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            logger.LogInformation("Starting {Service}", nameof(ProcessingService));
-            while (!stoppingToken.IsCancellationRequested)
+            using (LogContext.PushProperty("ServiceName", nameof(ProcessingService)))
             {
-                try
+                logger.LogInformation("Started {Service}", nameof(ProcessingService));
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    var adaptiveBatchSize = await backPressureManager.CalculateAdaptiveBatchSizeAsync(
-                        Queues.Processing,
-                        options.Value.MinBatchSize,
-                        options.Value.MaxBatchSize);
+                    try
+                    {
+                        var adaptiveBatchSize = await backPressureManager.CalculateAdaptiveBatchSizeAsync(
+                            Queues.Processing,
+                            options.Value.MinBatchSize,
+                            options.Value.MaxBatchSize);
 
-                    var processingStartTime = DateTime.UtcNow;
+                        var batch = await queueClient.DequeueBatchAsync(
+                            Queues.Processing,
+                            maxCount: adaptiveBatchSize,
+                            stoppingToken: stoppingToken);
 
-                    var batch = await queueClient.DequeueBatchAsync(
-                        Queues.Processing,
-                        maxCount: adaptiveBatchSize,
-                        stoppingToken: stoppingToken);
-
-                    if (batch.Count <= 0) continue;
+                        if (batch.Count <= 0) continue;
                     
-                    logger.LogInformation("Processing batch of {BatchSize} items (adaptive size: {AdaptiveSize})",
-                        batch.Count, adaptiveBatchSize);
+                        logger.LogInformation("Processing batch of {BatchSize} items (adaptive size: {AdaptiveSize})",
+                            batch.Count, adaptiveBatchSize);
 
-                    await ProcessBatchAsync(batch, stoppingToken);
+                        await ProcessBatchAsync(batch, stoppingToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Error processing batch in {Service}", nameof(ProcessingService));
+                    }
+                    finally
+                    {
+                        var delaySeconds = await backPressureManager.CalculateAdaptiveDelayAsync(Queues.Processing,
+                            options.Value.DelayIntervalSeconds);
+                        await Task.Delay(TimeSpan.FromSeconds(delaySeconds), stoppingToken);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Error processing batch in {Service}", nameof(ProcessingService));
-                }
-                finally
-                {
-                    var delaySeconds = await backPressureManager.CalculateAdaptiveDelayAsync(Queues.Processing,
-                        options.Value.DelayIntervalSeconds);
-                    await Task.Delay(TimeSpan.FromSeconds(delaySeconds), stoppingToken);
-                }
+                logger.LogInformation("Stopped {Service}", nameof(ProcessingService));
             }
-            logger.LogInformation("Stopping {Service}", nameof(ProcessingService));
         }
         
         private async Task ProcessBatchAsync(ICollection<PipelineContext> batch, CancellationToken stoppingToken)
         {
             foreach (var context in batch.ToList())
             {
-                try
+                using (LogContext.PushProperty("ContextId", context.Id))
+                using (LogContext.PushProperty("ExecutionId", context.JobExecutionId))
+                using (LogContext.PushProperty("Sku", context.Sku))
+                using (LogContext.PushProperty("CollectionUrl", context.Metadata.CollectionUrl))
+                using (LogContext.PushProperty("Tags", context.Metadata.Tags))
                 {
-                    // Process Acts
-                    var acts = context.ProcessedEntities
-                        .Where(e => e.Type == EntityType.Act)
-                        .Select(e => e.Data)
-                        .Cast<ProcessedAct>();
+                    try
+                    {
+                        // Process Acts
+                        var acts = context.ProcessedEntities
+                            .Where(e => e.Type == EntityType.Act)
+                            .Select(e => e.Data)
+                            .Cast<ProcessedAct>();
 
-                    await actService.ProcessActsAsync(acts, stoppingToken);
+                        await actService.ProcessActsAsync(acts, stoppingToken);
 
-                    // Process Venues
-                    var venues = context.ProcessedEntities
-                        .Where(e => e.Type == EntityType.Venue)
-                        .Select(e => e.Data)
-                        .Cast<ProcessedVenue>();
+                        // Process Venues
+                        var venues = context.ProcessedEntities
+                            .Where(e => e.Type == EntityType.Venue)
+                            .Select(e => e.Data)
+                            .Cast<ProcessedVenue>();
 
-                    await venueService.ProcessVenuesAsync(venues, stoppingToken);
+                        await venueService.ProcessVenuesAsync(venues, stoppingToken);
 
-                    // Process Events
-                    var events = context.ProcessedEntities
-                        .Where(e => e.Type == EntityType.Event)
-                        .Select(e => e.Data)
-                        .Cast<ProcessedEvent>();
+                        // Process Events
+                        var events = context.ProcessedEntities
+                            .Where(e => e.Type == EntityType.Event)
+                            .Select(e => e.Data)
+                            .Cast<ProcessedEvent>();
 
-                    await eventService.ProcessEventsAsync(events, stoppingToken);
+                        await eventService.ProcessEventsAsync(events, stoppingToken);
                     
-                    context.State = ProcessingState.Completed;
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Error processing context {ContextId}", context.Id);
-                    context.State = ProcessingState.Failed;
+                        context.State = ProcessingState.Completed;
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Error processing context {ContextId}", context.Id);
+                        context.State = ProcessingState.Failed;
+                    }
                 }
             }
         }

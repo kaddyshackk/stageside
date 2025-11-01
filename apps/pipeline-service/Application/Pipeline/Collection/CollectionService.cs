@@ -5,6 +5,7 @@ using ComedyPull.Domain.Models.Queue;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog.Context;
 
 namespace ComedyPull.Application.Pipeline.Collection
 {
@@ -20,36 +21,39 @@ namespace ComedyPull.Application.Pipeline.Collection
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            logger.LogInformation("Starting {Service}", nameof(CollectionService));
-            while (!stoppingToken.IsCancellationRequested)
+            using (LogContext.PushProperty("ServiceName", nameof(CollectionService)))
             {
-                try
+                logger.LogInformation("Started {Service}", nameof(CollectionService));
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    if (await queueClient.GetLengthAsync(Queues.Collection) <= 0) continue;
-                    
-                    var context = await queueClient.DequeueAsync(Queues.Collection);
-                    if (context == null) continue;
-
-                    var targetQueue = GetTargetQueue(SkuConfiguration.GetCollectionType(context.Sku));
-
-                    if (await backPressureManager.ShouldApplyBackPressureAsync(targetQueue))
+                    try
                     {
-                        await queueClient.EnqueueAsync(Queues.Collection, context);
-                        continue;
-                    }
+                        if (await queueClient.GetLengthAsync(Queues.Collection) <= 0) continue;
+                    
+                        var context = await queueClient.DequeueAsync(Queues.Collection);
+                        if (context == null) continue;
 
-                    await queueClient.EnqueueAsync(targetQueue, context);
+                        var targetQueue = GetTargetQueue(SkuConfiguration.GetCollectionType(context.Sku));
+
+                        if (await backPressureManager.ShouldApplyBackPressureAsync(targetQueue))
+                        {
+                            await queueClient.EnqueueAsync(Queues.Collection, context);
+                            continue;
+                        }
+
+                        await queueClient.EnqueueAsync(targetQueue, context);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Error in collection service execution");
+                    }
+                    finally
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(options.Value.DelayIntervalSeconds), stoppingToken);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Error in collection service execution");
-                }
-                finally
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(options.Value.DelayIntervalSeconds), stoppingToken);
-                }
+                logger.LogInformation("Stopped {Service}", nameof(CollectionService));
             }
-            logger.LogInformation("Stopping {Service}", nameof(CollectionService));
         }
 
         private static QueueConfig<PipelineContext> GetTargetQueue(CollectionType collectionType)

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog.Context;
 
 namespace ComedyPull.Application.Pipeline.Scheduling
 {
@@ -19,64 +20,72 @@ namespace ComedyPull.Application.Pipeline.Scheduling
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            using (LogContext.PushProperty("ServiceName", nameof(SchedulingService)))
             {
-                try
+                logger.LogInformation("Started {ServiceName}", nameof(SchedulingService));
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    if (await backPressureManager.ShouldApplyBackPressureAsync(Queues.Collection))
+                    try
                     {
-                        logger.LogWarning("Collection queue overloaded, delaying for another interval.");
-                        continue;
+                        if (await backPressureManager.ShouldApplyBackPressureAsync(Queues.Collection))
+                        {
+                            logger.LogWarning("Collection queue overloaded, delaying for another interval.");
+                            continue;
+                        }
+
+                        using var scope = scopeFactory.CreateScope();
+                        var repository = scope.ServiceProvider.GetRequiredService<ISchedulingRepository>();
+
+                        var nextJob = await repository.GetNextJobAsync(stoppingToken);
+                        if (nextJob == null)
+                        {
+                            continue;
+                        }
+
+                        await ProcessJobAsync(repository, nextJob, stoppingToken);
                     }
-
-                    using var scope = scopeFactory.CreateScope();
-                    var repository = scope.ServiceProvider.GetRequiredService<ISchedulingRepository>();
-
-                    var nextJob = await repository.GetNextJobAsync(stoppingToken);
-                    if (nextJob == null)
+                    catch (Exception ex)
                     {
-                        continue;
+                        logger.LogError(ex, "Error in scheduling service execution");
                     }
-
-                    logger.LogInformation("Processing job [{Jobname}]", nextJob.Name);
-
-                    await ProcessJobAsync(repository, nextJob, stoppingToken);
+                    finally
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(options.Value.DelayIntervalSeconds), stoppingToken);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Error in scheduling service execution");
-                }
-                finally
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(options.Value.DelayIntervalSeconds), stoppingToken);
-                }
+                logger.LogInformation("Stopped {ServiceName}", nameof(SchedulingService));
             }
         }
 
         private async Task ProcessJobAsync(ISchedulingRepository repository, Job job, CancellationToken stoppingToken)
         {
-            var execution = await repository.CreateJobExecutionAsync(job.Id, stoppingToken);
-            var sitemaps = await repository.GetJobSitemapsAsync(job.Id, stoppingToken);
-            try
+            using (LogContext.PushProperty("JobId", job.Id))
             {
-                var urls = await GetSitemapUrlsAsync(sitemaps);
-                var pipelineContexts = urls.Select(url => new PipelineContext
+                var execution = await repository.CreateJobExecutionAsync(job.Id, stoppingToken);
+                using (LogContext.PushProperty("ExecutionId", execution.Id))
                 {
-                    JobExecutionId = execution.Id,
-                    Source = job.Source,
-                    Sku = job.Sku,
-                    Metadata = new PipelineMetadata { CollectionUrl = url }
-                }).ToList();
+                    var sitemaps = await repository.GetJobSitemapsAsync(job.Id, stoppingToken);
+                    try
+                    {
+                        var urls = await GetSitemapUrlsAsync(sitemaps);
+                        var pipelineContexts = urls.Select(url => new PipelineContext
+                        {
+                            JobExecutionId = execution.Id,
+                            Source = job.Source,
+                            Sku = job.Sku,
+                            Metadata = new PipelineMetadata { CollectionUrl = url }
+                        }).ToList();
 
-                await queueClient.EnqueueBatchAsync(Queues.Collection, pipelineContexts);
-
-                await repository.UpdateJobExecutionAsScheduledAsync(execution.Id, stoppingToken);
-                logger.LogInformation("Scheduled job {JobId} with {UrlCount} URLs", job.Id, pipelineContexts.Count);
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, "Job execution {ExecutionId} failed: {Message}", execution.Id, e.Message);
-                await repository.UpdateJobExecutionAsFailedAsync(execution.Id, e.Message, stoppingToken);
+                        await queueClient.EnqueueBatchAsync(Queues.Collection, pipelineContexts);
+                        await repository.UpdateJobExecutionAsScheduledAsync(execution.Id, stoppingToken);
+                        logger.LogInformation("Job execution {ExecutionId} for job {JobId} with {UrlCount} URLs.", execution.Id, job.Id, pipelineContexts.Count);
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError(e, "Job execution {ExecutionId} failed: {Message}", execution.Id, e.Message);
+                        await repository.UpdateJobExecutionAsFailedAsync(execution.Id, e.Message, stoppingToken);
+                    }
+                }
             }
         }
 

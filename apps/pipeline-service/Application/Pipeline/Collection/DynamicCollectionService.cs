@@ -6,6 +6,7 @@ using ComedyPull.Domain.Models.Queue;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog.Context;
 
 namespace ComedyPull.Application.Pipeline.Collection
 {
@@ -50,88 +51,89 @@ namespace ComedyPull.Application.Pipeline.Collection
         {
             await InitializeAsync();
             
-            logger.LogInformation("Starting PlaywrightScraper workers with concurrency {Concurrency}", options.Value.WebBrowserConcurrency);
-            
             var workers = Enumerable.Range(0, options.Value.WebBrowserConcurrency)
                 .Select(_ => WorkerAsync(stoppingToken))
                 .ToArray();
+
+            logger.LogInformation("Starting PlaywrightScraper workers with concurrency {Concurrency}", options.Value.WebBrowserConcurrency);
 
             await Task.WhenAll(workers);
         }
 
         private async Task WorkerAsync(CancellationToken stoppingToken)
         {
-            logger.LogInformation("Starting {Service}", nameof(DynamicCollectionService));
-            while (!stoppingToken.IsCancellationRequested)
+            using (LogContext.PushProperty("ServiceName", nameof(DynamicCollectionService)))
             {
-                try
+                logger.LogInformation("Started {ServiceName}", nameof(DynamicCollectionService));
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    if (await backPressureManager.ShouldApplyBackPressureAsync(Queues.Transformation))
-                    {
-                        logger.LogWarning("Transformation queue overloaded, delaying for another interval.");
-                        continue;
-                    }
-
-                    if (await queueClient.GetLengthAsync(Queues.DynamicCollection) == 0)
-                    {
-                        continue;
-                    }
-
-                    var context = await queueClient.DequeueAsync(Queues.DynamicCollection);
-                    if (context == null)
-                    {
-                        continue;
-                    }
-
-                    var collectionStartTime = DateTime.UtcNow;
-                    await _semaphore.WaitAsync(stoppingToken);
-
-                    IWebPage page = null!;
                     try
                     {
-                        page = await _context!.NewPageAsync();
-
-                        var collector = collectorFactory.GetPageCollector(context.Sku);
-                        if (collector == null)
+                        if (await backPressureManager.ShouldApplyBackPressureAsync(Queues.Transformation))
                         {
-                            logger.LogWarning("Found no collector that matches content sku {Sku}", context.Sku);
-                            context.State = ProcessingState.Failed;
+                            logger.LogWarning("Transformation queue overloaded, delaying for another interval.");
                             continue;
                         }
+                        if (await queueClient.GetLengthAsync(Queues.DynamicCollection) == 0) continue;
 
-                        var result = await collector.CollectPageAsync(context.Metadata.CollectionUrl, page);
+                        var context = await queueClient.DequeueAsync(Queues.DynamicCollection);
+                        if (context == null) continue;
+                        
+                        using (LogContext.PushProperty("ContextId", context.Id))
+                        using (LogContext.PushProperty("ExecutionId", context.JobExecutionId))
+                        using (LogContext.PushProperty("Sku", context.Sku))
+                        using (LogContext.PushProperty("CollectionUrl", context.Metadata.CollectionUrl))
+                        using (LogContext.PushProperty("Tags", context.Metadata.Tags))
+                        {
+                            await _semaphore.WaitAsync(stoppingToken);
+                            IWebPage page = null!;
+                            try
+                            {
+                                page = await _context!.NewPageAsync();
 
-                        context.RawData = result;
-                        context.Metadata.CollectedAt = DateTimeOffset.UtcNow;
-                        context.State = ProcessingState.Collected;
+                                var collector = collectorFactory.GetPageCollector(context.Sku);
+                                if (collector == null)
+                                {
+                                    logger.LogWarning("Found no collector that matches content sku {Sku}", context.Sku);
+                                    context.State = ProcessingState.Failed;
+                                    continue;
+                                }
 
-                        await queueClient.EnqueueAsync(Queues.Transformation, context);
+                                var result = await collector.CollectPageAsync(context.Metadata.CollectionUrl, page);
+
+                                context.RawData = result;
+                                context.Metadata.CollectedAt = DateTimeOffset.UtcNow;
+                                context.State = ProcessingState.Collected;
+
+                                await queueClient.EnqueueAsync(Queues.Transformation, context);
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.LogError(ex, "Error processing url {Url} from job execution {BatchId}",
+                                    context.Metadata.CollectionUrl,
+                                    context.JobExecutionId);
+                                context.State = ProcessingState.Failed;
+                            }
+                            finally
+                            {
+                                await page.CloseAsync();
+                                _semaphore.Release();
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError(ex, "Error processing url {Url} from job execution {BatchId}",
-                            context.Metadata.CollectionUrl,
-                            context.JobExecutionId);
-                        context.State = ProcessingState.Failed;
+                        logger.LogError(ex, "Error in dynamic collection worker");
                     }
                     finally
                     {
-                        await page.CloseAsync();
-                        _semaphore.Release();
+                        var delaySeconds = await backPressureManager.CalculateAdaptiveDelayAsync(Queues.Transformation,
+                            options.Value.DelayIntervalSeconds);
+                        await Task.Delay(TimeSpan.FromSeconds(delaySeconds), stoppingToken);
                     }
                 }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Error in dynamic collection worker");
-                }
-                finally
-                {
-                    var delaySeconds = await backPressureManager.CalculateAdaptiveDelayAsync(Queues.Transformation,
-                        options.Value.DelayIntervalSeconds);
-                    await Task.Delay(TimeSpan.FromSeconds(delaySeconds), stoppingToken);
-                }
+                logger.LogInformation("Stopped {ServiceName}", nameof(DynamicCollectionService));
             }
-            logger.LogInformation("Stopping {Service}", nameof(DynamicCollectionService));
         }
 
         /// <summary>

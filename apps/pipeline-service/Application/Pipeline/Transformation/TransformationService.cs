@@ -5,6 +5,7 @@ using ComedyPull.Domain.Models.Queue;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog.Context;
 
 namespace ComedyPull.Application.Pipeline.Transformation
 {
@@ -18,77 +19,84 @@ namespace ComedyPull.Application.Pipeline.Transformation
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            logger.LogInformation("Starting {Service}", nameof(TransformationService));
-            while (!stoppingToken.IsCancellationRequested)
+            using (LogContext.PushProperty("ServiceName", nameof(TransformationService)))
             {
-                try
+                logger.LogInformation("Started {Service}", nameof(TransformationService));
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    if (await backPressureManager.ShouldApplyBackPressureAsync(Queues.Processing))
+                    try
                     {
-                        logger.LogWarning("Processing queue overloaded. Applying back pressure delay.");
-                        continue;
+                        if (await backPressureManager.ShouldApplyBackPressureAsync(Queues.Processing))
+                        {
+                            logger.LogWarning("Processing queue overloaded. Applying back pressure delay.");
+                            continue;
+                        }
+
+                        var adaptiveBatchSize = await backPressureManager.CalculateAdaptiveBatchSizeAsync(
+                            Queues.Transformation,
+                            options.Value.MinBatchSize,
+                            options.Value.MaxBatchSize);
+
+                        var batch = await queueClient.DequeueBatchAsync(
+                            Queues.Transformation,
+                            maxCount: adaptiveBatchSize,
+                            stoppingToken: stoppingToken);
+                        if (batch.Count <= 0) continue;
+                        
+                        logger.LogInformation("Transforming batch of {BatchSize} items (adaptive size: {AdaptiveSize})",
+                            batch.Count, adaptiveBatchSize);
+
+                        TransformBatch(batch);
+
+                        var successfulItems = batch.Where(c => c.State == ProcessingState.Transformed).ToList();
+                        if (successfulItems.Count <= 0) continue;
+                        
+                        await queueClient.EnqueueBatchAsync(Queues.Processing, successfulItems);
                     }
-
-                    var adaptiveBatchSize = await backPressureManager.CalculateAdaptiveBatchSizeAsync(
-                        Queues.Transformation,
-                        options.Value.MinBatchSize,
-                        options.Value.MaxBatchSize);
-                    
-                    var transformationStartTime = DateTime.UtcNow;
-
-                    var batch = await queueClient.DequeueBatchAsync(
-                        Queues.Transformation,
-                        maxCount: adaptiveBatchSize,
-                        stoppingToken: stoppingToken);
-                    if (batch.Count <= 0) continue;
-                    
-                    logger.LogInformation("Transforming batch of {BatchSize} items (adaptive size: {AdaptiveSize})",
-                        batch.Count, adaptiveBatchSize);
-
-                    await TransformBatchAsync(batch, stoppingToken);
-
-                    var successfulItems = batch.Where(c => c.State == ProcessingState.Transformed).ToList();
-                    if (successfulItems.Count <= 0) continue;
-                    
-                    await queueClient.EnqueueBatchAsync(Queues.Processing, successfulItems);
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Error in transformation service execution");
+                    }
+                    finally
+                    {
+                        var delaySeconds = await backPressureManager.CalculateAdaptiveDelayAsync(Queues.Processing,
+                            options.Value.DelayIntervalSeconds);
+                        await Task.Delay(TimeSpan.FromSeconds(delaySeconds), stoppingToken);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Error in transformation service execution");
-                }
-                finally
-                {
-                    var delaySeconds = await backPressureManager.CalculateAdaptiveDelayAsync(Queues.Processing,
-                        options.Value.DelayIntervalSeconds);
-                    await Task.Delay(TimeSpan.FromSeconds(delaySeconds), stoppingToken);
-                }
+                logger.LogInformation("Stopped {Service}", nameof(TransformationService));
             }
-            logger.LogInformation("Stopping {Service}", nameof(TransformationService));
         }
-
-
-        private async Task TransformBatchAsync(ICollection<PipelineContext> batch, CancellationToken stoppingToken)
+        
+        private void TransformBatch(ICollection<PipelineContext> batch)
         {
             foreach (var context in batch)
             {
-                var transformer = transformerFactory.GetTransformer(context.Sku);
-                if (transformer == null)
+                using (LogContext.PushProperty("ContextId", context.Id))
+                using (LogContext.PushProperty("ExecutionId", context.JobExecutionId))
+                using (LogContext.PushProperty("Sku", context.Sku))
+                using (LogContext.PushProperty("CollectionUrl", context.Metadata.CollectionUrl))
+                using (LogContext.PushProperty("Tags", context.Metadata.Tags))
                 {
-                    logger.LogWarning("Found no transformer that matched content sku {Sku}", context.Sku);
-                    context.State = ProcessingState.Failed;
-                    continue;
-                }
+                    var transformer = transformerFactory.GetTransformer(context.Sku);
+                    if (transformer == null)
+                    {
+                        logger.LogWarning("Found no transformer that matched content sku {Sku}", context.Sku);
+                        context.State = ProcessingState.Failed;
+                        continue;
+                    }
 
-                try
-                {
-                    context.ProcessedEntities = transformer.Transform(context.RawData);
-                    context.State = ProcessingState.Transformed;
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Failed to transform context {ContextId} with sku {Sku}",
-                        context.Id, context.Sku);
-                    context.State = ProcessingState.Failed;
+                    try
+                    {
+                        context.ProcessedEntities = transformer.Transform(context.RawData);
+                        context.State = ProcessingState.Transformed;
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Failed to transform context {ContextId} with sku {Sku}",
+                            context.Id, context.Sku);
+                        context.State = ProcessingState.Failed;
+                    }
                 }
             }
         }
