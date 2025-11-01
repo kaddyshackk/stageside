@@ -14,7 +14,7 @@ namespace ComedyPull.Data.Contexts.ComedyDb.Configurations
         /// Configures the Act table.
         /// </summary>
         /// <param name="builder">The EntityTypeBuilder instance.</param>
-        public new void Configure(EntityTypeBuilder<Act> builder)
+        public override void Configure(EntityTypeBuilder<Act> builder)
         {
             base.Configure(builder);
 

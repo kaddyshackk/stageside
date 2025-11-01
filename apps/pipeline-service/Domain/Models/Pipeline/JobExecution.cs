@@ -13,6 +13,5 @@ namespace ComedyPull.Domain.Models.Pipeline
 
         // Navigation properties
         public virtual Job Job { get; set; } = null!;
-        public virtual ICollection<PipelineContext> PipelineContexts { get; set; } = [];
     }
 }

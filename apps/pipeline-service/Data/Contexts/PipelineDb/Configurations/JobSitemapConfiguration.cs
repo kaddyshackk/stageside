@@ -7,7 +7,7 @@ namespace ComedyPull.Data.Contexts.PipelineDb.Configurations
 {
     public class JobSitemapConfiguration : BaseEntityConfiguration<JobSitemap>
     {
-        public new void Configure(EntityTypeBuilder<JobSitemap> builder)
+        public override void Configure(EntityTypeBuilder<JobSitemap> builder)
         {
             base.Configure(builder);
 

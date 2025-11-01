@@ -14,7 +14,7 @@ namespace ComedyPull.Data.Contexts.ComedyDb.Configurations
         /// Configures the Events table.
         /// </summary>
         /// <param name="builder">The EntityTypeBuilder instance.</param>
-        public new void Configure(EntityTypeBuilder<Event> builder)
+        public override void Configure(EntityTypeBuilder<Event> builder)
         {
             base.Configure(builder);
 

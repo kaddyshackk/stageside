@@ -7,7 +7,7 @@ namespace ComedyPull.Data.Contexts.PipelineDb.Configurations
 {
     public class JobExecutionConfiguration : BaseEntityConfiguration<JobExecution>
     {
-        public new void Configure(EntityTypeBuilder<JobExecution> builder)
+        public override void Configure(EntityTypeBuilder<JobExecution> builder)
         {
             base.Configure(builder);
 
