@@ -6,9 +6,8 @@ namespace ComedyPull.Domain.Models.Pipeline
         public required Source Source { get; set; }
         public required Sku Sku { get; set; }
         public required string Name { get; set; }
-        public required string CronExpression { get; set; }
+        public string? CronExpression { get; set; }
         public required bool IsActive { get; set; }
-        public int TimeoutMinutes { get; set; } = 60;
         public DateTimeOffset? LastExecuted { get; set; }
         public DateTimeOffset? NextExecution { get; set; }
 
