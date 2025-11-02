@@ -1,8 +1,9 @@
 using System.Text.Json;
+using ComedyPull.Domain.Core.Events.Services;
+using ComedyPull.Domain.Core.Shared.Services;
 using ComedyPull.Domain.Interfaces.Processing;
 using ComedyPull.Domain.Models;
 using ComedyPull.Domain.Models.Pipeline;
-using ComedyPull.Domain.Services;
 using ComedyPull.Domain.Sources.Punchup.Models;
 using Microsoft.Extensions.Logging;
 
@@ -24,7 +25,7 @@ namespace ComedyPull.Domain.Sources.Punchup
             var now = DateTimeOffset.UtcNow;
             
             // Process Act
-            var comedianSlug = SlugGenerator.GenerateSlug(punchupRecord.Name);
+            var comedianSlug = GenericSlugGenerator.GenerateSlug(punchupRecord.Name);
             var processedAct = new ProcessedAct
             {
                 Name = punchupRecord.Name,
@@ -46,7 +47,7 @@ namespace ComedyPull.Domain.Sources.Punchup
                 .ToList();
 
             var venueEntities = from venueName in uniqueVenues
-                let venueSlug = SlugGenerator.GenerateSlug(venueName)
+                let venueSlug = GenericSlugGenerator.GenerateSlug(venueName)
                 select new ProcessedVenue { Name = venueName, Slug = venueSlug, ProcessedAt = now }
                 into processedVenue
                 select new ProcessedEntity
@@ -60,8 +61,8 @@ namespace ComedyPull.Domain.Sources.Punchup
 
             // Process Events
             var eventEntities = from punchupEvent in punchupRecord.Events
-                let venueSlug = SlugGenerator.GenerateSlug(punchupEvent.Venue)
-                let eventSlug = SlugGenerator.GenerateEventSlug(comedianSlug, venueSlug, punchupEvent.StartDateTime)
+                let venueSlug = GenericSlugGenerator.GenerateSlug(punchupEvent.Venue)
+                let eventSlug = EventSlugGenerator.GenerateEventSlug(comedianSlug, venueSlug, punchupEvent.StartDateTime)
                 select new ProcessedEvent
                 {
                     // TODO: Move to domain service

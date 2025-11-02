@@ -1,4 +1,4 @@
-﻿namespace ComedyPull.Domain.Interfaces.Service
+﻿namespace ComedyPull.Domain.Jobs.Interfaces
 {
     public interface ISitemapLoader
     {
