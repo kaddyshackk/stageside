@@ -40,6 +40,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
+app.MapEndpoints(typeof(Program).Assembly);
+
 app.Run();
 
 return 0;

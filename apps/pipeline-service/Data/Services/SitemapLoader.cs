@@ -1,5 +1,5 @@
 ﻿using System.Xml.Linq;
-using ComedyPull.Domain.Interfaces.Service;
+using ComedyPull.Domain.Jobs.Interfaces;
 using Microsoft.Extensions.Logging;
 using Serilog.Context;
 
