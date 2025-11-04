@@ -1,4 +1,6 @@
-namespace ComedyPull.Domain.Models.Pipeline
+using ComedyPull.Domain.Core.Shared;
+
+namespace ComedyPull.Domain.Pipeline
 {
     public record ProcessedEntity
     {

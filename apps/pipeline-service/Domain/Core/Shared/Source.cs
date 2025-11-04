@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace ComedyPull.Domain.Models
+namespace ComedyPull.Domain.Core.Shared
 {
     public enum Source
     {

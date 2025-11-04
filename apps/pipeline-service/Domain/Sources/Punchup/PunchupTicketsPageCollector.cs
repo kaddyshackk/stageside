@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using ComedyPull.Domain.Interfaces.Processing;
+using ComedyPull.Domain.Pipeline.Interfaces;
 using ComedyPull.Domain.Sources.Punchup.Models;
 using ComedyPull.Domain.Sources.Punchup.Pages;
 using ComedyPull.Domain.Utils;

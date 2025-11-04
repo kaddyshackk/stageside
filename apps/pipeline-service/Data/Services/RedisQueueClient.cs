@@ -1,7 +1,7 @@
 using System.Text.Json;
 using ComedyPull.Application.Pipeline;
-using ComedyPull.Domain.Interfaces.Service;
-using ComedyPull.Domain.Models.Queue;
+using ComedyPull.Domain.Pipeline.Interfaces;
+using ComedyPull.Domain.Queue;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 

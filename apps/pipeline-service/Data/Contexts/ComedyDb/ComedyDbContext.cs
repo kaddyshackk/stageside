@@ -1,5 +1,7 @@
 ﻿using ComedyPull.Data.Contexts.ComedyDb.Configurations;
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Core.Acts;
+using ComedyPull.Domain.Core.Events;
+using ComedyPull.Domain.Core.Venues;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComedyPull.Data.Contexts.ComedyDb

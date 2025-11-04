@@ -1,7 +1,7 @@
-using ComedyPull.Domain.Configuration;
-using ComedyPull.Domain.Interfaces.Service;
-using ComedyPull.Domain.Models.Pipeline;
-using ComedyPull.Domain.Models.Queue;
+using ComedyPull.Domain.Core.Shared;
+using ComedyPull.Domain.Pipeline;
+using ComedyPull.Domain.Pipeline.Interfaces;
+using ComedyPull.Domain.Queue;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

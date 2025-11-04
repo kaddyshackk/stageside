@@ -5,7 +5,7 @@ namespace ComedyPull.Data.Utils
 {
     public static class DbContextConfigurationUtil
     {
-        public static void ConfigureDbContextOptionsBuilder(DbContextOptionsBuilder options, IConfiguration configuration)
+        public static void ConfigureDbContextOptionsBuilder(DbContextOptionsBuilder options, IConfiguration configuration, string connectionStringName = "DefaultConnection")
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             if (string.IsNullOrEmpty(environment))
@@ -13,10 +13,10 @@ namespace ComedyPull.Data.Utils
                 throw new InvalidOperationException("ASPNETCORE_ENVIRONMENT is not set");
             }
             
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var connectionString = configuration.GetConnectionString(connectionStringName);
             if (string.IsNullOrEmpty(connectionString))
             {
-                throw new InvalidOperationException("DefaultConnection string is not configured.");
+                throw new InvalidOperationException($"{connectionStringName} connection string is not configured.");
             }
             
             options.UseNpgsql(connectionString, npgsqlOptions =>

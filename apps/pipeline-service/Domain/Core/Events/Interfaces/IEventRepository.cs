@@ -1,6 +1,4 @@
-using ComedyPull.Domain.Models;
-
-namespace ComedyPull.Domain.Interfaces.Repository
+namespace ComedyPull.Domain.Core.Events.Interfaces
 {
     /// <summary>
     /// Manages data access operations for <see cref="Event"/> entities.

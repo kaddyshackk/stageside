@@ -1,8 +1,11 @@
-using ComedyPull.Domain.Interfaces.Service;
-using ComedyPull.Domain.Models;
-using ComedyPull.Domain.Models.Pipeline;
-using ComedyPull.Domain.Models.Queue;
-using ComedyPull.Domain.Services;
+using ComedyPull.Domain.Core.Acts;
+using ComedyPull.Domain.Core.Events.Services;
+using ComedyPull.Domain.Core.Shared;
+using ComedyPull.Domain.Core.Venues;
+using ComedyPull.Domain.Pipeline;
+using ComedyPull.Domain.Pipeline.Interfaces;
+using ComedyPull.Domain.Queue;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -13,9 +16,7 @@ namespace ComedyPull.Application.Pipeline.Processing
     public class ProcessingService(
         IQueueClient queueClient,
         IBackPressureManager backPressureManager,
-        ActService actService,
-        VenueService venueService,
-        EventService eventService,
+        IServiceScopeFactory scopeFactory,
         IOptions<ProcessingOptions> options,
         ILogger<ProcessingService> logger) : BackgroundService
     {
@@ -62,6 +63,10 @@ namespace ComedyPull.Application.Pipeline.Processing
         
         private async Task ProcessBatchAsync(ICollection<PipelineContext> batch, CancellationToken stoppingToken)
         {
+            using var scope = scopeFactory.CreateScope();
+            var actService = scope.ServiceProvider.GetRequiredService<ActService>();
+            var venueService = scope.ServiceProvider.GetRequiredService<VenueService>();
+            var eventService = scope.ServiceProvider.GetRequiredService<EventService>();
             foreach (var context in batch.ToList())
             {
                 using (LogContext.PushProperty("ContextId", context.Id))

@@ -1,5 +1,5 @@
-using ComedyPull.Data.Models;
-using ComedyPull.Domain.Models;
+using ComedyPull.Data.Core;
+using ComedyPull.Domain.Core.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

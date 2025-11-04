@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ComedyPull.Data.Migrations
 {
     [DbContext(typeof(ComedyDbContext))]
-    [Migration("20251101024520_ComedyDbInitialCreate")]
-    partial class ComedyDbInitialCreate
+    [Migration("20251103234831_InitialCreateComedyDb")]
+    partial class InitialCreateComedyDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace ComedyPull.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.Act", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Core.Acts.Act", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -74,7 +74,7 @@ namespace ComedyPull.Data.Migrations
                     b.ToTable("Acts", (string)null);
                 });
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.Event", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Core.Events.Event", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -136,7 +136,7 @@ namespace ComedyPull.Data.Migrations
                     b.ToTable("Events", (string)null);
                 });
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.EventAct", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Core.Events.EventAct", b =>
                 {
                     b.Property<Guid>("ActId")
                         .HasColumnType("uuid");
@@ -169,7 +169,7 @@ namespace ComedyPull.Data.Migrations
                     b.ToTable("EventActs", (string)null);
                 });
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.Venue", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Core.Venues.Venue", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -211,9 +211,9 @@ namespace ComedyPull.Data.Migrations
                     b.ToTable("Venues", (string)null);
                 });
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.Event", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Core.Events.Event", b =>
                 {
-                    b.HasOne("ComedyPull.Domain.Models.Venue", "Venue")
+                    b.HasOne("ComedyPull.Domain.Core.Venues.Venue", "Venue")
                         .WithMany("Events")
                         .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -222,15 +222,15 @@ namespace ComedyPull.Data.Migrations
                     b.Navigation("Venue");
                 });
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.EventAct", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Core.Events.EventAct", b =>
                 {
-                    b.HasOne("ComedyPull.Domain.Models.Act", "Act")
+                    b.HasOne("ComedyPull.Domain.Core.Acts.Act", "Act")
                         .WithMany("EventActs")
                         .HasForeignKey("ActId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ComedyPull.Domain.Models.Event", "Event")
+                    b.HasOne("ComedyPull.Domain.Core.Events.Event", "Event")
                         .WithMany("ComedianEvents")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -241,17 +241,17 @@ namespace ComedyPull.Data.Migrations
                     b.Navigation("Event");
                 });
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.Act", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Core.Acts.Act", b =>
                 {
                     b.Navigation("EventActs");
                 });
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.Event", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Core.Events.Event", b =>
                 {
                     b.Navigation("ComedianEvents");
                 });
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.Venue", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Core.Venues.Venue", b =>
                 {
                     b.Navigation("Events");
                 });

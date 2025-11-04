@@ -1,9 +1,9 @@
 ﻿using ComedyPull.Data.Contexts.ComedyDb;
-using ComedyPull.Domain.Interfaces.Repository;
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Core.Venues;
+using ComedyPull.Domain.Core.Venues.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Repositories
+namespace ComedyPull.Data.Core
 {
     /// inheritdoc
     public class VenueRepository(ComedyDbContext context) : IVenueRepository

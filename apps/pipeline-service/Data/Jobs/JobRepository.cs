@@ -17,7 +17,7 @@ namespace ComedyPull.Data.Jobs
             var now = DateTimeOffset.UtcNow;
 
             return await context.Jobs
-                .Where(j => j.IsActive && j.NextExecution != null && j.NextExecution <= now)
+                .Where(j => j.IsActive && j.NextExecution <= now)
                 .OrderBy(j => j.NextExecution)
                 .FirstOrDefaultAsync(stoppingToken);
         }

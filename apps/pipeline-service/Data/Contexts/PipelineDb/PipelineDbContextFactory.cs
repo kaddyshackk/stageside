@@ -14,7 +14,7 @@ namespace ComedyPull.Data.Contexts.PipelineDb
         {
             var configuration = BuildConfiguration();
             var optionsBuilder = new DbContextOptionsBuilder<PipelineDbContext>();
-            DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(optionsBuilder, configuration);
+            DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(optionsBuilder, configuration, "PipelineDb");
             return new PipelineDbContext(optionsBuilder.Options);
         }
 
@@ -25,6 +25,7 @@ namespace ComedyPull.Data.Contexts.PipelineDb
                 .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Api", "Settings"))
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile($"appsettings.{environment}.json", optional: true)
+                .AddUserSecrets<PipelineDbContextFactory>()
                 .AddEnvironmentVariables();
             return builder.Build();
         }

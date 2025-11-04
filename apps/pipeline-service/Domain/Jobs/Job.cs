@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Core.Shared;
 
 namespace ComedyPull.Domain.Jobs
 {
@@ -10,8 +10,8 @@ namespace ComedyPull.Domain.Jobs
         public required string Name { get; set; }
         public string? CronExpression { get; set; }
         public required bool IsActive { get; set; }
+        public required DateTimeOffset NextExecution { get; set; }
         public DateTimeOffset? LastExecuted { get; set; }
-        public DateTimeOffset? NextExecution { get; set; }
 
         // Navigation properties
         public virtual ICollection<JobSitemap> Sitemaps { get; set; } = [];

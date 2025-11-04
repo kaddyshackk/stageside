@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Interfaces.Processing;
+using ComedyPull.Domain.Pipeline.Interfaces;
 using Microsoft.Playwright;
 
 namespace ComedyPull.Data.Services

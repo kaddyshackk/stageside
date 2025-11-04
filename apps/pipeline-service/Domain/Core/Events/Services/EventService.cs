@@ -1,24 +1,21 @@
-using ComedyPull.Domain.Interfaces.Repository;
-using ComedyPull.Domain.Models;
-using ComedyPull.Domain.Models.Pipeline;
-using Microsoft.Extensions.DependencyInjection;
+using ComedyPull.Domain.Core.Acts;
+using ComedyPull.Domain.Core.Events.Interfaces;
+using ComedyPull.Domain.Core.Venues.Interfaces;
+using ComedyPull.Domain.Pipeline;
 using Microsoft.Extensions.Logging;
 
-namespace ComedyPull.Domain.Services
+namespace ComedyPull.Domain.Core.Events.Services
 {
     public class EventService(
-        IServiceScopeFactory scopeFactory,
+        IEventRepository eventRepository,
+        IEventActRepository eventActRepository,
+        IActRepository actRepository,
+        IVenueRepository venueRepository,
         ILogger<EventService> logger
     )
     {
         public async Task<BatchProcessResult<ProcessedEvent, Event>> ProcessEventsAsync(IEnumerable<ProcessedEvent> processedEvents, CancellationToken stoppingToken)
         {
-            using var scope = scopeFactory.CreateScope();
-            var eventRepository = scope.ServiceProvider.GetRequiredService<IEventRepository>();
-            var eventActRepository = scope.ServiceProvider.GetRequiredService<IEventActRepository>();
-            var actRepository = scope.ServiceProvider.GetRequiredService<IActRepository>();
-            var venueRepository = scope.ServiceProvider.GetRequiredService<IVenueRepository>();
-            
             var events = processedEvents.ToList();
             var eventSlugs = events.Select(e => e.Slug).Distinct().ToList();
             var existingEvents = await eventRepository.GetEventsBySlugAsync(eventSlugs!, stoppingToken);

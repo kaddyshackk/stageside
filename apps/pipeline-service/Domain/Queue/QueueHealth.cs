@@ -1,4 +1,4 @@
-namespace ComedyPull.Domain.Models.Queue
+namespace ComedyPull.Domain.Queue
 {
     public record QueueHealth
     {

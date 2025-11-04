@@ -1,9 +1,8 @@
 ﻿using ComedyPull.Data.Contexts.ComedyDb;
-using ComedyPull.Domain.Interfaces.Repository;
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Core.Acts;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Repositories
+namespace ComedyPull.Data.Core
 {
     /// inheritdoc
     public class ActRepository(ComedyDbContext context) : IActRepository

@@ -28,7 +28,6 @@ namespace ComedyPull.Domain.Jobs.Services
             var execution = await executionRepository.CreateJobExecutionAsync(new JobExecution
             {
                 JobId = job.Id,
-                
             }, stoppingToken);
             
             job.LastExecuted = DateTimeOffset.UtcNow;
@@ -39,11 +38,13 @@ namespace ComedyPull.Domain.Jobs.Services
             }
             else
             {
-                job.NextExecution = CronCalculationService.CalculateNextOccurence(job.CronExpression);
-                if (job.NextExecution == null)
+                var nextExecution = CronCalculationService.CalculateNextOccurence(job.CronExpression);
+                if (!nextExecution.HasValue)
                 {
-                    logger.LogWarning("Failed to calculate next occurence for job {JobId} and execution {ExecutionId}", job.Id, execution.Id);
+                    logger.LogError("Failed to calculate next occurence for job {JobId} and execution {ExecutionId}", job.Id, execution.Id);
+                    throw new InvalidJobExecutionStateException($"Failed to calculate next occurence for job {job.Id}. Cron expression is invalid.");
                 }
+                job.NextExecution = nextExecution.Value;
             }
             
             await jobRepository.UpdateJobAsync(job, stoppingToken);

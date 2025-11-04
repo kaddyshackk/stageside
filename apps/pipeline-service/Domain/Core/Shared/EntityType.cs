@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace ComedyPull.Domain.Models
+namespace ComedyPull.Domain.Core.Shared
 {
     /// <summary>
     /// Represents an entity that can be processed and displayed.

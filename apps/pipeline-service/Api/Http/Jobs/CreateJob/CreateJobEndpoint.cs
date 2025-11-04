@@ -9,7 +9,7 @@ namespace ComedyPull.Api.Http.Jobs.CreateJob
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapGet("/jobs", HandleAsync)
+            app.MapPost("/api/jobs", HandleAsync)
                 .WithOpenApi()
                 .WithName("CreateJob")
                 .WithTags("Jobs")

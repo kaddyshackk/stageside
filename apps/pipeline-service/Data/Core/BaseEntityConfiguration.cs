@@ -1,8 +1,8 @@
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Core.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ComedyPull.Data.Models
+namespace ComedyPull.Data.Core
 {
     /// <summary>
     /// Configuration class for the BaseEntity fields of a table.

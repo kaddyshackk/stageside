@@ -1,7 +1,6 @@
-using ComedyPull.Domain.Models;
-using ComedyPull.Domain.Interfaces.Processing;
+using ComedyPull.Domain.Core.Shared;
 
-namespace ComedyPull.Domain.Interfaces.Factory
+namespace ComedyPull.Domain.Pipeline.Interfaces
 {
     public interface ICollectorFactory
     {

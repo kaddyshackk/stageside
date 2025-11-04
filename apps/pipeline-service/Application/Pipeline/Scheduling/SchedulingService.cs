@@ -1,6 +1,7 @@
-using ComedyPull.Domain.Interfaces.Service;
 using ComedyPull.Domain.Jobs.Services;
-using ComedyPull.Domain.Models.Queue;
+using ComedyPull.Domain.Pipeline.Interfaces;
+using ComedyPull.Domain.Queue;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,7 +10,7 @@ using Serilog.Context;
 namespace ComedyPull.Application.Pipeline.Scheduling
 {
     public class SchedulingService(
-        JobDispatchService jobDispatchService,
+        IServiceScopeFactory scopeFactory,
         IBackPressureManager backPressureManager,
         IOptions<SchedulingOptions> options,
         ILogger<SchedulingService> logger) : BackgroundService
@@ -29,6 +30,8 @@ namespace ComedyPull.Application.Pipeline.Scheduling
                             continue;
                         }
 
+                        using var scope = scopeFactory.CreateScope();
+                        var jobDispatchService = scope.ServiceProvider.GetRequiredService<JobDispatchService>();
                         await jobDispatchService.DispatchNextJobAsync(stoppingToken);
                     }
                     catch (Exception ex)

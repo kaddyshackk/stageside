@@ -1,4 +1,4 @@
-using ComedyPull.Data.Models;
+using ComedyPull.Data.Core;
 using ComedyPull.Domain.Jobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -21,11 +21,9 @@ namespace ComedyPull.Data.Contexts.PipelineDb.Configurations
             builder.Property(x => x.SitemapUrl)
                 .HasMaxLength(500)
                 .IsRequired();
-            
-            builder.Property(x => x.ProcessingOrder)
-                .IsRequired();
 
             builder.Property(x => x.IsActive)
+                .HasDefaultValue(true)
                 .IsRequired();
         }
     }

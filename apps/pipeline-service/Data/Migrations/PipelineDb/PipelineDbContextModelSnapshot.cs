@@ -22,7 +22,7 @@ namespace ComedyPull.Data.Migrations.PipelineDb
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.Pipeline.Job", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Jobs.Job", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -38,14 +38,15 @@ namespace ComedyPull.Data.Migrations.PipelineDb
                         .HasColumnType("text");
 
                     b.Property<string>("CronExpression")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
-                    b.Property<DateTimeOffset>("LastExecuted")
+                    b.Property<DateTimeOffset?>("LastExecuted")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
@@ -66,9 +67,6 @@ namespace ComedyPull.Data.Migrations.PipelineDb
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<int>("TimeoutMinutes")
-                        .HasColumnType("integer");
-
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -80,16 +78,20 @@ namespace ComedyPull.Data.Migrations.PipelineDb
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NextExecution");
+
+                    b.HasIndex("IsActive", "NextExecution");
+
                     b.ToTable("Jobs", (string)null);
                 });
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.Pipeline.JobExecution", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Jobs.JobExecution", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTimeOffset>("CompletedAt")
+                    b.Property<DateTimeOffset?>("CompletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTimeOffset>("CreatedAt")
@@ -102,26 +104,19 @@ namespace ComedyPull.Data.Migrations.PipelineDb
                         .HasColumnType("text");
 
                     b.Property<string>("ErrorMessage")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
                     b.Property<Guid>("JobId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("ProcessedUrls")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("StartedAt")
+                    b.Property<DateTimeOffset?>("StartedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
-
-                    b.Property<int>("TotalUrls")
-                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -139,7 +134,7 @@ namespace ComedyPull.Data.Migrations.PipelineDb
                     b.ToTable("JobExecutions", (string)null);
                 });
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.Pipeline.JobSitemap", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Jobs.JobSitemap", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -155,13 +150,12 @@ namespace ComedyPull.Data.Migrations.PipelineDb
                         .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<Guid>("JobId")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("ProcessingOrder")
-                        .HasColumnType("integer");
 
                     b.Property<string>("SitemapUrl")
                         .IsRequired()
@@ -184,9 +178,9 @@ namespace ComedyPull.Data.Migrations.PipelineDb
                     b.ToTable("JobSitemaps", (string)null);
                 });
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.Pipeline.JobExecution", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Jobs.JobExecution", b =>
                 {
-                    b.HasOne("ComedyPull.Domain.Models.Pipeline.Job", "Job")
+                    b.HasOne("ComedyPull.Domain.Jobs.Job", "Job")
                         .WithMany("Executions")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -195,9 +189,9 @@ namespace ComedyPull.Data.Migrations.PipelineDb
                     b.Navigation("Job");
                 });
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.Pipeline.JobSitemap", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Jobs.JobSitemap", b =>
                 {
-                    b.HasOne("ComedyPull.Domain.Models.Pipeline.Job", "Job")
+                    b.HasOne("ComedyPull.Domain.Jobs.Job", "Job")
                         .WithMany("Sitemaps")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -206,7 +200,7 @@ namespace ComedyPull.Data.Migrations.PipelineDb
                     b.Navigation("Job");
                 });
 
-            modelBuilder.Entity("ComedyPull.Domain.Models.Pipeline.Job", b =>
+            modelBuilder.Entity("ComedyPull.Domain.Jobs.Job", b =>
                 {
                     b.Navigation("Executions");
 

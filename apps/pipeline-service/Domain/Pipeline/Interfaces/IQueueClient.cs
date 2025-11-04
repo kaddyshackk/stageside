@@ -1,6 +1,6 @@
-using ComedyPull.Domain.Models.Queue;
+using ComedyPull.Domain.Queue;
 
-namespace ComedyPull.Domain.Interfaces.Service
+namespace ComedyPull.Domain.Pipeline.Interfaces
 {
     public interface IQueueClient
     {

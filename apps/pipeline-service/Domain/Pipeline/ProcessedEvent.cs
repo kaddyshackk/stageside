@@ -1,4 +1,4 @@
-namespace ComedyPull.Domain.Models.Pipeline
+namespace ComedyPull.Domain.Pipeline
 {
     /// <summary>
     /// Represents a processed event from the data pipeline.

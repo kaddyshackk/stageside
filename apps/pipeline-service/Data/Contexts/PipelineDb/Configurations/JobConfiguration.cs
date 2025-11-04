@@ -1,4 +1,4 @@
-using ComedyPull.Data.Models;
+using ComedyPull.Data.Core;
 using ComedyPull.Domain.Jobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -33,12 +33,13 @@ namespace ComedyPull.Data.Contexts.PipelineDb.Configurations
                 .HasMaxLength(50);
             
             builder.Property(x => x.IsActive)
+                .HasDefaultValue(true)
                 .IsRequired();
 
-            builder.Property(x => x.LastExecuted);
-            
             builder.Property(x => x.NextExecution)
                 .IsRequired();
+            
+            builder.Property(x => x.LastExecuted);
             
             builder.HasIndex(x => x.NextExecution);
             builder.HasIndex(x => new { x.IsActive, x.NextExecution });

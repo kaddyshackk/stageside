@@ -3,7 +3,7 @@ using ComedyPull.Domain.Jobs.Interfaces;
 using Microsoft.Extensions.Logging;
 using Serilog.Context;
 
-namespace ComedyPull.Data.Services
+namespace ComedyPull.Data.Jobs
 {
     public class SitemapLoader(IHttpClientFactory httpClientFactory, ILogger<SitemapLoader> logger) : ISitemapLoader
     {

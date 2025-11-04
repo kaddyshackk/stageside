@@ -1,17 +1,11 @@
-using ComedyPull.Domain.Interfaces.Repository;
-using ComedyPull.Domain.Models;
-using ComedyPull.Domain.Models.Pipeline;
-using Microsoft.Extensions.DependencyInjection;
+using ComedyPull.Domain.Pipeline;
 
-namespace ComedyPull.Domain.Services
+namespace ComedyPull.Domain.Core.Acts
 {
-    public class ActService(IServiceScopeFactory scopeFactory)
+    public class ActService(IActRepository repository)
     {
         public async Task<BatchProcessResult<ProcessedAct, Act>> ProcessActsAsync(IEnumerable<ProcessedAct> processedActs, CancellationToken stoppingToken)
         {
-            using var scope = scopeFactory.CreateScope();
-            var repository = scope.ServiceProvider.GetRequiredService<IActRepository>();
-            
             var acts = processedActs.ToList();
             var slugs = acts.Select(s => s.Slug).Distinct().Where(s => !string.IsNullOrEmpty(s));
             var existingActs = await repository.GetActsBySlugAsync(slugs!, stoppingToken);

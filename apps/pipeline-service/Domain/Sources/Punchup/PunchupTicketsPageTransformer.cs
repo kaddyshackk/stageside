@@ -1,9 +1,9 @@
 using System.Text.Json;
 using ComedyPull.Domain.Core.Events.Services;
+using ComedyPull.Domain.Core.Shared;
 using ComedyPull.Domain.Core.Shared.Services;
-using ComedyPull.Domain.Interfaces.Processing;
-using ComedyPull.Domain.Models;
-using ComedyPull.Domain.Models.Pipeline;
+using ComedyPull.Domain.Pipeline;
+using ComedyPull.Domain.Pipeline.Interfaces;
 using ComedyPull.Domain.Sources.Punchup.Models;
 using Microsoft.Extensions.Logging;
 

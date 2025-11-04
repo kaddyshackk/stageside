@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace ComedyPull.Domain.Models.Pipeline
+namespace ComedyPull.Domain.Pipeline
 {
     public enum ProcessingState
     {

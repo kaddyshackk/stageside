@@ -1,4 +1,7 @@
-namespace ComedyPull.Domain.Models
+using ComedyPull.Domain.Core.Events;
+using ComedyPull.Domain.Core.Shared;
+
+namespace ComedyPull.Domain.Core.Venues
 {
     /// <summary>
     /// Defines a venue for comedy events.

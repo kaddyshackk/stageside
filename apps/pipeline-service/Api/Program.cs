@@ -13,7 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("Settings/appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"Settings/appsettings.{builder.Environment.EnvironmentName}.json", optional: true,
-        reloadOnChange: true);
+        reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Configuration(context.Configuration)

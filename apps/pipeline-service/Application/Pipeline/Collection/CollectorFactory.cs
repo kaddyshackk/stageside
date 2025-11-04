@@ -1,6 +1,5 @@
-using ComedyPull.Domain.Interfaces.Factory;
-using ComedyPull.Domain.Interfaces.Processing;
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Core.Shared;
+using ComedyPull.Domain.Pipeline.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ComedyPull.Application.Pipeline.Collection

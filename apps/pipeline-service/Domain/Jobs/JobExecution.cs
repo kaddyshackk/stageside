@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Core.Shared;
 
 namespace ComedyPull.Domain.Jobs
 {

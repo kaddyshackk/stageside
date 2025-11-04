@@ -1,6 +1,6 @@
-using ComedyPull.Domain.Interfaces.Model;
+using ComedyPull.Domain.Core.Shared.Interfaces;
 
-namespace ComedyPull.Domain.Models
+namespace ComedyPull.Domain.Core.Shared
 {
     /// <summary>
     /// Defines a base entity.

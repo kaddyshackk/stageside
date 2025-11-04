@@ -1,5 +1,5 @@
-using ComedyPull.Data.Models;
-using ComedyPull.Domain.Models;
+using ComedyPull.Data.Core;
+using ComedyPull.Domain.Core.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -38,8 +38,7 @@ namespace ComedyPull.Data.Contexts.ComedyDb.Configurations
             builder.Property(e => e.StartDateTime)
                 .IsRequired();
 
-            builder.Property(e => e.EndDateTime)
-                .IsRequired(false);
+            builder.Property(e => e.EndDateTime);
             
             builder.HasOne(e => e.Venue)
                 .WithMany(v => v.Events)

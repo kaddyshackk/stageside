@@ -1,7 +1,7 @@
 using ComedyPull.Domain.Extensions;
-using ComedyPull.Domain.Models.Pipeline;
+using ComedyPull.Domain.Pipeline;
 
-namespace ComedyPull.Domain.Models.Queue
+namespace ComedyPull.Domain.Queue
 {
     public static class Queues
     {

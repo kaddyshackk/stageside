@@ -1,4 +1,4 @@
-using ComedyPull.Data.Models;
+using ComedyPull.Data.Core;
 using ComedyPull.Domain.Jobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -17,21 +17,18 @@ namespace ComedyPull.Data.Contexts.PipelineDb.Configurations
             
             builder.Property(x => x.JobId)
                 .IsRequired();
-            
-            builder.Property(x => x.StartedAt)
-                .IsRequired();
-            
+
             builder.Property(x => x.Status)
                 .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();
-
-            builder.Property(x => x.CompletedAt)
-                .IsRequired();
             
+            builder.Property(x => x.StartedAt);
+
+            builder.Property(x => x.CompletedAt);
+
             builder.Property(x => x.ErrorMessage)
-                .HasMaxLength(255)
-                .IsRequired();
+                .HasMaxLength(255);
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using ComedyPull.Data.Contexts.ComedyDb;
-using ComedyPull.Domain.Interfaces.Repository;
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Core.Events;
+using ComedyPull.Domain.Core.Events.Interfaces;
 
-namespace ComedyPull.Data.Repositories
+namespace ComedyPull.Data.Core
 {
     /// inheritdoc
     public class EventActRepository(ComedyDbContext context) : IEventActRepository

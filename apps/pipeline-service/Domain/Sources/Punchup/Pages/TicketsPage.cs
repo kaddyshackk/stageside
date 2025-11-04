@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Interfaces.Processing;
+using ComedyPull.Domain.Pipeline.Interfaces;
 
 namespace ComedyPull.Domain.Sources.Punchup.Pages
 {

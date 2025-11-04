@@ -1,4 +1,4 @@
-namespace ComedyPull.Domain.Models
+namespace ComedyPull.Domain.Pipeline
 {
     public record BatchProcessResult<TOrigin, TResult>
     {

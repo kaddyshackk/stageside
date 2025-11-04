@@ -1,6 +1,4 @@
-using ComedyPull.Domain.Models;
-
-namespace ComedyPull.Domain.Interfaces.Repository
+namespace ComedyPull.Domain.Core.Acts
 {
     /// <summary>
     /// Manages data access operations for <see cref="Act"/> entities.

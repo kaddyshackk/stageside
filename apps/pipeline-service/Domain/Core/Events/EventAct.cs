@@ -1,4 +1,7 @@
-namespace ComedyPull.Domain.Models
+using ComedyPull.Domain.Core.Acts;
+using ComedyPull.Domain.Core.Shared;
+
+namespace ComedyPull.Domain.Core.Events
 {
     /// <summary>
     /// Defines a relationship between comedian and event.

@@ -1,5 +1,4 @@
-﻿using ComedyPull.Domain.Interfaces.Service;
-using ComedyPull.Domain.Jobs.Interfaces;
+﻿using ComedyPull.Domain.Jobs.Interfaces;
 
 namespace ComedyPull.Domain.Jobs.Services
 {
@@ -11,12 +10,12 @@ namespace ComedyPull.Domain.Jobs.Services
             return await GetSitemapUrlsAsync(sitemaps);
         }
         
-        public async Task<List<string>> GetSitemapUrlsAsync(ICollection<JobSitemap> sitemaps)
+        private async Task<List<string>> GetSitemapUrlsAsync(ICollection<JobSitemap> sitemaps)
         {
             var allUrls = new List<string>();
             if (sitemaps.Count != 0)
             {
-                foreach (var sitemap in sitemaps.OrderBy(s => s.ProcessingOrder))
+                foreach (var sitemap in sitemaps)
                 {
                     var urls = await sitemapLoader.LoadSitemapAsync(sitemap.SitemapUrl);
                     allUrls.AddRange(urls);

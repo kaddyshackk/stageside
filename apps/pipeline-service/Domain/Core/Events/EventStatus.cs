@@ -1,4 +1,4 @@
-namespace ComedyPull.Domain.Models
+namespace ComedyPull.Domain.Core.Events
 {
     public enum EventStatus
     {

@@ -14,7 +14,7 @@ namespace ComedyPull.Data.Contexts.ComedyDb
         {
             var configuration = BuildConfiguration();
             var optionsBuilder = new DbContextOptionsBuilder<ComedyDbContext>();
-            DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(optionsBuilder, configuration);
+            DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(optionsBuilder, configuration, "ComedyDb");
             return new ComedyDbContext(optionsBuilder.Options);
         }
 
@@ -25,6 +25,7 @@ namespace ComedyPull.Data.Contexts.ComedyDb
                 .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Api", "Settings"))
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile($"appsettings.{environment}.json", optional: true)
+                .AddUserSecrets<ComedyDbContextFactory>()
                 .AddEnvironmentVariables();
             return builder.Build();
         }

@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Models;
+using ComedyPull.Domain.Core.Shared;
 
 namespace ComedyPull.Domain.Jobs
 {
@@ -7,7 +7,6 @@ namespace ComedyPull.Domain.Jobs
         public Guid Id { get; set; }
         public required Guid JobId { get; set; }
         public required string SitemapUrl { get; set; }
-        public required int ProcessingOrder { get; set; }
         public bool IsActive { get; set; } = true;
 
         // Navigation properties

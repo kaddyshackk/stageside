@@ -1,4 +1,4 @@
-namespace ComedyPull.Domain.Interfaces.Model
+namespace ComedyPull.Domain.Core.Shared.Interfaces
 {
     /// <summary>
     /// Represents an auditable entity with several tracking fields.

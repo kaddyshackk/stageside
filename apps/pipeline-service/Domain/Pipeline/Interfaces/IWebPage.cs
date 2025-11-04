@@ -1,4 +1,4 @@
-namespace ComedyPull.Domain.Interfaces.Processing
+namespace ComedyPull.Domain.Pipeline.Interfaces
 {
     public interface IWebPage : IAsyncDisposable
     {

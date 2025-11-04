@@ -28,6 +28,12 @@
         "resolved": "1.22.1",
         "contentHash": "EfYANhAWqmWKoLwN6bxoiPZSOfJSO9lzX+UrU6GVhLhPub1Hd+5f0zL0/tggIA6mRz6Ebw2xCNcIsM4k+7NPng=="
       },
+      "Riok.Mapperly": {
+        "type": "Direct",
+        "requested": "[4.3.0-next.5, )",
+        "resolved": "4.3.0-next.5",
+        "contentHash": "sICJfHHDO3X7nXp0kPNyXyYpMO0iTw6aIKNnYzLVRbCsw5BS8CSV2sqfJ+gk9416q5yrt9QqtJzS4n79gPsBeQ=="
+      },
       "Scalar.AspNetCore": {
         "type": "Direct",
         "requested": "[2.8.11, )",
@@ -658,12 +664,6 @@
           "Microsoft.EntityFrameworkCore.Relational": "[9.0.0, 10.0.0)",
           "Npgsql": "9.0.2"
         }
-      },
-      "Riok.Mapperly": {
-        "type": "CentralTransitive",
-        "requested": "[4.3.0-next.5, )",
-        "resolved": "4.3.0-next.5",
-        "contentHash": "sICJfHHDO3X7nXp0kPNyXyYpMO0iTw6aIKNnYzLVRbCsw5BS8CSV2sqfJ+gk9416q5yrt9QqtJzS4n79gPsBeQ=="
       },
       "Serilog": {
         "type": "CentralTransitive",

@@ -1,8 +1,6 @@
-﻿using ComedyPull.Domain.Interfaces.Factory;
-using ComedyPull.Domain.Interfaces.Processing;
-using ComedyPull.Domain.Interfaces.Service;
-using ComedyPull.Domain.Models.Pipeline;
-using ComedyPull.Domain.Models.Queue;
+﻿using ComedyPull.Domain.Pipeline;
+using ComedyPull.Domain.Pipeline.Interfaces;
+using ComedyPull.Domain.Queue;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -94,7 +92,7 @@ namespace ComedyPull.Application.Pipeline.Collection
                                 var collector = collectorFactory.GetPageCollector(context.Sku);
                                 if (collector == null)
                                 {
-                                    logger.LogWarning("Found no collector that matches content sku {Sku}", context.Sku);
+                                    logger.LogWarning($"Found no collector that matches content sku {context.Sku}");
                                     context.State = ProcessingState.Failed;
                                     continue;
                                 }

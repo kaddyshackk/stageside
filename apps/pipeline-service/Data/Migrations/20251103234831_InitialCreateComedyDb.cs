@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ComedyPull.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class ComedyDbInitialCreate : Migration
+    public partial class InitialCreateComedyDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

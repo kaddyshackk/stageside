@@ -1,12 +1,12 @@
 using ComedyPull.Application.Pipeline;
-using ComedyPull.Domain.Interfaces.Service;
-using ComedyPull.Domain.Models.Queue;
+using ComedyPull.Domain.Pipeline.Interfaces;
+using ComedyPull.Domain.Queue;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
 namespace ComedyPull.Data.Services
 {
-    public class QueueHealthChecker(IConnectionMultiplexer redis, IOptions<BackPressureOptions> options) : IQueueHealthChecker
+    public class QueueHealthChecker(IConnectionMultiplexer redis, IOptions<QueueOptions> options) : IQueueHealthChecker
     {
         private readonly IDatabase _db = redis.GetDatabase();
 
@@ -31,7 +31,7 @@ namespace ComedyPull.Data.Services
 
         private int GetThreshold(string queueKey)
         {
-            options.Value.QueueThresholds.TryGetValue(queueKey, out var threshold);
+            options.Value.Thresholds.TryGetValue(queueKey, out var threshold);
             if (threshold is null)
             {
                 throw new NullReferenceException($"Queue threshold not found for {queueKey}");

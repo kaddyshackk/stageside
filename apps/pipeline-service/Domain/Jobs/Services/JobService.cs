@@ -1,7 +1,7 @@
-﻿using ComedyPull.Domain.Extensions;
+﻿using ComedyPull.Domain.Core.Shared;
+using ComedyPull.Domain.Extensions;
 using ComedyPull.Domain.Jobs.Interfaces;
 using ComedyPull.Domain.Jobs.Operations;
-using ComedyPull.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ComedyPull.Domain.Jobs.Services

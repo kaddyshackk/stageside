@@ -1,7 +1,6 @@
-using ComedyPull.Domain.Models;
-using ComedyPull.Domain.Models.Pipeline;
+using ComedyPull.Domain.Pipeline;
 
-namespace ComedyPull.Domain.Configuration
+namespace ComedyPull.Domain.Core.Shared
 {
     public static class SkuConfiguration
     {

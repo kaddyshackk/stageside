@@ -1,16 +1,18 @@
 using ComedyPull.Data.Contexts.ComedyDb;
 using ComedyPull.Data.Contexts.PipelineDb;
+using ComedyPull.Data.Core;
 using ComedyPull.Data.Jobs;
-using ComedyPull.Data.Repositories;
 using ComedyPull.Data.Services;
 using ComedyPull.Data.Utils;
-using ComedyPull.Domain.Interfaces.Processing;
-using ComedyPull.Domain.Interfaces.Repository;
-using ComedyPull.Domain.Interfaces.Service;
+using ComedyPull.Domain.Core.Acts;
+using ComedyPull.Domain.Core.Events.Interfaces;
+using ComedyPull.Domain.Core.Venues.Interfaces;
 using ComedyPull.Domain.Jobs.Interfaces;
+using ComedyPull.Domain.Pipeline.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
+using StackExchange.Redis;
 
 namespace ComedyPull.Data.Extensions
 {
@@ -47,12 +49,26 @@ namespace ComedyPull.Data.Extensions
             // Contexts
             services.AddDbContextFactory<ComedyDbContext>((_, options) =>
             {
-                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration);
+                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration, "ComedyDb");
             });
             
             services.AddDbContextFactory<PipelineDbContext>((_, options) =>
             {
-                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration);
+                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration, "PipelineDb");
+            });
+            
+            // Redis
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
+            {
+                var connection = Environment.GetEnvironmentVariable("ConnectionStrings__Redis")
+                                 ?? throw new Exception("Redis connection string not found");
+                var config = ConfigurationOptions.Parse(connection);
+
+                config.AbortOnConnectFail = false;
+                config.ConnectRetry = 3;
+                config.ConnectTimeout = 5000;
+                
+                return ConnectionMultiplexer.Connect(config);
             });
         }
     }

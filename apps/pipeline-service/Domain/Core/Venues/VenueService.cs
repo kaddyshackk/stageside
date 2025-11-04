@@ -1,9 +1,8 @@
-using ComedyPull.Domain.Interfaces.Repository;
-using ComedyPull.Domain.Models;
-using ComedyPull.Domain.Models.Pipeline;
+using ComedyPull.Domain.Core.Venues.Interfaces;
+using ComedyPull.Domain.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ComedyPull.Domain.Services
+namespace ComedyPull.Domain.Core.Venues
 {
     public class VenueService(IServiceScopeFactory scopeFactory)
     {

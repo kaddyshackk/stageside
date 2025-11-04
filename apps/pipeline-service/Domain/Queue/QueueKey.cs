@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace ComedyPull.Domain.Models.Queue
+namespace ComedyPull.Domain.Queue
 {
     public enum QueueKey
     {
