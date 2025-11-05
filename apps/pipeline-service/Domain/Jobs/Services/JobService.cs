@@ -1,7 +1,7 @@
 ﻿using ComedyPull.Domain.Core.Shared;
 using ComedyPull.Domain.Extensions;
 using ComedyPull.Domain.Jobs.Interfaces;
-using ComedyPull.Domain.Jobs.Operations;
+using ComedyPull.Domain.Jobs.Operations.CreateJob;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ComedyPull.Domain.Jobs.Services
@@ -19,6 +19,7 @@ namespace ComedyPull.Domain.Jobs.Services
         {
             using var scope = scopeFactory.CreateScope();
             var jobRepository = scope.ServiceProvider.GetRequiredService<IJobRepository>();
+            var sitemapRepository = scope.ServiceProvider.GetRequiredService<IJobSitemapRepository>();
             
             var nextOccurence = string.IsNullOrEmpty(command.CronExpression)
                 ? DateTimeOffset.UtcNow
@@ -31,7 +32,7 @@ namespace ComedyPull.Domain.Jobs.Services
             var source = EnumExtensions.ParseFromDescriptionOrThrow<Source>(command.Source);
             var sku = EnumExtensions.ParseFromDescriptionOrThrow<Sku>(command.Sku);
 
-            return await jobRepository.CreateJobAsync(new Job
+            var job = await jobRepository.CreateJobAsync(new Job
             {
                 Source = source,
                 Sku = sku,
@@ -44,6 +45,25 @@ namespace ComedyPull.Domain.Jobs.Services
                 UpdatedAt = DateTimeOffset.UtcNow,
                 UpdatedBy = "System",
             }, stoppingToken);
+
+            var sitemaps = new List<JobSitemap>();
+            
+            if (command.SitemapUrls?.Count > 0)
+            {
+                foreach (var sitemapUrl in command.SitemapUrls)
+                {
+                    var createdSitemap = await sitemapRepository.CreateJobSitemapAsync(new JobSitemap
+                    {
+                        JobId = job.Id,
+                        SitemapUrl = sitemapUrl
+                    }, stoppingToken);
+                    sitemaps.Add(createdSitemap);
+                }
+            }
+            
+            job.Sitemaps = sitemaps;
+
+            return job;
         }
     }
 }

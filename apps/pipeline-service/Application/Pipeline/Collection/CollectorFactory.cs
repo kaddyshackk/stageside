@@ -8,7 +8,8 @@ namespace ComedyPull.Application.Pipeline.Collection
     {
         public IDynamicCollector? GetPageCollector(Sku sku)
         {
-            return serviceProvider.GetKeyedService<IDynamicCollector>(sku);
+            using var scope = serviceProvider.CreateScope();
+            return scope.ServiceProvider.GetKeyedService<IDynamicCollector>(sku);
         }
     }
 }

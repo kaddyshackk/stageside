@@ -5,7 +5,7 @@ using ComedyPull.Application.Pipeline.Collection;
 using ComedyPull.Application.Pipeline.Processing;
 using ComedyPull.Application.Pipeline.Scheduling;
 using ComedyPull.Application.Pipeline.Transformation;
-using ComedyPull.Domain.Jobs.Operations;
+using ComedyPull.Domain.Jobs.Operations.CreateJob;
 using ComedyPull.Domain.Pipeline.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

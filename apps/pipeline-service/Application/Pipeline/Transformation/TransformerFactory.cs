@@ -4,11 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ComedyPull.Application.Pipeline.Transformation
 {
-    public class TransformerFactory(IServiceProvider serviceProvider) : ITransformerFactory
+    public class TransformerFactory(IServiceScopeFactory serviceFactory) : ITransformerFactory
     {
         public ITransformer? GetTransformer(Sku sku)
         {
-            return serviceProvider.GetKeyedService<ITransformer>(sku);
+            using var scope = serviceFactory.CreateScope();
+            return scope.ServiceProvider.GetKeyedService<ITransformer>(sku);
         }
     }
 }

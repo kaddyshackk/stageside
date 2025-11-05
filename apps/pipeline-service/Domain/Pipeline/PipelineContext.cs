@@ -9,7 +9,7 @@ namespace ComedyPull.Domain.Pipeline
         public required Source Source { get; init; }
         public required Sku Sku { get; init; }
         public required PipelineMetadata Metadata { get; init; }
-        public string? RawData { get; set; }
+        public object? RawData { get; set; }
         public ICollection<ProcessedEntity> ProcessedEntities { get; set; } = [];
         public ProcessingState State { get; set; } = ProcessingState.Pending;
         public string? ErrorMessage { get; set; }

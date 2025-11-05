@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using ComedyPull.Domain.Pipeline.Interfaces;
+﻿using ComedyPull.Domain.Pipeline.Interfaces;
 using ComedyPull.Domain.Sources.Punchup.Models;
 using ComedyPull.Domain.Sources.Punchup.Pages;
 using ComedyPull.Domain.Utils;
@@ -8,7 +7,7 @@ namespace ComedyPull.Domain.Sources.Punchup
 {
     public class PunchupTicketsPageCollector : IDynamicCollector
     {
-        public async Task<string> CollectPageAsync(string url, IWebPage page)
+        public async Task<object> CollectPageAsync(string url, IWebPage page)
         {
             var pom = new TicketsPage(page);
 
@@ -33,12 +32,12 @@ namespace ComedyPull.Domain.Sources.Punchup
                 shows = results.Where(show => show != null).ToList()!;
             }
 
-            return JsonSerializer.Serialize(new PunchupRecord
+            return new PunchupRecord
             {
                 Name = name,
                 Bio = bio,
                 Events = shows,
-            });
+            };
         }
 
         private async Task<PunchupEvent?> ProcessShowAsync(IWebElement showLocator)

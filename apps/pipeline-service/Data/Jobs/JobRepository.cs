@@ -7,6 +7,12 @@ namespace ComedyPull.Data.Jobs
 {
     public class JobRepository(PipelineDbContext context) : IJobRepository
     {
+        public async Task<bool> ReadJobExistsByIdAsync(Guid id, CancellationToken stoppingToken)
+        {
+            var job = await context.Jobs.AsNoTracking().FirstOrDefaultAsync(j => j.Id == id, stoppingToken);
+            return job != null;
+        }
+
         public async Task<Job?> ReadJobByIdAsync(Guid jobId, CancellationToken stoppingToken)
         {
             return await context.Jobs.FirstOrDefaultAsync(j => j.Id == jobId, stoppingToken);

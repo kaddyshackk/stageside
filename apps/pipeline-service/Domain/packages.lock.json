@@ -23,6 +23,12 @@
         "resolved": "13.0.4",
         "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
       },
+      "Riok.Mapperly": {
+        "type": "Direct",
+        "requested": "[4.3.0-next.5, )",
+        "resolved": "4.3.0-next.5",
+        "contentHash": "sICJfHHDO3X7nXp0kPNyXyYpMO0iTw6aIKNnYzLVRbCsw5BS8CSV2sqfJ+gk9416q5yrt9QqtJzS4n79gPsBeQ=="
+      },
       "Serilog": {
         "type": "Direct",
         "requested": "[4.2.0, )",

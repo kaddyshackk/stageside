@@ -14,5 +14,7 @@ namespace ComedyPull.Api.Http.Jobs.CreateJob
         public required string Name { get; init; }
         
         public string? CronExpression { get; init; }
+        
+        public ICollection<string>? SitemapUrls { get; init; }
     }
 }

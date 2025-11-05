@@ -5,21 +5,19 @@ using ComedyPull.Domain.Core.Shared.Services;
 using ComedyPull.Domain.Pipeline;
 using ComedyPull.Domain.Pipeline.Interfaces;
 using ComedyPull.Domain.Sources.Punchup.Models;
-using Microsoft.Extensions.Logging;
 
 namespace ComedyPull.Domain.Sources.Punchup
 {
-    public class PunchupTicketsPageTransformer(ILogger<PunchupTicketsPageTransformer> logger) : ITransformer
+    public class PunchupTicketsPageTransformer : ITransformer
     {
-        public ICollection<ProcessedEntity> Transform(string data)
+        public ICollection<ProcessedEntity> Transform(object data)
         {
             var transformed = new List<ProcessedEntity>();
 
-            var punchupRecord = JsonSerializer.Deserialize<PunchupRecord>(data);
-
+            var punchupRecord = (PunchupRecord)data;
             if (punchupRecord == null)
             {
-                throw new Exception("PunchupRecord is null");
+                throw new Exception("Failed to process punchup record because it was null.");
             }
             
             var now = DateTimeOffset.UtcNow;

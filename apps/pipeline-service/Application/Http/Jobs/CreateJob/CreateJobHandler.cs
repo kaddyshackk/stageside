@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Jobs.Operations;
+using ComedyPull.Domain.Jobs.Operations.CreateJob;
 using ComedyPull.Domain.Jobs.Services;
 
 namespace ComedyPull.Application.Http.Jobs.CreateJob

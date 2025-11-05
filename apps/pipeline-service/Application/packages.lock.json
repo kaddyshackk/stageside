@@ -216,6 +216,7 @@
           "Cronos": "[0.11.1, )",
           "Microsoft.Extensions.Logging.Abstractions": "[9.0.0, )",
           "Newtonsoft.Json": "[13.0.4, )",
+          "Riok.Mapperly": "[4.3.0-next.5, )",
           "Serilog": "[4.2.0, )"
         }
       },

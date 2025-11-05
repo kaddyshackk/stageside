@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Jobs.Operations;
+using ComedyPull.Domain.Jobs.Operations.CreateJob;
 using Riok.Mapperly.Abstractions;
 
 namespace ComedyPull.Api.Http.Jobs.CreateJob
