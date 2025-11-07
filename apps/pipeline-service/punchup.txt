@@ -1,0 +1,2 @@
+sitemap = https://www.punchup.live/sitemap.xml
+regex = ^https?:\/\/(?:www\.)?punchup\.live\/([^\/]+)\/tickets(?:\/)?$

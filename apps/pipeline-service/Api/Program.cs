@@ -1,7 +1,7 @@
 using ComedyPull.Api.Extensions;
-using ComedyPull.Api.Modules.Public;
 using ComedyPull.Application.Extensions;
 using ComedyPull.Data.Extensions;
+using ComedyPull.Domain.Extensions;
 using Microsoft.Playwright;
 using Scalar.AspNetCore;
 using Serilog;
@@ -13,7 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("Settings/appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"Settings/appsettings.{builder.Environment.EnvironmentName}.json", optional: true,
-        reloadOnChange: true);
+        reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Configuration(context.Configuration)
@@ -21,9 +22,10 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .Enrich.FromLogContext());
 
 builder.Services.AddOpenApi();
-builder.Services.AddApiServices(builder.Configuration);
-builder.Services.AddApplicationServices(builder.Configuration);
-builder.Services.AddDataServices(builder.Configuration);
+builder.Services.AddApiLayer();
+builder.Services.AddApplicationLayer(builder.Configuration);
+builder.Services.AddDataLayer(builder.Configuration);
+builder.Services.AddDomainLayer();
 
 // -- [ Configure Application ] ----
 
@@ -39,8 +41,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
-app.MapGroup("/api")
-    .AddPublicEndpoints();
+app.MapEndpoints(typeof(Program).Assembly);
+
 app.Run();
 
 return 0;

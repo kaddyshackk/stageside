@@ -1,18 +1,18 @@
-using ComedyPull.Application.Interfaces;
-using ComedyPull.Application.Modules.DataProcessing.Interfaces;
-using ComedyPull.Application.Modules.DataProcessing.Steps.Complete.Interfaces;
-using ComedyPull.Application.Modules.DataProcessing.Steps.Transform.Interfaces;
-using ComedyPull.Application.Modules.DataSync.Interfaces;
-using ComedyPull.Application.Modules.Public.Events.GetEventBySlug.Interfaces;
-using ComedyPull.Data.Modules.Common;
-using ComedyPull.Data.Queue;
-using ComedyPull.Data.Modules.DataProcessing;
-using ComedyPull.Data.Modules.DataSync;
-using ComedyPull.Data.Modules.Public;
+using ComedyPull.Data.Contexts.ComedyDb;
+using ComedyPull.Data.Contexts.PipelineDb;
+using ComedyPull.Data.Core;
+using ComedyPull.Data.Jobs;
+using ComedyPull.Data.Services;
 using ComedyPull.Data.Utils;
-using ComedyPull.Domain.Modules.DataProcessing;
+using ComedyPull.Domain.Core.Acts;
+using ComedyPull.Domain.Core.Events.Interfaces;
+using ComedyPull.Domain.Core.Venues.Interfaces;
+using ComedyPull.Domain.Jobs.Interfaces;
+using ComedyPull.Domain.Pipeline.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Playwright;
+using StackExchange.Redis;
 
 namespace ComedyPull.Data.Extensions
 {
@@ -26,22 +26,49 @@ namespace ComedyPull.Data.Extensions
         /// </summary>
         /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
         /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
-        public static void AddDataServices(this IServiceCollection services, IConfiguration configuration)
+        public static void AddDataLayer(this IServiceCollection services, IConfiguration configuration)
         {
-            // Configure queue
-            services.AddSingleton<IQueue<BronzeRecord>, InMemoryQueue<BronzeRecord>>();
+            // Services
+            services.AddSingleton<ISitemapLoader, SitemapLoader>();
+            services.AddSingleton<IQueueClient, RedisQueueClient>();
+            services.AddSingleton<IQueueHealthChecker, QueueHealthChecker>();
+            
+            // Web Browser Services
+            services.AddSingleton<IPlaywright>(_ => Playwright.CreateAsync().Result);
+            services.AddSingleton<IWebBrowser, PlaywrightWebBrowserAdapter>();
             
             // Repositories
-            services.AddSingleton<IBronzeRecordIngestionRepository, BronzeRecordIngestionRepository>();
-            services.AddSingleton<IBatchRepository, BatchRepository>();
-            services.AddSingleton<ICompleteStateRepository, CompleteStateRepository>();
-            services.AddSingleton<ITransformStateRepository, TransformStateRepository>();
-            services.AddScoped<IGetEventBySlugRepository, GetEventBySlugRepository>();
-
-            // Context's
-            services.AddDbContextFactory<ComedyPullContext>((_, options) =>
+            services.AddScoped<IJobRepository, JobRepository>();
+            services.AddScoped<IJobExecutionRepository, JobExecutionRepository>();
+            services.AddScoped<IJobSitemapRepository, JobSitemapRepository>();
+            services.AddScoped<IActRepository, ActRepository>();
+            services.AddScoped<IVenueRepository, VenueRepository>();
+            services.AddScoped<IEventRepository, EventRepository>();
+            services.AddScoped<IEventActRepository, EventActRepository>();
+            
+            // Contexts
+            services.AddDbContextFactory<ComedyDbContext>((_, options) =>
             {
-                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration);
+                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration, "ComedyDb");
+            });
+            
+            services.AddDbContextFactory<PipelineDbContext>((_, options) =>
+            {
+                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration, "PipelineDb");
+            });
+            
+            // Redis
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
+            {
+                var connection = Environment.GetEnvironmentVariable("ConnectionStrings__Redis")
+                                 ?? throw new Exception("Redis connection string not found");
+                var config = ConfigurationOptions.Parse(connection);
+
+                config.AbortOnConnectFail = false;
+                config.ConnectRetry = 3;
+                config.ConnectTimeout = 5000;
+                
+                return ConnectionMultiplexer.Connect(config);
             });
         }
     }

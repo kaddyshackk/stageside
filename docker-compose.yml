@@ -4,15 +4,18 @@ services:
     build:
       context: ./apps/pipeline-service
       dockerfile: Dockerfile
+    image: pipeline-service:latest
     environment:
       - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
+      - ConnectionStrings__ComedyDb=${POSTGRES_CONNECTION_COMEDY}
+      - ConnectionStrings__PipelineDb=${POSTGRES_CONNECTION_PIPELINE}
+      - ConnectionStrings__Redis=${REDIS_CONNECTION}
     ports:
       - "5281:8080"
-    volumes:
-      - ./Api:/app/Api
-      - ./Application:/app/Application
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - comedypull-dev
@@ -32,7 +35,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init/postgres:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -51,9 +54,38 @@ services:
     networks:
       - comedypull-dev
 
+  redis:
+    image: redis:7-alpine
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDISCLI_AUTH=${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "sh", "-c", "redis-cli --no-auth-warning ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - comedypull-dev
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    
+  redis-insight:
+    image: redislabs/redisinsight:latest
+    ports:
+      - "8001:5540"
+    volumes:
+      - redisinsight_data:/data
+    networks:
+      - comedypull-dev
+
 volumes:
   postgres_data:
   seq_data:
+  redis_data:
+  redisinsight_data:
 
 networks:
   comedypull-dev:

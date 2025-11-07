@@ -1,24 +1,14 @@
-using ComedyPull.Application.Events;
-using ComedyPull.Application.Interfaces;
-using ComedyPull.Application.Modules.DataProcessing.Services;
-using ComedyPull.Application.Modules.DataProcessing.Services.Interfaces;
-using ComedyPull.Application.Modules.DataProcessing.Steps.Complete;
-using ComedyPull.Application.Modules.DataProcessing.Steps.Interfaces;
-using ComedyPull.Application.Modules.DataProcessing.Steps.Transform;
-using ComedyPull.Application.Modules.DataSync;
-using ComedyPull.Application.Modules.DataSync.Interfaces;
-using ComedyPull.Application.Modules.Public.Events.GetEventBySlug;
-using ComedyPull.Application.Modules.Punchup;
-using ComedyPull.Application.Modules.Punchup.Collectors;
-using ComedyPull.Application.Modules.Punchup.Collectors.Interfaces;
-using ComedyPull.Application.Modules.Punchup.Processors;
-using ComedyPull.Application.Options;
-using ComedyPull.Domain.Enums;
-using MediatR;
+using ComedyPull.Application.Http;
+using ComedyPull.Application.Http.Jobs.CreateJob;
+using ComedyPull.Application.Pipeline;
+using ComedyPull.Application.Pipeline.Collection;
+using ComedyPull.Application.Pipeline.Processing;
+using ComedyPull.Application.Pipeline.Scheduling;
+using ComedyPull.Application.Pipeline.Transformation;
+using ComedyPull.Domain.Jobs.Operations.CreateJob;
+using ComedyPull.Domain.Pipeline.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Playwright;
-using Quartz;
 
 namespace ComedyPull.Application.Extensions
 {
@@ -29,104 +19,44 @@ namespace ComedyPull.Application.Extensions
         /// </summary>
         /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
         /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
-        public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
+        public static void AddApplicationLayer(this IServiceCollection services, IConfiguration configuration)
         {
             // Options
-            services.Configure<ApplicationOptions>(configuration.GetSection("ApplicationOptions"));
-            
-            // Frameworks & Libraries
-            services.AddQuartzServices(configuration);
-            services.AddMediatR(cfg =>
-                cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-            
-            // Modules
-            services.AddPublicApplicationModule();
-            services.AddDataSyncApplicationModule(configuration);
-            services.AddDataProcessingApplicationModule();
-            services.AddPunchupApplicationModule();
+            services.Configure<QueueOptions>(configuration.GetSection("Queue"));
+
+            services.AddHttpServices();
+            services.AddPipelineServices(configuration);
         }
 
-        private static void AddPublicApplicationModule(this IServiceCollection services)
+        private static void AddHttpServices(this IServiceCollection services)
         {
-            services.AddScoped<IHandler<GetEventBySlugQuery, GetEventBySlugResponse>, GetEventBySlugHandler>();
-        }
-        
-        /// <summary>
-        /// Configures services for the DataSync module.
-        /// </summary>
-        /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
-        /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
-        private static void AddDataSyncApplicationModule(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.Configure<DataSyncOptions>(configuration.GetSection("DataSyncOptions"));
-            services.AddHostedService<IngestionService>();
-            services.AddScoped<ISitemapLoader, SitemapLoader>();
-            services.AddScoped<IPlaywrightScraperFactory, PlaywrightScraperFactory>();
-        }
-        
-        /// <summary>
-        /// Configures services for the DataProcessing module.
-        /// </summary>
-        /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
-        private static void AddDataProcessingApplicationModule(this IServiceCollection services)
-        {
-            services.AddScoped<INotificationHandler<StateCompletedEvent>, StateCompletedHandler>();
-            services.AddScoped<ISubProcessorResolver, SubProcessorResolver>();
-
-            // Register state processors
-            services.AddScoped<IStateProcessor, TransformStateProcessor>();
-            services.AddScoped<IStateProcessor, CompleteStateProcessor>();
+            // Handlers
+            services.AddScoped<IHandler<CreateJobCommand, CreateJobResponse>, CreateJobHandler>();
         }
 
-        private static void AddPunchupApplicationModule(this IServiceCollection services)
+        private static void AddPipelineServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<IPunchupTicketsPageCollectorFactory, PunchupTicketsPageCollectorFactory>();
-            services.AddScoped<ISubProcessor<DataSourceType>, PunchupTransformSubProcessor>();
-        }
-        
-        /// <summary>
-        /// Configures services for the Quartz scheduler.
-        /// </summary>
-        /// <param name="services">Injected <see cref="IServiceCollection"/> instance.</param>
-        /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
-        private static void AddQuartzServices(this IServiceCollection services, IConfiguration configuration)
-        {
-            // TODO: Extract database specific logic to Data layer
-            services.AddQuartzHostedService(options => 
-            {
-                options.WaitForJobsToComplete = true;
-            });
+            // Pipeline Hosted Services
+            services.AddHostedService<SchedulingService>();
+            services.AddHostedService<CollectionService>();
+            services.AddHostedService<DynamicCollectionService>();
+            services.AddHostedService<TransformationService>();
+            services.AddHostedService<ProcessingService>();
             
-            services.AddQuartz(q =>
-            {
-                // Configure Jobs
-                
-                q.AddJob<PunchupScrapeJob>(options =>
-                {
-                    options.WithIdentity(PunchupScrapeJob.Key);
-                    options.WithDescription("Performs a complete scrape job for punchup.live.");
-                    options.StoreDurably();
-                });
-                
-                // Configure Postgres
-                
-                q.UsePersistentStore(options =>
-                {
-                    options.UsePostgres(connectionString =>
-                    {
-                        connectionString.ConnectionString = configuration.GetConnectionString("DefaultConnection")!;
-                        connectionString.TablePrefix = "quartz.qrtz_";
-                    });
-                    options.UseNewtonsoftJsonSerializer();
-                    options.PerformSchemaValidation = true;
-                    options.UseProperties = true;
-                });
-                
-                q.UseDefaultThreadPool(p =>
-                {
-                    p.MaxConcurrency = 10;
-                });
-            });
+            // Pipeline Management Services
+            services.AddSingleton<IBackPressureManager, BackPressureService>();
+            
+            // Service Factories
+            services.AddSingleton<ICollectorFactory, CollectorFactory>();
+            services.AddSingleton<ITransformerFactory, TransformerFactory>();
+            
+            // Options
+            services.Configure<CollectionOptions>(configuration.GetSection("Pipeline:Collection"));
+            services.Configure<TransformationOptions>(configuration.GetSection("Pipeline:Transformation"));
+            services.Configure<ProcessingOptions>(configuration.GetSection("Pipeline:Processing"));
+            services.Configure<SchedulingOptions>(configuration.GetSection("Pipeline:Scheduling"));
+            services.Configure<DynamicCollectionOptions>(configuration.GetSection("Pipeline:DynamicCollection"));
+            services.Configure<BackPressureOptions>(configuration.GetSection("Pipeline:BackPressure"));
         }
     }
 }
