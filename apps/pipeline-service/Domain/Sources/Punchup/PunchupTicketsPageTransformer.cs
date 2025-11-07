@@ -14,10 +14,15 @@ namespace ComedyPull.Domain.Sources.Punchup
         {
             var transformed = new List<ProcessedEntity>();
 
-            var punchupRecord = (PunchupRecord)data;
+            if (data is not JsonElement jsonElement)
+            {
+                throw new ArgumentException("Expected JsonElement data");
+            }
+            
+            var punchupRecord = JsonSerializer.Deserialize<PunchupRecord>(jsonElement.GetRawText());
             if (punchupRecord == null)
             {
-                throw new Exception("Failed to process punchup record because it was null.");
+                throw new Exception("Failed to deserialize punchup record from JSON.");
             }
             
             var now = DateTimeOffset.UtcNow;
@@ -76,7 +81,7 @@ namespace ComedyPull.Domain.Sources.Punchup
                 select new ProcessedEntity
                 {
                     Type = EntityType.Event,
-                    Data = JsonSerializer.Serialize(processedEvent)
+                    Data = processedEvent
                 };
             
             transformed.AddRange(eventEntities);

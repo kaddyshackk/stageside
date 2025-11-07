@@ -2,8 +2,8 @@
 {
     public interface IJobExecutionRepository
     {
-        public Task<JobExecution?> ReadJobExecutionByIdAsync(Guid executionId, CancellationToken stoppingToken);
-        public Task<JobExecution> CreateJobExecutionAsync(JobExecution execution, CancellationToken stoppingToken);
-        public Task<JobExecution> UpdateJobExecutionAsync(JobExecution execution, CancellationToken stoppingToken);
+        public Task<Execution?> ReadJobExecutionByIdAsync(Guid executionId, CancellationToken stoppingToken);
+        public Task<Execution> CreateJobExecutionAsync(Execution execution, CancellationToken stoppingToken);
+        public Task<Execution> UpdateJobExecutionAsync(Execution execution, CancellationToken stoppingToken);
     }
 }

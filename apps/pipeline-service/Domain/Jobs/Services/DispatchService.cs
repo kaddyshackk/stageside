@@ -6,12 +6,12 @@ using Serilog.Context;
 
 namespace ComedyPull.Domain.Jobs.Services
 {
-    public class JobDispatchService(
+    public class DispatchService(
         JobService jobService,
-        JobExecutionService executionService,
-        JobSitemapService sitemapService,
+        ExecutionService executionService,
+        SitemapService sitemapService,
         IQueueClient queueClient,
-        ILogger<JobDispatchService> logger)
+        ILogger<DispatchService> logger)
     {
         public async Task DispatchNextJobAsync(CancellationToken stoppingToken)
         {
@@ -37,13 +37,13 @@ namespace ComedyPull.Domain.Jobs.Services
                         }).ToList();
 
                         await queueClient.EnqueueBatchAsync(Queues.Collection, pipelineContexts);
-                        await executionService.UpdateJobExecutionStatusAsync(execution.Id, JobExecutionStatus.Executed, stoppingToken);
+                        await executionService.UpdateJobExecutionStatusAsync(execution.Id, ExecutionStatus.Executed, stoppingToken);
                         logger.LogInformation("Job execution {ExecutionId} for job {JobId} with {UrlCount} URLs.", execution.Id, job.Id, pipelineContexts.Count);
                     }
                     catch (Exception e)
                     {
                         logger.LogError(e, "Job execution {ExecutionId} failed: {Message}", execution.Id, e.Message);
-                        await executionService.UpdateJobExecutionStatusAsync(execution.Id, JobExecutionStatus.Failed, stoppingToken);
+                        await executionService.UpdateJobExecutionStatusAsync(execution.Id, ExecutionStatus.Failed, stoppingToken);
                     }
                 }
             }

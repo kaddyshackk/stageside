@@ -1,4 +1,5 @@
-﻿using ComedyPull.Domain.Core.Shared;
+﻿using System.Text.RegularExpressions;
+using ComedyPull.Domain.Core.Shared;
 using ComedyPull.Domain.Extensions;
 using ComedyPull.Domain.Jobs.Interfaces;
 using ComedyPull.Domain.Jobs.Operations.CreateJob;
@@ -46,16 +47,17 @@ namespace ComedyPull.Domain.Jobs.Services
                 UpdatedBy = "System",
             }, stoppingToken);
 
-            var sitemaps = new List<JobSitemap>();
+            var sitemaps = new List<Sitemap>();
             
-            if (command.SitemapUrls?.Count > 0)
+            if (command.Sitemaps?.Count > 0)
             {
-                foreach (var sitemapUrl in command.SitemapUrls)
+                foreach (var sitemap in command.Sitemaps)
                 {
-                    var createdSitemap = await sitemapRepository.CreateJobSitemapAsync(new JobSitemap
+                    var createdSitemap = await sitemapRepository.CreateJobSitemapAsync(new Sitemap
                     {
                         JobId = job.Id,
-                        SitemapUrl = sitemapUrl
+                        Url = sitemap.Url,
+                        RegexFilter = sitemap.RegexFilter,
                     }, stoppingToken);
                     sitemaps.Add(createdSitemap);
                 }

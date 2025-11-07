@@ -27,7 +27,7 @@ namespace ComedyPull.Data.Contexts.ComedyDb.Configurations
                 .IsRequired();
             
             builder.Property(v => v.Slug)
-                .HasMaxLength(50)
+                .HasMaxLength(255)
                 .IsRequired();
 
             builder.HasMany(v => v.Events)

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ComedyPull.Domain.Pipeline;
 using ComedyPull.Domain.Pipeline.Interfaces;
 using ComedyPull.Domain.Queue;
@@ -87,7 +88,18 @@ namespace ComedyPull.Application.Pipeline.Transformation
 
                     try
                     {
-                        context.ProcessedEntities = transformer.Transform(context.RawData);
+                        // Deserialize RawData back to object
+                        object? deserializedData = null;
+                        if (context.RawData is string jsonString && !string.IsNullOrEmpty(jsonString))
+                        {
+                            deserializedData = JsonSerializer.Deserialize<JsonElement>(jsonString);
+                        }
+                        else
+                        {
+                            deserializedData = context.RawData;
+                        }
+
+                        context.ProcessedEntities = transformer.Transform(deserializedData);
                         context.State = ProcessingState.Transformed;
                     }
                     catch (Exception ex)

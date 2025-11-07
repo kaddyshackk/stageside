@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using ComedyPull.Domain.Jobs.Operations.CreateJob;
 
 namespace ComedyPull.Api.Http.Jobs.CreateJob
 {
@@ -15,6 +16,6 @@ namespace ComedyPull.Api.Http.Jobs.CreateJob
         
         public string? CronExpression { get; init; }
         
-        public ICollection<string>? SitemapUrls { get; init; }
+        public ICollection<SitemapDto>? Sitemaps { get; init; }
     }
 }

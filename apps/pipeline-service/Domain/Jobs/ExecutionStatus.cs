@@ -1,6 +1,6 @@
 namespace ComedyPull.Domain.Jobs
 {
-    public enum JobExecutionStatus
+    public enum ExecutionStatus
     {
         Executed,
         Completed,

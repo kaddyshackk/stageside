@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ComedyPull.Data.Contexts.PipelineDb.Configurations
 {
-    public class JobExecutionConfiguration : BaseEntityConfiguration<JobExecution>
+    public class ExecutionConfiguration : BaseEntityConfiguration<Execution>
     {
-        public override void Configure(EntityTypeBuilder<JobExecution> builder)
+        public override void Configure(EntityTypeBuilder<Execution> builder)
         {
             base.Configure(builder);
 

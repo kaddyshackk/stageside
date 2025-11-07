@@ -5,9 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace ComedyPull.Domain.Jobs.Services
 {
-    public class JobExecutionService(IServiceScopeFactory scopeFactory, ILogger<JobExecutionService> logger)
+    public class ExecutionService(IServiceScopeFactory scopeFactory, ILogger<ExecutionService> logger)
     {
-        public async Task<JobExecution> CreateJobExecutionAsync(Guid jobId, CancellationToken stoppingToken)
+        public async Task<Execution> CreateJobExecutionAsync(Guid jobId, CancellationToken stoppingToken)
         {
             using var scope = scopeFactory.CreateScope();
             var jobRepository = scope.ServiceProvider.GetRequiredService<IJobRepository>();
@@ -25,7 +25,7 @@ namespace ComedyPull.Domain.Jobs.Services
                 throw new InvalidJobStateException("Job to execute is more than one minute in the future.");
             }
 
-            var execution = await executionRepository.CreateJobExecutionAsync(new JobExecution
+            var execution = await executionRepository.CreateJobExecutionAsync(new Execution
             {
                 JobId = job.Id,
             }, stoppingToken);
@@ -51,7 +51,7 @@ namespace ComedyPull.Domain.Jobs.Services
             return execution;
         }
 
-        public async Task UpdateJobExecutionStatusAsync(Guid executionId, JobExecutionStatus status,
+        public async Task UpdateJobExecutionStatusAsync(Guid executionId, ExecutionStatus status,
             CancellationToken stoppingToken)
         {
             using var scope = scopeFactory.CreateScope();
@@ -64,7 +64,7 @@ namespace ComedyPull.Domain.Jobs.Services
             }
             
             execution.Status = status;
-            if (status == JobExecutionStatus.Completed) execution.CompletedAt = DateTimeOffset.UtcNow;
+            if (status == ExecutionStatus.Completed) execution.CompletedAt = DateTimeOffset.UtcNow;
             
             await executionRepository.UpdateJobExecutionAsync(execution, stoppingToken);
         }

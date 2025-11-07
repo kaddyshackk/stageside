@@ -3,6 +3,7 @@ using System;
 using ComedyPull.Data.Contexts.ComedyDb;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ComedyPull.Data.Migrations
 {
     [DbContext(typeof(ComedyDbContext))]
-    partial class ComedyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251106201647_ComedyDbIncreaseVenueSlugLength")]
+    partial class ComedyDbIncreaseVenueSlugLength
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

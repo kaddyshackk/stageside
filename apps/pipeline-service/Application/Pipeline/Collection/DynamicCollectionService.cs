@@ -1,4 +1,5 @@
-﻿using ComedyPull.Domain.Pipeline;
+﻿using System.Text.Json;
+using ComedyPull.Domain.Pipeline;
 using ComedyPull.Domain.Pipeline.Interfaces;
 using ComedyPull.Domain.Queue;
 using Microsoft.Extensions.Hosting;
@@ -99,7 +100,7 @@ namespace ComedyPull.Application.Pipeline.Collection
 
                                 var result = await collector.CollectPageAsync(context.Metadata.CollectionUrl, page);
 
-                                context.RawData = result;
+                                context.RawData = JsonSerializer.Serialize(result);
                                 context.Metadata.CollectedAt = DateTimeOffset.UtcNow;
                                 context.State = ProcessingState.Collected;
 

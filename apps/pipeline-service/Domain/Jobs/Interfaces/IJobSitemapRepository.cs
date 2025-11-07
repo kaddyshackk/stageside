@@ -2,7 +2,7 @@
 {
     public interface IJobSitemapRepository
     {
-        public Task<JobSitemap> CreateJobSitemapAsync(JobSitemap sitemap, CancellationToken stoppingToken);
-        public Task<ICollection<JobSitemap>> ReadJobSitemapsForJobAsync(Guid jobId, CancellationToken stoppingToken);
+        public Task<Sitemap> CreateJobSitemapAsync(Sitemap sitemap, CancellationToken stoppingToken);
+        public Task<ICollection<Sitemap>> ReadJobSitemapsForJobAsync(Guid jobId, CancellationToken stoppingToken);
     }
 }

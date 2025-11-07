@@ -31,7 +31,7 @@ namespace ComedyPull.Application.Pipeline.Scheduling
                         }
 
                         using var scope = scopeFactory.CreateScope();
-                        var jobDispatchService = scope.ServiceProvider.GetRequiredService<JobDispatchService>();
+                        var jobDispatchService = scope.ServiceProvider.GetRequiredService<DispatchService>();
                         await jobDispatchService.DispatchNextJobAsync(stoppingToken);
                     }
                     catch (Exception ex)

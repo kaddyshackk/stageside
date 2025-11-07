@@ -14,7 +14,7 @@ namespace ComedyPull.Domain.Jobs
         public DateTimeOffset? LastExecuted { get; set; }
 
         // Navigation properties
-        public virtual ICollection<JobSitemap> Sitemaps { get; set; } = [];
-        public virtual ICollection<JobExecution> Executions { get; set; } = [];
+        public virtual ICollection<Sitemap> Sitemaps { get; set; } = [];
+        public virtual ICollection<Execution> Executions { get; set; } = [];
     }
 }

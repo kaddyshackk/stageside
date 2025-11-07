@@ -6,6 +6,6 @@
         public required string Sku { get; init; }
         public required string Name { get; init; }
         public string? CronExpression { get; init; }
-        public ICollection<string>? SitemapUrls { get; init; }
+        public ICollection<SitemapDto>? Sitemaps { get; init; }
     }
 }

@@ -15,9 +15,9 @@ namespace ComedyPull.Domain.Extensions
         {
             // Services
             services.AddScoped<JobService>();
-            services.AddScoped<JobExecutionService>();
-            services.AddScoped<JobSitemapService>();
-            services.AddScoped<JobDispatchService>();
+            services.AddScoped<ExecutionService>();
+            services.AddScoped<SitemapService>();
+            services.AddScoped<DispatchService>();
             services.AddScoped<ActService>();
             services.AddScoped<VenueService>();
             services.AddScoped<EventService>();

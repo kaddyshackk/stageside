@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ComedyPull.Domain.Core.Acts;
 using ComedyPull.Domain.Core.Events.Services;
 using ComedyPull.Domain.Core.Shared;
@@ -80,7 +81,8 @@ namespace ComedyPull.Application.Pipeline.Processing
                         // Process Acts
                         var acts = context.ProcessedEntities
                             .Where(e => e.Type == EntityType.Act)
-                            .Select(e => e.Data)
+                            .Select(e => DeserializeEntity<ProcessedAct>(e.Data))
+                            .Where(a => a != null)
                             .Cast<ProcessedAct>();
 
                         await actService.ProcessActsAsync(acts, stoppingToken);
@@ -88,7 +90,8 @@ namespace ComedyPull.Application.Pipeline.Processing
                         // Process Venues
                         var venues = context.ProcessedEntities
                             .Where(e => e.Type == EntityType.Venue)
-                            .Select(e => e.Data)
+                            .Select(e => DeserializeEntity<ProcessedVenue>(e.Data))
+                            .Where(v => v != null)
                             .Cast<ProcessedVenue>();
 
                         await venueService.ProcessVenuesAsync(venues, stoppingToken);
@@ -96,7 +99,8 @@ namespace ComedyPull.Application.Pipeline.Processing
                         // Process Events
                         var events = context.ProcessedEntities
                             .Where(e => e.Type == EntityType.Event)
-                            .Select(e => e.Data)
+                            .Select(e => DeserializeEntity<ProcessedEvent>(e.Data))
+                            .Where(ev => ev != null)
                             .Cast<ProcessedEvent>();
 
                         await eventService.ProcessEventsAsync(events, stoppingToken);
@@ -110,6 +114,19 @@ namespace ComedyPull.Application.Pipeline.Processing
                     }
                 }
             }
+        }
+        
+        private static T? DeserializeEntity<T>(object data) where T : class
+        {
+            if (data is JsonElement jsonElement)
+            {
+                return JsonSerializer.Deserialize<T>(jsonElement.GetRawText());
+            }
+            if (data is T directType)
+            {
+                return directType;
+            }
+            return null;
         }
     }
 }
