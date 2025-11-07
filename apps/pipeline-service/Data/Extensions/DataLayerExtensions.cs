@@ -1,13 +1,13 @@
 using ComedyPull.Data.Contexts.ComedyDb;
 using ComedyPull.Data.Contexts.PipelineDb;
 using ComedyPull.Data.Core;
-using ComedyPull.Data.Jobs;
 using ComedyPull.Data.Services;
 using ComedyPull.Data.Utils;
 using ComedyPull.Domain.Core.Acts;
 using ComedyPull.Domain.Core.Events.Interfaces;
 using ComedyPull.Domain.Core.Venues.Interfaces;
-using ComedyPull.Domain.Jobs.Interfaces;
+using ComedyPull.Domain.Interfaces.Data;
+using ComedyPull.Domain.Jobs.Services.Interfaces;
 using ComedyPull.Domain.Pipeline.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,9 +38,6 @@ namespace ComedyPull.Data.Extensions
             services.AddSingleton<IWebBrowser, PlaywrightWebBrowserAdapter>();
             
             // Repositories
-            services.AddScoped<IJobRepository, JobRepository>();
-            services.AddScoped<IJobExecutionRepository, JobExecutionRepository>();
-            services.AddScoped<IJobSitemapRepository, JobSitemapRepository>();
             services.AddScoped<IActRepository, ActRepository>();
             services.AddScoped<IVenueRepository, VenueRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
@@ -56,6 +53,10 @@ namespace ComedyPull.Data.Extensions
             {
                 DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration, "PipelineDb");
             });
+            
+            // Sessions
+            services.AddScoped<IComedyDataSession, ComedyDataSession>();
+            services.AddScoped<IPipelineDataSession, PipelineDataSession>();
             
             // Redis
             services.AddSingleton<IConnectionMultiplexer>(_ =>
