@@ -6,7 +6,7 @@ namespace ComedyPull.Domain.Jobs
     {
         public Guid Id { get; set; }
         public required Guid JobId { get; set; }
-        public ExecutionStatus Status { get; set; } = ExecutionStatus.Executed;
+        public ExecutionStatus Status { get; set; } = ExecutionStatus.Created;
         public DateTimeOffset? StartedAt { get; set; }
         public DateTimeOffset? CompletedAt { get; set; }
         public string? ErrorMessage { get; set; }
