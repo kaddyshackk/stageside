@@ -2,9 +2,9 @@ namespace ComedyPull.Domain.Pipeline
 {
     public record BatchProcessResult<TOrigin, TResult>
     {
-        public required IEnumerable<TResult> Created { get; init; }
-        public required IEnumerable<TResult> Updated { get; init; }
-        public required IEnumerable<TOrigin> Failed { get; init; }
-        public required int ProcessedCount { get; init; }
+        public IEnumerable<TResult> Created { get; init; } = [];
+        public IEnumerable<TResult> Updated { get; init; } = [];
+        public IEnumerable<TOrigin> Failed { get; init; } = [];
+        public int ProcessedCount { get; init; } = 0;
     }
 }

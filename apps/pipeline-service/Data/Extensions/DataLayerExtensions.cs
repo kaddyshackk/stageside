@@ -1,11 +1,7 @@
 using ComedyPull.Data.Contexts.ComedyDb;
 using ComedyPull.Data.Contexts.PipelineDb;
-using ComedyPull.Data.Core;
 using ComedyPull.Data.Services;
 using ComedyPull.Data.Utils;
-using ComedyPull.Domain.Core.Acts;
-using ComedyPull.Domain.Core.Events.Interfaces;
-using ComedyPull.Domain.Core.Venues.Interfaces;
 using ComedyPull.Domain.Interfaces.Data;
 using ComedyPull.Domain.Jobs.Services.Interfaces;
 using ComedyPull.Domain.Pipeline.Interfaces;
@@ -28,21 +24,6 @@ namespace ComedyPull.Data.Extensions
         /// <param name="configuration">Injected <see cref="IConfiguration"/> instance.</param>
         public static void AddDataLayer(this IServiceCollection services, IConfiguration configuration)
         {
-            // Services
-            services.AddSingleton<ISitemapLoader, SitemapLoader>();
-            services.AddSingleton<IQueueClient, RedisQueueClient>();
-            services.AddSingleton<IQueueHealthChecker, QueueHealthChecker>();
-            
-            // Web Browser Services
-            services.AddSingleton<IPlaywright>(_ => Playwright.CreateAsync().Result);
-            services.AddSingleton<IWebBrowser, PlaywrightWebBrowserAdapter>();
-            
-            // Repositories
-            services.AddScoped<IActRepository, ActRepository>();
-            services.AddScoped<IVenueRepository, VenueRepository>();
-            services.AddScoped<IEventRepository, EventRepository>();
-            services.AddScoped<IEventActRepository, EventActRepository>();
-            
             // Contexts
             services.AddDbContextFactory<ComedyDbContext>((_, options) =>
             {
@@ -57,6 +38,15 @@ namespace ComedyPull.Data.Extensions
             // Sessions
             services.AddScoped<IComedyDataSession, ComedyDataSession>();
             services.AddScoped<IPipelineDataSession, PipelineDataSession>();
+            
+            // Services
+            services.AddSingleton<ISitemapLoader, SitemapLoader>();
+            services.AddSingleton<IQueueClient, RedisQueueClient>();
+            services.AddSingleton<IQueueHealthChecker, QueueHealthChecker>();
+            
+            // Web Browser Services
+            services.AddSingleton<IPlaywright>(_ => Playwright.CreateAsync().Result);
+            services.AddSingleton<IWebBrowser, PlaywrightWebBrowserAdapter>();
             
             // Redis
             services.AddSingleton<IConnectionMultiplexer>(_ =>

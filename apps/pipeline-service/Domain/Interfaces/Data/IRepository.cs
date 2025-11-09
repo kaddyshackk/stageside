@@ -9,6 +9,7 @@ namespace ComedyPull.Domain.Interfaces.Data
         public Task AddAsync(T entity, CancellationToken ct);
         public Task AddRangeAsync(IEnumerable<T> entities, CancellationToken ct);
         public void Update(T entity);
+        public void UpdateRange(IEnumerable<T> entities);
         public void Delete(T entity);
         public Task<ICollection<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken ct);
         public IQueryable<T> Query();

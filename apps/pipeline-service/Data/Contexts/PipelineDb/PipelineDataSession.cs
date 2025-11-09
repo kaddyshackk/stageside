@@ -1,4 +1,5 @@
-﻿using ComedyPull.Domain.Interfaces.Data;
+﻿using ComedyPull.Data.Services;
+using ComedyPull.Domain.Interfaces.Data;
 using ComedyPull.Domain.Jobs;
 using Microsoft.EntityFrameworkCore.Storage;
 

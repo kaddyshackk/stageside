@@ -2,7 +2,7 @@
 using ComedyPull.Domain.Interfaces.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComedyPull.Data.Contexts
+namespace ComedyPull.Data.Services
 {
     public class Repository<T>(DbContext context) : IRepository<T>
         where T : class
@@ -32,6 +32,11 @@ namespace ComedyPull.Data.Contexts
         public void Update(T entity)
         {
             _dbSet.Update(entity);
+        }
+        
+        public void UpdateRange(IEnumerable<T> entities)
+        {
+            _dbSet.UpdateRange(entities);
         }
 
         public void Delete(T entity)

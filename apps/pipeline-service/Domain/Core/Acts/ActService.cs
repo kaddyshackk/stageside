@@ -1,25 +1,36 @@
+using ComedyPull.Domain.Interfaces.Data;
 using ComedyPull.Domain.Pipeline;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ComedyPull.Domain.Core.Acts
 {
-    public class ActService(IActRepository repository)
+    public class ActService(IComedyDataSession session, ILogger<ActService> logger)
     {
-        public async Task<BatchProcessResult<ProcessedAct, Act>> ProcessActsAsync(IEnumerable<ProcessedAct> processedActs, CancellationToken stoppingToken)
+        public async Task<BatchProcessResult<ProcessedAct, Act>> ProcessActsAsync(
+            IEnumerable<ProcessedAct> processedActs, CancellationToken ct)
         {
             var acts = processedActs.ToList();
             var slugs = acts.Select(s => s.Slug).Distinct().Where(s => !string.IsNullOrEmpty(s));
-            var existingActs = await repository.GetActsBySlugAsync(slugs!, stoppingToken);
-            var existingBySlug = existingActs.ToDictionary(s => s.Slug, s => s);
+
+            var existingActs = await session.Acts.Query()
+                .Where(a => slugs.Contains(a.Slug))
+                .ToDictionaryAsync(a => a.Slug, a => a, ct);
 
             var toCreate = new List<Act>();
             var toUpdate = new List<Act>();
-
+            
             foreach (var current in acts)
             {
-                if (existingBySlug.TryGetValue(current.Slug!, out var existing))
+                if (current.Slug is null)
+                {
+                    logger.LogWarning("Could not process act because it's slug is null.");
+                    continue;
+                }
+                if (existingActs.TryGetValue(current.Slug, out var existing))
                 {
                     var hasChanges = false;
-                    if (!string.IsNullOrEmpty(current.Name) && existing.Name != current.Name)
+                    if (!string.IsNullOrEmpty(existing.Name) && existing.Name != current.Name)
                     {
                         existing.Name = current.Name;
                         hasChanges = true;
@@ -52,11 +63,13 @@ namespace ComedyPull.Domain.Core.Acts
             }
             
             if (toCreate.Count != 0)
-                await repository.BulkCreateActsAsync(toCreate, stoppingToken);
+                await session.Acts.AddRangeAsync(toCreate, ct);
             
             if (toUpdate.Count != 0)
-                await repository.SaveChangesAsync(stoppingToken);
-
+                session.Acts.UpdateRange(toUpdate);
+            
+            await session.SaveChangesAsync(ct);
+            
             return new BatchProcessResult<ProcessedAct, Act>
             {
                 Created = toCreate,
