@@ -515,6 +515,7 @@
         "type": "Project",
         "dependencies": {
           "Cronos": "[0.11.1, )",
+          "Microsoft.EntityFrameworkCore": "[9.0.0, )",
           "Microsoft.Extensions.Logging.Abstractions": "[9.0.0, )",
           "Newtonsoft.Json": "[13.0.4, )",
           "Riok.Mapperly": "[4.3.0-next.5, )",

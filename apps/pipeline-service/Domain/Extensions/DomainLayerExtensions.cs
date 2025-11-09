@@ -14,10 +14,7 @@ namespace ComedyPull.Domain.Extensions
         public static void AddDomainLayer(this IServiceCollection services)
         {
             // Services
-            services.AddScoped<JobService>();
-            services.AddScoped<ExecutionService>();
-            services.AddScoped<SitemapService>();
-            services.AddScoped<DispatchService>();
+            services.AddScoped<JobAggregateService>();
             services.AddScoped<ActService>();
             services.AddScoped<VenueService>();
             services.AddScoped<EventService>();

@@ -1,27 +1,33 @@
-using ComedyPull.Domain.Core.Venues.Interfaces;
+using ComedyPull.Domain.Interfaces.Data;
 using ComedyPull.Domain.Pipeline;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ComedyPull.Domain.Core.Venues
 {
-    public class VenueService(IServiceScopeFactory scopeFactory)
+    public class VenueService(IComedyDataSession session, ILogger<VenueService> logger)
     {
-        public async Task<BatchProcessResult<ProcessedVenue, Venue>> ProcessVenuesAsync(IEnumerable<ProcessedVenue> processedVenues, CancellationToken stoppingToken)
+        public async Task<BatchProcessResult<ProcessedVenue, Venue>> ProcessVenuesAsync(IEnumerable<ProcessedVenue> processedVenues, CancellationToken ct)
         {
-            using var scope = scopeFactory.CreateScope();
-            var repository = scope.ServiceProvider.GetRequiredService<IVenueRepository>();
-
             var venues = processedVenues.ToList();
             var slugs = venues.Select(s => s.Slug).Distinct().Where(s => !string.IsNullOrEmpty(s));
-            var existingVenues = await repository.GetVenuesBySlugAsync(slugs!, stoppingToken);
-            var existingBySlug = existingVenues.ToDictionary(s => s.Slug, s => s);
-
+            
+            var existingVenues = await session.Venues.Query()
+                .Where(v => slugs.Contains(v.Slug))
+                .ToDictionaryAsync(v => v.Slug, v => v, ct);
+            
             var toCreate = new List<Venue>();
             var toUpdate = new List<Venue>();
 
             foreach (var current in venues)
             {
-                if (existingBySlug.TryGetValue(current.Slug!, out var existing))
+                if (current.Slug is null)
+                {
+                    logger.LogWarning("Could not process venue because it's slug is null.");
+                    continue;
+                }
+                
+                if (existingVenues.TryGetValue(current.Slug, out var existing))
                 {
                     var hasChanges = false;
                     if (!string.IsNullOrEmpty(current.Name) && existing.Name != current.Name)
@@ -50,11 +56,13 @@ namespace ComedyPull.Domain.Core.Venues
             }
             
             if (toCreate.Count != 0)
-                await repository.BulkCreateVenuesAsync(toCreate, stoppingToken);
+                await session.Venues.AddRangeAsync(toCreate, ct);
             
             if (toUpdate.Count != 0)
-                await repository.SaveChangesAsync(stoppingToken);
-
+                session.Venues.UpdateRange(toUpdate);
+            
+            await session.SaveChangesAsync(ct);
+            
             return new BatchProcessResult<ProcessedVenue, Venue>
             {
                 Created = toCreate,

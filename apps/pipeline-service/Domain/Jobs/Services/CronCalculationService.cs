@@ -6,7 +6,7 @@ namespace ComedyPull.Domain.Jobs.Services
     {
         public static DateTimeOffset? CalculateNextOccurence(string cronExpression)
         {
-            return CronExpression.Parse(cronExpression).GetNextOccurrence(DateTimeOffset.Now, TimeZoneInfo.Utc);
+            return CronExpression.Parse(cronExpression).GetNextOccurrence(DateTimeOffset.UtcNow, TimeZoneInfo.Utc);
         }
     }
 }
