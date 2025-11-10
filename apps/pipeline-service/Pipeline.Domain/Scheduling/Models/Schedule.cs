@@ -14,6 +14,6 @@ namespace StageSide.Pipeline.Domain.Scheduling.Models
         public DateTimeOffset? LastExecuted { get; set; }
 
         public ICollection<Sitemap> Sitemaps { get; set; } = [];
-        public ICollection<Execution> Executions { get; set; } = [];
+        public ICollection<Job> Jobs { get; set; } = [];
     }
 }

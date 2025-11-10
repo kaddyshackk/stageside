@@ -67,7 +67,7 @@ namespace StageSide.Pipeline.Service.Pipeline.Processing
             foreach (var context in batch.ToList())
             {
                 using (LogContext.PushProperty("ContextId", context.Id))
-                using (LogContext.PushProperty("ExecutionId", context.ExecutionId))
+                using (LogContext.PushProperty("ExecutionId", context.JobId))
                 using (LogContext.PushProperty("Sku", context.Sku))
                 using (LogContext.PushProperty("CollectionUrl", context.Metadata.CollectionUrl))
                 using (LogContext.PushProperty("Tags", context.Metadata.Tags))

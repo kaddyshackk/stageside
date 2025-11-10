@@ -1,11 +1,9 @@
 namespace StageSide.Pipeline.Domain.Scheduling.Models
 {
-    public enum ExecutionStatus
+    public enum JobStatus
     {
         Created,
-        Executed,
         Completed,
-        Failed,
-        Cancelled
+        Failed
     }
 }

@@ -7,7 +7,7 @@ namespace StageSide.Pipeline.Data.Contexts.Scheduling
     public class SchedulingDbContext(DbContextOptions<SchedulingDbContext> options) : DbContext(options)
     {
         public DbSet<Schedule> Schedules { get; set; }
-        public DbSet<Execution> Executions { get; set; }
+        public DbSet<Job> Jobs { get; set; }
         public DbSet<Sitemap> Sitemaps { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -15,7 +15,7 @@ namespace StageSide.Pipeline.Data.Contexts.Scheduling
             base.OnModelCreating(modelBuilder);
             
             modelBuilder.ApplyConfiguration(new ScheduleConfiguration());
-            modelBuilder.ApplyConfiguration(new ExecutionConfiguration());
+            modelBuilder.ApplyConfiguration(new JobConfiguration());
             modelBuilder.ApplyConfiguration(new SitemapConfiguration());
         }
     }

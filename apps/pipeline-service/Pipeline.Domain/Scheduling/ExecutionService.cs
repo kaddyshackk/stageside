@@ -24,11 +24,11 @@ namespace StageSide.Pipeline.Domain.Scheduling
                 return [];
             }
             
-            var execution = await CreateExecutionAsync(schedule.Id, ct);
+            var job = await CreateJobAsync(schedule.Id, ct);
             var urls = await sitemapLoader.LoadManySitemapsAsync(sitemaps);
             return urls.Select(u => new PipelineContext
             {
-                ExecutionId = execution.Id,
+                JobId = job.Id,
                 Source = schedule.Source,
                 Sku = schedule.Sku,
                 Metadata = new PipelineMetadata { CollectionUrl = u }
@@ -45,7 +45,7 @@ namespace StageSide.Pipeline.Domain.Scheduling
                 .FirstOrDefaultAsync(ct);
         }
         
-        private async Task<Execution> CreateExecutionAsync(Guid scheduleId, CancellationToken ct)
+        private async Task<Job> CreateJobAsync(Guid scheduleId, CancellationToken ct)
         {
             try
             {
@@ -58,20 +58,20 @@ namespace StageSide.Pipeline.Domain.Scheduling
                 }
                 if (schedule.NextExecution > DateTimeOffset.UtcNow.AddMinutes(1))
                 {
-                    throw new InvalidScheduleStateException("Schedule to execute is more than one minute in the future.");
+                    throw new InvalidScheduleStateException("Schedule is more than one minute in the future.");
                 }
 
                 var now = DateTimeOffset.UtcNow;
-                var execution = new Execution
+                var job = new Job
                 {
                     ScheduleId = schedule.Id,
-                    Status = ExecutionStatus.Created,
+                    Status = JobStatus.Created,
                     CreatedAt = now,
                     CreatedBy = "System",
                     UpdatedAt = now,
                     UpdatedBy = "System",
                 };
-                await session.Executions.AddAsync(execution, ct);
+                await session.Jobs.AddAsync(job, ct);
                 
                 if (schedule.CronExpression == null)
                 {
@@ -82,8 +82,8 @@ namespace StageSide.Pipeline.Domain.Scheduling
                     var nextExecution = CronCalculationService.CalculateNextOccurence(schedule.CronExpression);
                     if (!nextExecution.HasValue)
                     {
-                        logger.LogError("Failed to calculate next occurence for schedule {ScheduleId} and execution {ExecutionId}", schedule.Id, execution.Id);
-                        throw new InvalidExecutionStateException($"Failed to calculate next occurence for schedule {schedule.Id}. Cron expression is invalid.");
+                        logger.LogError("Failed to calculate next occurence for schedule {ScheduleId} and job {JobId}", schedule.Id, job.Id);
+                        throw new InvalidJobStateException($"Failed to calculate next occurence for schedule {schedule.Id}. Cron expression is invalid.");
                     }
                     schedule.NextExecution = nextExecution.Value;
                 }
@@ -96,39 +96,39 @@ namespace StageSide.Pipeline.Domain.Scheduling
                 await session.SaveChangesAsync(ct);
                 await session.CommitTransactionAsync(ct);
                 
-                return execution;
+                return job;
             }
             catch (Exception ex)
             {
                 await session.RollbackTransactionAsync(ct);
                 session.Dispose();
-                logger.LogError(ex, "Failed to create schedule execution.");
+                logger.LogError(ex, "Failed to create job.");
                 throw;
             }
         }
         
-        public async Task<bool> UpdateExecutionStatusAsync(Guid executionId, ExecutionStatus status,
+        public async Task<bool> UpdateJobStatusAsync(Guid jobId, JobStatus status,
             CancellationToken ct)
         {
-            var execution = await session.Executions.GetByIdAsync(executionId, ct);
-            if (execution == null)
+            var job = await session.Jobs.GetByIdAsync(jobId, ct);
+            if (job == null)
             {
-                throw new NullScheduleException($"Could not find schedule execution with id {executionId}");
+                throw new NullScheduleException($"Could not find job with id {jobId}");
             }
                 
             var now = DateTimeOffset.UtcNow;
-            execution.Status = status;
-            execution.UpdatedAt = now;
-            execution.UpdatedBy = "System";
-            if (status == ExecutionStatus.Completed)
+            job.Status = status;
+            job.UpdatedAt = now;
+            job.UpdatedBy = "System";
+            if (status == JobStatus.Completed)
             {
-                execution.CompletedAt = DateTimeOffset.UtcNow;
+                job.CompletedAt = DateTimeOffset.UtcNow;
             }
                 
             var affected = await session.SaveChangesAsync(ct);
             if (affected == 0)
             {
-                throw new InvalidOperationException("Failed to update schedule execution.");
+                throw new InvalidOperationException("Failed to update job status.");
             }
              
             return true;

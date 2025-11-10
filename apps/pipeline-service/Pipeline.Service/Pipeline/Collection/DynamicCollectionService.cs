@@ -78,7 +78,7 @@ namespace StageSide.Pipeline.Service.Pipeline.Collection
                         if (context == null) continue;
                         
                         using (LogContext.PushProperty("ContextId", context.Id))
-                        using (LogContext.PushProperty("ExecutionId", context.ExecutionId))
+                        using (LogContext.PushProperty("ExecutionId", context.JobId))
                         using (LogContext.PushProperty("Sku", context.Sku))
                         using (LogContext.PushProperty("CollectionUrl", context.Metadata.CollectionUrl))
                         using (LogContext.PushProperty("Tags", context.Metadata.Tags))
@@ -109,7 +109,7 @@ namespace StageSide.Pipeline.Service.Pipeline.Collection
                             {
                                 logger.LogError(ex, "Error processing url {Url} from execution {BatchId}",
                                     context.Metadata.CollectionUrl,
-                                    context.ExecutionId);
+                                    context.JobId);
                                 context.State = ProcessingState.Failed;
                             }
                             finally
