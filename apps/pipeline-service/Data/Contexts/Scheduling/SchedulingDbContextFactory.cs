@@ -14,7 +14,7 @@ namespace ComedyPull.Data.Contexts.Scheduling
         {
             var configuration = BuildConfiguration();
             var optionsBuilder = new DbContextOptionsBuilder<SchedulingDbContext>();
-            DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(optionsBuilder, configuration, "PipelineDb");
+            DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(optionsBuilder, configuration, "SchedulingDb");
             return new SchedulingDbContext(optionsBuilder.Options);
         }
 

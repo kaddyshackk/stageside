@@ -12,4 +12,4 @@ done
 
 echo "> Applying migrations"
 source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/pipeline-service/Data --context ComedyDbContext
-source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/pipeline-service/Data --context PipelineDbContext
+source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/pipeline-service/Data --context SchedulingDbContext
