@@ -101,4 +101,4 @@ jobs:
             --cache-to type=gha,mode=max \
             ${PUSH_FLAG} \
             -f apps/pipeline-service/Dockerfile \
-            apps/pipeline-service
+            .
