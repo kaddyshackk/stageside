@@ -22,7 +22,7 @@ namespace ComedyPull.Data.Contexts.Scheduling
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Api", "Settings"))
+                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Service", "Settings"))
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile($"appsettings.{environment}.json", optional: true)
                 .AddEnvironmentVariables();

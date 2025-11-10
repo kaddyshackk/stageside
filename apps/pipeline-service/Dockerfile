@@ -6,8 +6,8 @@ WORKDIR /src
 COPY ["ComedyPull.sln", "./"]
 COPY ["Directory.Build.props", "./"]
 COPY ["Directory.Packages.props", "./"]
-COPY ["Api/Api.csproj", "Api/"]
-COPY ["Api/packages.lock.json", "Api/"]
+COPY ["Service/Service.csproj", "Service/"]
+COPY ["Service/packages.lock.json", "Service/"]
 COPY ["Data/Data.csproj", "Data/"]
 COPY ["Data/packages.lock.json", "Data/"]
 COPY ["Domain/Domain.csproj", "Domain/"]
@@ -22,7 +22,7 @@ ARG BUILD_CONFIGURATION=Release
 
 COPY . .
 
-RUN dotnet publish Api/Api.csproj -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish Service/Service.csproj -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # -- [ Install Playwright ] ----
 FROM build AS playwright-install
@@ -71,4 +71,4 @@ COPY --from=playwright-install /ms-playwright /ms-playwright
 EXPOSE 8080
 EXPOSE 8081
 
-ENTRYPOINT ["dotnet", "Api.dll"]
+ENTRYPOINT ["dotnet", "Service.dll"]
