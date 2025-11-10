@@ -13,6 +13,7 @@ namespace StageSide.Pipeline.Domain.Extensions
         {
             // Services
             services.AddScoped<SchedulingService>();
+            services.AddScoped<ExecutionService>();
             services.AddScoped<ActService>();
             services.AddScoped<VenueService>();
             services.AddScoped<EventService>();

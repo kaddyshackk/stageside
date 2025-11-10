@@ -1,6 +1,6 @@
 ﻿namespace StageSide.Pipeline.Domain.Operations
 {
-    public record CreateJobCommand
+    public record CreateScheduleCommand
     {
         public required string Source { get; init; }
         public required string Sku { get; init; }

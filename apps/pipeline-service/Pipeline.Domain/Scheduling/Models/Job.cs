@@ -5,15 +5,12 @@ namespace StageSide.Pipeline.Domain.Scheduling.Models
     public record Job : AuditableEntity
     {
         public Guid Id { get; set; }
-        public required Source Source { get; set; }
-        public required Sku Sku { get; set; }
-        public required string Name { get; set; }
-        public string? CronExpression { get; set; }
-        public required bool IsActive { get; set; }
-        public required DateTimeOffset NextExecution { get; set; }
-        public DateTimeOffset? LastExecuted { get; set; }
+        public required Guid ScheduleId { get; set; }
+        public JobStatus Status { get; set; } = JobStatus.Created;
+        public DateTimeOffset? StartedAt { get; set; }
+        public DateTimeOffset? CompletedAt { get; set; }
+        public string? ErrorMessage { get; set; }
 
-        public ICollection<Sitemap> Sitemaps { get; set; } = [];
-        public ICollection<Execution> Executions { get; set; } = [];
+        public virtual Schedule Schedule { get; set; } = null!;
     }
 }

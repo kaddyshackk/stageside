@@ -1,8 +1,6 @@
-﻿using StageSide.Pipeline.Domain.Exceptions;
-using StageSide.Pipeline.Domain.Extensions;
+﻿using StageSide.Pipeline.Domain.Extensions;
 using StageSide.Pipeline.Domain.Models;
 using StageSide.Pipeline.Domain.Operations;
-using StageSide.Pipeline.Domain.Pipeline.Models;
 using StageSide.Pipeline.Domain.Scheduling.Interfaces;
 using StageSide.Pipeline.Domain.Scheduling.Models;
 using Microsoft.EntityFrameworkCore;
@@ -10,137 +8,9 @@ using Microsoft.Extensions.Logging;
 
 namespace StageSide.Pipeline.Domain.Scheduling
 {
-    public class SchedulingService(ISchedulingDataSession session, ISitemapLoader sitemapLoader, ILogger<SchedulingService> logger)
+    public class SchedulingService(ISchedulingDataSession session, ILogger<SchedulingService> logger)
     {
-        public async Task<ICollection<PipelineContext>> ScheduleNextJobAsync(CancellationToken ct)
-        {
-            var job = await GetNextJobForExecutionAsync(ct);
-            if (job == null)
-            {
-                return [];
-            }
-            
-            var sitemaps = job.Sitemaps.Where(j => j.IsActive).ToList();
-            if (sitemaps.Count == 0)
-            {
-                logger.LogError("Failed to dispatch next job. No sitemaps available.");
-                return [];
-            }
-            
-            var execution = await CreateExecutionAsync(job.Id, ct);
-            var urls = await sitemapLoader.LoadManySitemapsAsync(sitemaps);
-            return urls.Select(u => new PipelineContext
-            {
-                JobExecutionId = execution.Id,
-                Source = job.Source,
-                Sku = job.Sku,
-                Metadata = new PipelineMetadata { CollectionUrl = u }
-            }).ToList();
-        }
-        
-        private async Task<Job?> GetNextJobForExecutionAsync(CancellationToken ct)
-        {
-            return await session.Jobs.Query()
-                .AsNoTracking()
-                .Include(j => j.Sitemaps)
-                .Where(j => j.IsActive && j.NextExecution <= DateTimeOffset.UtcNow)
-                .OrderBy(j => j.NextExecution)
-                .FirstOrDefaultAsync(ct);
-        }
-        
-        private async Task<Execution> CreateExecutionAsync(Guid jobId, CancellationToken ct)
-        {
-            try
-            {
-                await session.BeginTransactionAsync(ct);
-                
-                // Fetch & validate job
-                var job = await session.Jobs.GetByIdAsync(jobId, ct);
-                if (job == null)
-                {
-                    throw new NullJobException($"Could not find job with id {jobId}");
-                }
-                if (job.NextExecution > DateTimeOffset.UtcNow.AddMinutes(1))
-                {
-                    throw new InvalidJobStateException("Job to execute is more than one minute in the future.");
-                }
-
-                // Create execution
-                var now = DateTimeOffset.UtcNow;
-                var execution = new Execution
-                {
-                    JobId = job.Id,
-                    Status = ExecutionStatus.Created,
-                    CreatedAt = now,
-                    CreatedBy = "System",
-                    UpdatedAt = now,
-                    UpdatedBy = "System",
-                };
-                await session.Executions.AddAsync(execution, ct);
-                
-                // Check if one time job or needs next occurence
-                if (job.CronExpression == null)
-                {
-                    job.IsActive = false;
-                }
-                else
-                {
-                    var nextExecution = CronCalculationService.CalculateNextOccurence(job.CronExpression);
-                    if (!nextExecution.HasValue)
-                    {
-                        logger.LogError("Failed to calculate next occurence for job {JobId} and execution {ExecutionId}", job.Id, execution.Id);
-                        throw new InvalidJobExecutionStateException($"Failed to calculate next occurence for job {job.Id}. Cron expression is invalid.");
-                    }
-                    job.NextExecution = nextExecution.Value;
-                }
-                
-                job.LastExecuted = now;
-                job.UpdatedAt = now;
-                job.UpdatedBy = "System";
-                session.Jobs.Update(job);
-                
-                await session.SaveChangesAsync(ct);
-                await session.CommitTransactionAsync(ct);
-                
-                return execution;
-            }
-            catch (Exception ex)
-            {
-                await session.RollbackTransactionAsync(ct);
-                session.Dispose();
-                logger.LogError(ex, "Failed to create job execution.");
-                throw;
-            }
-        }
-        
-        public async Task<bool> UpdateExecutionStatusAsync(Guid executionId, ExecutionStatus status,
-            CancellationToken ct)
-        {
-            var execution = await session.Executions.GetByIdAsync(executionId, ct);
-            if (execution == null)
-            {
-                throw new NullJobException($"Could not find job execution with id {executionId}");
-            }
-                
-            var now = DateTimeOffset.UtcNow;
-            execution.Status = status;
-            execution.UpdatedAt = now;
-            execution.UpdatedBy = "System";
-            if (status == ExecutionStatus.Completed)
-            {
-                execution.CompletedAt = DateTimeOffset.UtcNow;
-            }
-                
-            var affected = await session.SaveChangesAsync(ct);
-            if (affected == 0)
-            {
-                throw new InvalidOperationException("Failed to update job execution.");
-            }
-             
-            return true;
-        }
-        
-        public async Task<Job?> CreateJobAsync(CreateJobCommand command, CancellationToken ct)
+        public async Task<Schedule?> CreateScheduleAsync(CreateScheduleCommand command, CancellationToken ct)
         {
             try
             {
@@ -149,7 +19,7 @@ namespace StageSide.Pipeline.Domain.Scheduling
                     : CronCalculationService.CalculateNextOccurence(command.CronExpression);
                 if (nextOccurence == null)
                 {
-                    throw new ArgumentException("Failed to determine next occurence for new job.");
+                    throw new ArgumentException("Failed to determine next occurence for new schedule.");
                 }
 
                 var source = EnumExtensions.ParseFromDescriptionOrThrow<Source>(command.Source);
@@ -158,7 +28,7 @@ namespace StageSide.Pipeline.Domain.Scheduling
                 await session.BeginTransactionAsync(ct);
 
                 var now = DateTimeOffset.UtcNow;
-                var job = new Job
+                var schedule = new Schedule
                 {
                     Source = source,
                     Sku = sku,
@@ -171,14 +41,14 @@ namespace StageSide.Pipeline.Domain.Scheduling
                     UpdatedAt = now,
                     UpdatedBy = "System",
                 };
-                await session.Jobs.AddAsync(job, ct);
+                await session.Schedules.AddAsync(schedule, ct);
 
                 if (command.Sitemaps is { Count: > 0 })
                 {
                     var sitemaps = command.Sitemaps
                         .Select(s => new Sitemap
                         {
-                            JobId = job.Id,
+                            ScheduleId = schedule.Id,
                             Url = s.Url,
                             RegexFilter = s.RegexFilter,
                             CreatedAt = now,
@@ -193,15 +63,15 @@ namespace StageSide.Pipeline.Domain.Scheduling
                 await session.SaveChangesAsync(ct);
                 await session.CommitTransactionAsync(ct);
 
-                return await session.Jobs.Query()
-                    .Include(j => j.Sitemaps)
-                    .FirstOrDefaultAsync(j => j.Id == job.Id, ct);
+                return await session.Schedules.Query()
+                    .Include(s => s.Sitemaps)
+                    .FirstOrDefaultAsync(s => s.Id == schedule.Id, ct);
             }
             catch (Exception ex)
             {
                 await session.RollbackTransactionAsync(ct);
                 session.Dispose();
-                logger.LogError(ex, "Failed to create job.");
+                logger.LogError(ex, "Failed to create schedule.");
                 throw;
             }
         }

@@ -15,34 +15,20 @@ namespace StageSide.Pipeline.Data.Contexts.Scheduling.Configurations
 
             builder.HasKey(x => x.Id);
             
-            builder.Property(x => x.Source)
+            builder.Property(x => x.ScheduleId)
+                .IsRequired();
+
+            builder.Property(x => x.Status)
                 .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();
             
-            builder.Property(x => x.Sku)
-                .HasConversion<string>()
-                .HasMaxLength(100)
-                .IsRequired();
-            
-            builder.Property(x => x.Name)
-                .HasMaxLength(100)
-                .IsRequired();
+            builder.Property(x => x.StartedAt);
 
-            builder.Property(x => x.CronExpression)
-                .HasMaxLength(50);
-            
-            builder.Property(x => x.IsActive)
-                .HasDefaultValue(true)
-                .IsRequired();
+            builder.Property(x => x.CompletedAt);
 
-            builder.Property(x => x.NextExecution)
-                .IsRequired();
-            
-            builder.Property(x => x.LastExecuted);
-            
-            builder.HasIndex(x => x.NextExecution);
-            builder.HasIndex(x => new { x.IsActive, x.NextExecution });
+            builder.Property(x => x.ErrorMessage)
+                .HasMaxLength(255);
         }
     }
 }

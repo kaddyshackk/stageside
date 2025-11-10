@@ -1,6 +1,6 @@
-namespace StageSide.Pipeline.Service.Operations.Scheduling.CreateJob
+namespace StageSide.Pipeline.Service.Operations.Scheduling.CreateSchedule
 {
-    public class CreateJobResponse
+    public class CreateScheduleResponse
     {
         public required string Id { get; set; }
         public required string Source { get; set; }
