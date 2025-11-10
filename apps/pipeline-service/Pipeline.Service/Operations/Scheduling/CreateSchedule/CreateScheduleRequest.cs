@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using StageSide.Pipeline.Domain.Operations;
 
-namespace StageSide.Pipeline.Service.Operations.Scheduling.CreateJob
+namespace StageSide.Pipeline.Service.Operations.Scheduling.CreateSchedule
 {
-    public record CreateJobRequest
+    public record CreateScheduleRequest
     {
         [Required]
         public required string Source { get; init; }

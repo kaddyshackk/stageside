@@ -11,11 +11,11 @@ namespace StageSide.Pipeline.Data.Contexts.Scheduling.Configurations
         {
             base.Configure(builder);
 
-            builder.ToTable("JobSitemaps");
+            builder.ToTable("Sitemaps");
 
             builder.HasKey(x => x.Id);
             
-            builder.Property(x => x.JobId)
+            builder.Property(x => x.ScheduleId)
                 .IsRequired();
             
             builder.Property(x => x.Url)

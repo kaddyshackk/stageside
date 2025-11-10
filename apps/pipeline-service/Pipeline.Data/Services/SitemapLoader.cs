@@ -16,7 +16,7 @@ namespace StageSide.Pipeline.Data.Services
         {
             using (LogContext.PushProperty("SitemapId", sitemap.Id))
             using (LogContext.PushProperty("SitemapUrl", sitemap.Url))
-            using (LogContext.PushProperty("JobId", sitemap.JobId))
+            using (LogContext.PushProperty("ScheduleId", sitemap.ScheduleId))
             {
                 try
                 {

@@ -5,7 +5,7 @@ namespace StageSide.Pipeline.Domain.Pipeline.Models
     public record PipelineContext
     {
         public Guid Id { get; init; } = Guid.NewGuid();
-        public required Guid JobExecutionId { get; init; } = Guid.NewGuid();
+        public required Guid ExecutionId { get; init; } = Guid.NewGuid();
         public required Source Source { get; init; }
         public required Sku Sku { get; init; }
         public required PipelineMetadata Metadata { get; init; }

@@ -5,7 +5,7 @@ namespace StageSide.Pipeline.Domain.Scheduling.Interfaces
 {
     public interface ISchedulingDataSession : IDataSession, IDisposable
     {
-        IRepository<Job> Jobs { get; }
+        IRepository<Schedule> Schedules { get; }
         IRepository<Execution> Executions { get; }
         IRepository<Sitemap> Sitemaps { get; }
     }

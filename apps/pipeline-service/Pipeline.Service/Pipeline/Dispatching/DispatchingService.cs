@@ -30,9 +30,8 @@ namespace StageSide.Pipeline.Service.Pipeline.Dispatching
                         }
 
                         using var scope = scopeFactory.CreateScope();
-                        var jobService = scope.ServiceProvider.GetRequiredService<SchedulingService>();
-                
-                        var entries = await jobService.ScheduleNextJobAsync(ct);
+                        var service = scope.ServiceProvider.GetRequiredService<ExecutionService>();
+                        var entries = await service.ExecuteNextScheduleAsync(ct);
                         await queueClient.EnqueueBatchAsync(Queues.Collection, entries);
                     }
                     catch (Exception ex)

@@ -8,12 +8,12 @@ namespace StageSide.Pipeline.Data.Contexts.Scheduling
 {
     public class SchedulingDataSession(SchedulingDbContext context) : ISchedulingDataSession
     {
-        private IRepository<Job>? _jobs;
+        private IRepository<Schedule>? _schedules;
         private IRepository<Execution>? _executions;
         private IRepository<Sitemap>? _sitemaps;
         private IDbContextTransaction? _transaction;
 
-        public IRepository<Job> Jobs => _jobs ??= new Repository<Job>(context);
+        public IRepository<Schedule> Schedules => _schedules ??= new Repository<Schedule>(context);
         public IRepository<Execution> Executions => _executions ??= new Repository<Execution>(context);
         public IRepository<Sitemap> Sitemaps => _sitemaps ??= new Repository<Sitemap>(context);
         

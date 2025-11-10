@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace StageSide.Pipeline.Data.Contexts.Scheduling.Configurations
 {
-    public class JobConfiguration : BaseEntityConfiguration<Job>
+    public class ScheduleConfiguration : BaseEntityConfiguration<Schedule>
     {
-        public override void Configure(EntityTypeBuilder<Job> builder)
+        public override void Configure(EntityTypeBuilder<Schedule> builder)
         {
             base.Configure(builder);
 
-            builder.ToTable("Jobs");
+            builder.ToTable("Schedules");
 
             builder.HasKey(x => x.Id);
             

@@ -2,7 +2,7 @@ using StageSide.Pipeline.Domain.Models;
 
 namespace StageSide.Pipeline.Domain.Scheduling.Models
 {
-    public record Job : AuditableEntity
+    public record Schedule : AuditableEntity
     {
         public Guid Id { get; set; }
         public required Source Source { get; set; }
