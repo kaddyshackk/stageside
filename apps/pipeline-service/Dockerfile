@@ -3,17 +3,17 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS restore
 
 WORKDIR /src
 
-COPY ["ComedyPull.sln", "./"]
+COPY ["StageSide.sln", "./"]
 COPY ["Directory.Build.props", "./"]
 COPY ["Directory.Packages.props", "./"]
-COPY ["Service/Service.csproj", "Service/"]
-COPY ["Service/packages.lock.json", "Service/"]
-COPY ["Data/Data.csproj", "Data/"]
-COPY ["Data/packages.lock.json", "Data/"]
-COPY ["Domain/Domain.csproj", "Domain/"]
-COPY ["Domain/packages.lock.json", "Domain/"]
+COPY ["apps/pipeline-service/Pipeline.Domain/Pipeline.Domain.csproj", "apps/pipeline-service/Pipeline.Domain/"]
+COPY ["apps/pipeline-service/Pipeline.Domain/packages.lock.json", "apps/pipeline-service/Pipeline.Domain/"]
+COPY ["apps/pipeline-service/Pipeline.Data/Pipeline.Data.csproj", "apps/pipeline-service/Pipeline.Data/"]
+COPY ["apps/pipeline-service/Pipeline.Data/packages.lock.json", "apps/pipeline-service/Pipeline.Data/"]
+COPY ["apps/pipeline-service/Pipeline.Service/Pipeline.Service.csproj", "apps/pipeline-service/Pipeline.Service/"]
+COPY ["apps/pipeline-service/Pipeline.Service/packages.lock.json", "apps/pipeline-service/Pipeline.Service/"]
 
-RUN dotnet restore "ComedyPull.sln" --locked-mode
+RUN dotnet restore "StageSide.sln" --locked-mode
 
 # -- [ BUILD ] ----
 FROM restore AS build
@@ -22,7 +22,7 @@ ARG BUILD_CONFIGURATION=Release
 
 COPY . .
 
-RUN dotnet publish Service/Service.csproj -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish apps/pipeline-service/Pipeline.Service/Pipeline.Service.csproj -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # -- [ Install Playwright ] ----
 FROM build AS playwright-install
@@ -30,7 +30,8 @@ FROM build AS playwright-install
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
-RUN dotnet tool install --global Microsoft.Playwright.CLI && \
+RUN dotnet build && \
+    dotnet tool install --global Microsoft.Playwright.CLI && \
     /root/.dotnet/tools/playwright install --with-deps chromium
 
 ## -- [ Install Playwright Deps ] ----
@@ -71,4 +72,4 @@ COPY --from=playwright-install /ms-playwright /ms-playwright
 EXPOSE 8080
 EXPOSE 8081
 
-ENTRYPOINT ["dotnet", "Service.dll"]
+ENTRYPOINT ["dotnet", "Pipeline.Service.dll"]
