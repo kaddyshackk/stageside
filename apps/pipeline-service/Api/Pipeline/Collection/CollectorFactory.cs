@@ -1,8 +1,7 @@
 using ComedyPull.Domain.Models;
 using ComedyPull.Domain.Pipeline.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace ComedyPull.Application.Pipeline.Collection
+namespace ComedyPull.Api.Pipeline.Collection
 {
     public class CollectorFactory(IServiceProvider serviceProvider) : ICollectorFactory
     {

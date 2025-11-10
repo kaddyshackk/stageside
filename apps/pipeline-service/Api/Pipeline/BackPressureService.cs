@@ -1,9 +1,10 @@
 using ComedyPull.Domain.Pipeline.Interfaces;
+using ComedyPull.Domain.Queue;
 using ComedyPull.Domain.Queue.Interfaces;
 using ComedyPull.Domain.Queue.Models;
 using Microsoft.Extensions.Options;
 
-namespace ComedyPull.Application.Pipeline
+namespace ComedyPull.Api.Pipeline
 {
     public class BackPressureService(IQueueHealthChecker queueHealthChecker, IOptions<BackPressureOptions> backPressureOptions, IOptions<QueueOptions> queueOptions) : IBackPressureManager
     {

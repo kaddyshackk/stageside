@@ -1,7 +1,7 @@
 using ComedyPull.Domain.Scheduling.Models;
 using Riok.Mapperly.Abstractions;
 
-namespace ComedyPull.Application.Http.Jobs.CreateJob
+namespace ComedyPull.Api.Http.Jobs.CreateJob
 {
     [Mapper]
     public partial class CreateJobResponseMapper

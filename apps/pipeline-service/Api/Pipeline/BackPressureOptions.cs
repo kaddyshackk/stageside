@@ -1,4 +1,4 @@
-namespace ComedyPull.Application.Pipeline
+namespace ComedyPull.Api.Pipeline
 {
     public class BackPressureOptions
     {

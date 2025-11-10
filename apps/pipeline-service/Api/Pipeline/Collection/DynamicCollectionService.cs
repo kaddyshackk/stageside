@@ -3,12 +3,10 @@ using ComedyPull.Domain.Pipeline.Interfaces;
 using ComedyPull.Domain.Pipeline.Models;
 using ComedyPull.Domain.Queue.Interfaces;
 using ComedyPull.Domain.Queue.Models;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
 
-namespace ComedyPull.Application.Pipeline.Collection
+namespace ComedyPull.Api.Pipeline.Collection
 {
     public class DynamicCollectionService(
         IQueueClient queueClient,

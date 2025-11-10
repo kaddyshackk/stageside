@@ -1,6 +1,6 @@
 using ComedyPull.Domain.Queue.Models;
 
-namespace ComedyPull.Application.Pipeline
+namespace ComedyPull.Domain.Queue
 {
     public class QueueOptions
     {

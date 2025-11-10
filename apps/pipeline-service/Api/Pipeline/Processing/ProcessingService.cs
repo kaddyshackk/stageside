@@ -5,13 +5,10 @@ using ComedyPull.Domain.Pipeline.Interfaces;
 using ComedyPull.Domain.Pipeline.Models;
 using ComedyPull.Domain.Queue.Interfaces;
 using ComedyPull.Domain.Queue.Models;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
 
-namespace ComedyPull.Application.Pipeline.Processing
+namespace ComedyPull.Api.Pipeline.Processing
 {
     public class ProcessingService(
         IQueueClient queueClient,

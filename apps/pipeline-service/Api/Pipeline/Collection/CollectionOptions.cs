@@ -1,4 +1,4 @@
-﻿namespace ComedyPull.Application.Pipeline.Collection
+﻿namespace ComedyPull.Api.Pipeline.Collection
 {
     public class CollectionOptions
     {

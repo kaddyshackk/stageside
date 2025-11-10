@@ -1,6 +1,6 @@
-namespace ComedyPull.Application.Pipeline.Processing
+namespace ComedyPull.Api.Pipeline.Transformation
 {
-    public class ProcessingOptions
+    public class TransformationOptions
     {
         public int DelayIntervalSeconds { get; init; }
         public int MinBatchSize { get; init; }

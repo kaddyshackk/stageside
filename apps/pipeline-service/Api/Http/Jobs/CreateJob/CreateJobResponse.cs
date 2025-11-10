@@ -1,4 +1,4 @@
-namespace ComedyPull.Application.Http.Jobs.CreateJob
+namespace ComedyPull.Api.Http.Jobs.CreateJob
 {
     public class CreateJobResponse
     {

@@ -1,4 +1,4 @@
-﻿namespace ComedyPull.Application.Pipeline.Dispatching
+﻿namespace ComedyPull.Api.Pipeline.Dispatching
 {
     public class DispatchingOptions
     {

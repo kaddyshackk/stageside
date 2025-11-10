@@ -4,13 +4,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.14.36301.6 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{255B0238-68C4-4D83-A9A9-D907B692D833}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B0677F3E-1C41-457E-8F5D-E821308AD0FD} = {B0677F3E-1C41-457E-8F5D-E821308AD0FD}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{16CEFA91-2A0B-4FFE-AB0B-069B355D581F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{B0677F3E-1C41-457E-8F5D-E821308AD0FD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{61D4ECD6-0EF3-4636-B48D-D041034E8F35}"
 EndProject
@@ -33,10 +28,6 @@ Global
 		{16CEFA91-2A0B-4FFE-AB0B-069B355D581F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16CEFA91-2A0B-4FFE-AB0B-069B355D581F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16CEFA91-2A0B-4FFE-AB0B-069B355D581F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B0677F3E-1C41-457E-8F5D-E821308AD0FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B0677F3E-1C41-457E-8F5D-E821308AD0FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B0677F3E-1C41-457E-8F5D-E821308AD0FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B0677F3E-1C41-457E-8F5D-E821308AD0FD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{61D4ECD6-0EF3-4636-B48D-D041034E8F35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{61D4ECD6-0EF3-4636-B48D-D041034E8F35}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61D4ECD6-0EF3-4636-B48D-D041034E8F35}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -1,8 +1,7 @@
 ﻿using ComedyPull.Domain.Models;
 using ComedyPull.Domain.Pipeline.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace ComedyPull.Application.Pipeline.Transformation
+namespace ComedyPull.Api.Pipeline.Transformation
 {
     public class TransformerFactory(IServiceScopeFactory serviceFactory) : ITransformerFactory
     {

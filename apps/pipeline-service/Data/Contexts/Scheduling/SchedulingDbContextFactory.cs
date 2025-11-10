@@ -25,7 +25,6 @@ namespace ComedyPull.Data.Contexts.Scheduling
                 .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Api", "Settings"))
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile($"appsettings.{environment}.json", optional: true)
-                .AddUserSecrets<SchedulingDbContextFactory>()
                 .AddEnvironmentVariables();
             return builder.Build();
         }

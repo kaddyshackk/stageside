@@ -1,4 +1,4 @@
-using ComedyPull.Application.Pipeline;
+using ComedyPull.Domain.Queue;
 using ComedyPull.Domain.Queue.Interfaces;
 using ComedyPull.Domain.Queue.Models;
 using Microsoft.Extensions.Options;

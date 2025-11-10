@@ -1,5 +1,4 @@
 using ComedyPull.Api.Extensions;
-using ComedyPull.Application.Extensions;
 using ComedyPull.Data.Extensions;
 using ComedyPull.Domain.Extensions;
 using Microsoft.Playwright;
@@ -22,8 +21,7 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .Enrich.FromLogContext());
 
 builder.Services.AddOpenApi();
-builder.Services.AddApiLayer();
-builder.Services.AddApplicationLayer(builder.Configuration);
+builder.Services.AddApiServices(builder.Configuration);
 builder.Services.AddDataLayer(builder.Configuration);
 builder.Services.AddDomainLayer();
 
