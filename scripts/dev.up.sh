@@ -11,5 +11,5 @@ until docker compose ps postgres | grep -q "healthy"; do
 done
 
 echo "> Applying migrations"
-source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/pipeline-service/Data --context ComedyDbContext
-source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/pipeline-service/Data --context SchedulingDbContext
+source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/pipeline-service/Pipeline.Data --context ComedyDbContext
+source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/pipeline-service/Pipeline.Data --context SchedulingDbContext

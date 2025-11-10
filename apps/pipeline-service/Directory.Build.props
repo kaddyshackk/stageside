@@ -1,7 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <RootNamespace>ComedyPull.$(MSBuildProjectName)</RootNamespace>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
-  </PropertyGroup>
-</Project>
