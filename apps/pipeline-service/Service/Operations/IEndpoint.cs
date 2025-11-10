@@ -1,4 +1,4 @@
-namespace ComedyPull.Service.Http
+namespace ComedyPull.Service.Operations
 {
     public interface IEndpoint
     {

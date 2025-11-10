@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using ComedyPull.Domain.Operations;
 
-namespace ComedyPull.Service.Http.Jobs.CreateJob
+namespace ComedyPull.Service.Operations.Scheduling.CreateJob
 {
     public record CreateJobRequest
     {

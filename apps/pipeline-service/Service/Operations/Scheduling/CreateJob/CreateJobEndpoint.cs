@@ -1,7 +1,7 @@
 using ComedyPull.Domain.Scheduling;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace ComedyPull.Service.Http.Jobs.CreateJob
+namespace ComedyPull.Service.Operations.Scheduling.CreateJob
 {
     public class CreateJobEndpoint : IEndpoint
     {

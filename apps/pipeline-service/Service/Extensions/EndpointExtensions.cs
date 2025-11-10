@@ -1,5 +1,5 @@
 using System.Reflection;
-using ComedyPull.Service.Http;
+using ComedyPull.Service.Operations;
 
 namespace ComedyPull.Service.Extensions
 {
