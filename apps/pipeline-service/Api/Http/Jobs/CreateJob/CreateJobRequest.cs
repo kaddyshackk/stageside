@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using ComedyPull.Domain.Jobs.Operations.CreateJob;
+using ComedyPull.Domain.Operations;
 
 namespace ComedyPull.Api.Http.Jobs.CreateJob
 {

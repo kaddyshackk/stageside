@@ -1,6 +1,6 @@
 using ComedyPull.Application.Pipeline;
-using ComedyPull.Domain.Pipeline.Interfaces;
-using ComedyPull.Domain.Queue;
+using ComedyPull.Domain.Queue.Interfaces;
+using ComedyPull.Domain.Queue.Models;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 

@@ -1,4 +1,4 @@
-﻿using ComedyPull.Domain.Core.Shared;
+﻿using ComedyPull.Domain.Models;
 using ComedyPull.Domain.Pipeline.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 

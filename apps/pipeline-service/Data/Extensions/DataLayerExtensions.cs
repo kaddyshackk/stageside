@@ -1,10 +1,10 @@
-using ComedyPull.Data.Contexts.ComedyDb;
-using ComedyPull.Data.Contexts.PipelineDb;
+using ComedyPull.Data.Contexts.Comedy;
+using ComedyPull.Data.Contexts.Scheduling;
 using ComedyPull.Data.Services;
 using ComedyPull.Data.Utils;
-using ComedyPull.Domain.Interfaces.Data;
-using ComedyPull.Domain.Jobs.Services.Interfaces;
 using ComedyPull.Domain.Pipeline.Interfaces;
+using ComedyPull.Domain.Queue.Interfaces;
+using ComedyPull.Domain.Scheduling.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
@@ -30,14 +30,14 @@ namespace ComedyPull.Data.Extensions
                 DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration, "ComedyDb");
             });
             
-            services.AddDbContextFactory<PipelineDbContext>((_, options) =>
+            services.AddDbContextFactory<SchedulingDbContext>((_, options) =>
             {
-                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration, "PipelineDb");
+                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration, "SchedulingDb");
             });
             
             // Sessions
             services.AddScoped<IComedyDataSession, ComedyDataSession>();
-            services.AddScoped<IPipelineDataSession, PipelineDataSession>();
+            services.AddScoped<ISchedulingDataSession, SchedulingDataSession>();
             
             // Services
             services.AddSingleton<ISitemapLoader, SitemapLoader>();

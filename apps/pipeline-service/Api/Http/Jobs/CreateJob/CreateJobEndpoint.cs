@@ -1,6 +1,6 @@
 using ComedyPull.Application.Http;
 using ComedyPull.Application.Http.Jobs.CreateJob;
-using ComedyPull.Domain.Jobs.Operations.CreateJob;
+using ComedyPull.Domain.Operations;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ComedyPull.Api.Http.Jobs.CreateJob

@@ -1,11 +1,10 @@
 using System.Text.Json;
-using ComedyPull.Domain.Core.Acts;
-using ComedyPull.Domain.Core.Events.Services;
-using ComedyPull.Domain.Core.Shared;
-using ComedyPull.Domain.Core.Venues;
+using ComedyPull.Domain.Models;
 using ComedyPull.Domain.Pipeline;
 using ComedyPull.Domain.Pipeline.Interfaces;
-using ComedyPull.Domain.Queue;
+using ComedyPull.Domain.Pipeline.Models;
+using ComedyPull.Domain.Queue.Interfaces;
+using ComedyPull.Domain.Queue.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

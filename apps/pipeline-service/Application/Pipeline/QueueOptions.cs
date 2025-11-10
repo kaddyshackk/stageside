@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Queue;
+using ComedyPull.Domain.Queue.Models;
 
 namespace ComedyPull.Application.Pipeline
 {

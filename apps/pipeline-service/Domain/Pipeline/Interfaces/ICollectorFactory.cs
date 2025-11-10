@@ -1,4 +1,4 @@
-using ComedyPull.Domain.Core.Shared;
+using ComedyPull.Domain.Models;
 
 namespace ComedyPull.Domain.Pipeline.Interfaces
 {

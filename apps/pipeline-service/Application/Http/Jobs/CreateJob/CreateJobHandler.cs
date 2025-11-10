@@ -1,9 +1,9 @@
-using ComedyPull.Domain.Jobs.Operations.CreateJob;
-using ComedyPull.Domain.Jobs.Services;
+using ComedyPull.Domain.Operations;
+using ComedyPull.Domain.Scheduling;
 
 namespace ComedyPull.Application.Http.Jobs.CreateJob
 {
-    public class CreateJobHandler(JobAggregateService jobService) : IHandler<CreateJobCommand, CreateJobResponse>
+    public class CreateJobHandler(SchedulingService jobService) : IHandler<CreateJobCommand, CreateJobResponse>
     {
         public async Task<CreateJobResponse> HandleAsync(CreateJobCommand request, CancellationToken stoppingToken)
         {

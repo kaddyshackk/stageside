@@ -15,4 +15,16 @@
     <PackageReference Include="Riok.Mapperly" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Operations\CreateJob\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Operations\CreateJob\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Operations\CreateJob\**" />
+  </ItemGroup>
+
 </Project>

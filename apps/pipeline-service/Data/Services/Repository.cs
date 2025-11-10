@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using ComedyPull.Domain.Interfaces.Data;
+using ComedyPull.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComedyPull.Data.Services
