@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using ComedyPull.Domain.Jobs;
-using ComedyPull.Domain.Jobs.Services.Interfaces;
+using ComedyPull.Domain.Scheduling.Interfaces;
+using ComedyPull.Domain.Scheduling.Models;
 using Microsoft.Extensions.Logging;
 using Serilog.Context;
 

@@ -8,7 +8,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
       - ConnectionStrings__ComedyDb=${POSTGRES_CONNECTION_COMEDY}
-      - ConnectionStrings__PipelineDb=${POSTGRES_CONNECTION_PIPELINE}
+      - ConnectionStrings__SchedulingDb=${POSTGRES_CONNECTION_SCHEDULING}
       - ConnectionStrings__Redis=${REDIS_CONNECTION}
     ports:
       - "5281:8080"
