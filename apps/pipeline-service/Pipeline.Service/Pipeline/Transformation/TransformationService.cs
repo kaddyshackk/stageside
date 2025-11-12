@@ -5,13 +5,14 @@ using StageSide.Pipeline.Domain.Queue.Interfaces;
 using StageSide.Pipeline.Domain.Queue.Models;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
+using StageSide.Pipeline.Domain.PipelineAdapter;
 
 namespace StageSide.Pipeline.Service.Pipeline.Transformation
 {
     public class TransformationService(
         IQueueClient queueClient,
         IBackPressureManager backPressureManager,
-        ITransformerFactory transformerFactory,
+        IPipelineAdapterFactory adapterFactory,
         IOptions<TransformationOptions> options,
         ILogger<TransformationService> logger
     ) : BackgroundService
@@ -77,19 +78,14 @@ namespace StageSide.Pipeline.Service.Pipeline.Transformation
                 using (LogContext.PushProperty("CollectionUrl", context.Metadata.CollectionUrl))
                 using (LogContext.PushProperty("Tags", context.Metadata.Tags))
                 {
-                    var transformer = transformerFactory.GetTransformer(context.Sku);
-                    if (transformer == null)
-                    {
-                        logger.LogWarning("Found no transformer that matched content sku {Sku}", context.Sku);
-                        context.State = ProcessingState.Failed;
-                        continue;
-                    }
+                    var adapter = adapterFactory.GetAdapter(context.Sku);
+                    var transformer = adapter.GetTransformer();
 
                     try
                     {
                         // Deserialize RawData back to object
                         object? deserializedData = null;
-                        if (context.RawData is string jsonString && !string.IsNullOrEmpty(jsonString))
+                        if (context.RawData is { } jsonString && !string.IsNullOrEmpty(jsonString))
                         {
                             deserializedData = JsonSerializer.Deserialize<JsonElement>(jsonString);
                         }

@@ -4,6 +4,7 @@ using StageSide.Pipeline.Domain.Queue.Models;
 using StageSide.Pipeline.Domain.Scheduling;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
+using StageSide.Pipeline.Domain.PipelineAdapter;
 
 namespace StageSide.Pipeline.Service.Pipeline.Dispatching
 {
@@ -31,7 +32,17 @@ namespace StageSide.Pipeline.Service.Pipeline.Dispatching
 
                         using var scope = scopeFactory.CreateScope();
                         var service = scope.ServiceProvider.GetRequiredService<ExecutionService>();
-                        var entries = await service.ExecuteNextScheduleAsync(ct);
+                        
+                        var nextSchedule = await service.GetNextSchedule(ct);
+                        if (nextSchedule == null) continue;
+                        
+                        var job = await service.CreateJobAsync(nextSchedule.Id, ct);
+
+                        var adapterFactory = scope.ServiceProvider.GetRequiredService<IPipelineAdapterFactory>();
+                        var adapter = adapterFactory.GetAdapter(nextSchedule.Sku);
+
+                        var entries = await adapter.GetScheduler().ScheduleAsync(nextSchedule, job, ct);
+                        
                         await queueClient.EnqueueBatchAsync(Queues.Collection, entries);
                     }
                     catch (Exception ex)

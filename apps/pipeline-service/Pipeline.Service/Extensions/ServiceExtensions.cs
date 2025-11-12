@@ -32,10 +32,6 @@ namespace StageSide.Pipeline.Service.Extensions
             // Pipeline Management Services
             services.AddSingleton<IBackPressureManager, BackPressureService>();
             
-            // Pipeline.Service Factories
-            services.AddSingleton<ICollectorFactory, CollectorFactory>();
-            services.AddSingleton<ITransformerFactory, TransformerFactory>();
-            
             // Options
             services.Configure<CollectionOptions>(configuration.GetSection("Pipeline:Collection"));
             services.Configure<TransformationOptions>(configuration.GetSection("Pipeline:Transformation"));

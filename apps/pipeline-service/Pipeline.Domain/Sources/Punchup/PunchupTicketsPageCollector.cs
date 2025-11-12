@@ -1,14 +1,16 @@
 ﻿using StageSide.Pipeline.Domain.Pipeline.Interfaces;
+using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Sources.Punchup.Models;
 using StageSide.Pipeline.Domain.Sources.Punchup.Pages;
 using StageSide.Pipeline.Domain.Utils;
 
 namespace StageSide.Pipeline.Domain.Sources.Punchup
 {
-    public class PunchupTicketsPageCollector : IDynamicCollector
+    public class PunchupTicketsPageCollector(IWebPageFactory pageFactory) : ICollector
     {
-        public async Task<object> CollectPageAsync(string url, IWebPage page)
+        public async Task<object> CollectAsync(string url)
         {
+            var page = pageFactory.GetWebPage();
             var pom = new TicketsPage(page);
 
             // Load page
