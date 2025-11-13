@@ -1,6 +1,4 @@
-﻿using StageSide.Pipeline.Domain.Pipeline.Interfaces;
-
-namespace StageSide.Pipeline.Domain.PipelineAdapter
+﻿namespace StageSide.Pipeline.Domain.PipelineAdapter
 {
     public interface IPipelineAdapter
     {

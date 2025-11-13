@@ -1,4 +1,5 @@
-using StageSide.Pipeline.Domain.Pipeline.Interfaces;
+using StageSide.Pipeline.Domain.WebBrowser.Interfaces;
+using StageSide.Pipeline.Domain.WebBrowser.Options;
 
 namespace StageSide.Pipeline.Domain.Sources.Punchup.Pages
 {

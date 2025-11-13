@@ -1,9 +1,11 @@
-using StageSide.Pipeline.Domain.Models;
 using StageSide.Pipeline.Domain.Pipeline;
-using StageSide.Pipeline.Domain.Pipeline.Interfaces;
 using StageSide.Pipeline.Domain.Scheduling;
-using StageSide.Pipeline.Domain.Sources.Punchup;
 using Microsoft.Extensions.DependencyInjection;
+using StageSide.Pipeline.Domain.Models;
+using StageSide.Pipeline.Domain.PipelineAdapter;
+using StageSide.Pipeline.Domain.Sources.Punchup;
+using StageSide.Pipeline.Domain.WebBrowser;
+using StageSide.Pipeline.Domain.WebBrowser.Interfaces;
 
 namespace StageSide.Pipeline.Domain.Extensions
 {
@@ -18,14 +20,13 @@ namespace StageSide.Pipeline.Domain.Extensions
             services.AddScoped<VenueService>();
             services.AddScoped<EventService>();
             
-            // Sources
-            AddPunchupSource(services);
-        }
-
-        private static void AddPunchupSource(IServiceCollection services)
-        {
-            services.AddKeyedScoped<IDynamicCollector, PunchupTicketsPageCollector>(Sku.PunchupTicketsPage);
-            services.AddKeyedScoped<ITransformer, PunchupTicketsPageTransformer>(Sku.PunchupTicketsPage);
+            // Web Browser
+            services.AddScoped<IWebBrowserManager, WebBrowserResourceManager>();
+            services.AddScoped<IWebPageSessionProvider, WebPageSessionProvider>();
+            
+            // Punchup
+            services.AddScoped<PunchupTicketsPageCollector>();
+            services.AddKeyedScoped<IPipelineAdapter, PunchupTicketsPageAdapter>(Sku.PunchupTicketsPage.GetEnumDescription());
         }
     }
 }

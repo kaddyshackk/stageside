@@ -1,7 +1,6 @@
 using System.Text.Json;
 using StageSide.Pipeline.Domain.Queue;
 using StageSide.Pipeline.Domain.Queue.Interfaces;
-using StageSide.Pipeline.Domain.Queue.Models;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 

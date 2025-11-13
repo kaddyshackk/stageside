@@ -2,6 +2,6 @@
 {
     public interface ICollector
     {
-        public Task<object> CollectAsync(string url);
+        public Task<object> CollectAsync(string url, CancellationToken ct);
     }
 }

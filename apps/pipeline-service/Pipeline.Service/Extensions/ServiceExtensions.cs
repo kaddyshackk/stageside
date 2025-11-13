@@ -1,4 +1,5 @@
 ﻿using StageSide.Pipeline.Domain.Pipeline.Interfaces;
+using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Queue;
 using StageSide.Pipeline.Service.Pipeline;
 using StageSide.Pipeline.Service.Pipeline.Collection;
@@ -24,7 +25,6 @@ namespace StageSide.Pipeline.Service.Extensions
         {
             // Pipeline Hosted Services
             services.AddHostedService<DispatchingService>();
-            services.AddHostedService<CollectionService>();
             services.AddHostedService<DynamicCollectionService>();
             services.AddHostedService<TransformationService>();
             services.AddHostedService<ProcessingService>();
@@ -32,8 +32,10 @@ namespace StageSide.Pipeline.Service.Extensions
             // Pipeline Management Services
             services.AddSingleton<IBackPressureManager, BackPressureService>();
             
+            // Pipeline Helpers
+            services.AddSingleton<IPipelineAdapterFactory, PipelineAdapterFactory>();
+            
             // Options
-            services.Configure<CollectionOptions>(configuration.GetSection("Pipeline:Collection"));
             services.Configure<TransformationOptions>(configuration.GetSection("Pipeline:Transformation"));
             services.Configure<ProcessingOptions>(configuration.GetSection("Pipeline:Processing"));
             services.Configure<DispatchingOptions>(configuration.GetSection("Pipeline:Dispatching"));

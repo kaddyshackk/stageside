@@ -1,8 +1,8 @@
 using System.Text.Json;
 using StageSide.Pipeline.Domain.Models;
 using StageSide.Pipeline.Domain.Pipeline;
-using StageSide.Pipeline.Domain.Pipeline.Interfaces;
 using StageSide.Pipeline.Domain.Pipeline.Models;
+using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Sources.Punchup.Models;
 
 namespace StageSide.Pipeline.Domain.Sources.Punchup

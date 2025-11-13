@@ -1,4 +1,4 @@
-namespace StageSide.Pipeline.Domain.Queue.Models
+namespace StageSide.Pipeline.Domain.Queue
 {
     public class QueueThresholds
     {

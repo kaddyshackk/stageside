@@ -1,12 +1,9 @@
 using System.ComponentModel;
 
-namespace StageSide.Pipeline.Domain.Queue.Models
+namespace StageSide.Pipeline.Domain.Queue
 {
     public enum QueueKey
     {
-        [Description("Collection")]
-        Collection,
-        
         [Description("DynamicCollection")]
         DynamicCollection,
         

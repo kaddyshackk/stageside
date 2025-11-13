@@ -2,10 +2,10 @@ using System.Text.Json;
 using StageSide.Pipeline.Domain.Pipeline.Interfaces;
 using StageSide.Pipeline.Domain.Pipeline.Models;
 using StageSide.Pipeline.Domain.Queue.Interfaces;
-using StageSide.Pipeline.Domain.Queue.Models;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
 using StageSide.Pipeline.Domain.PipelineAdapter;
+using StageSide.Pipeline.Domain.Queue;
 
 namespace StageSide.Pipeline.Service.Pipeline.Transformation
 {

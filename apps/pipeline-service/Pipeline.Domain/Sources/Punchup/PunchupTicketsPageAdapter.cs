@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using StageSide.Pipeline.Domain.Pipeline.Interfaces;
+using StageSide.Pipeline.Domain.Pipeline;
 using StageSide.Pipeline.Domain.PipelineAdapter;
 
 namespace StageSide.Pipeline.Domain.Sources.Punchup

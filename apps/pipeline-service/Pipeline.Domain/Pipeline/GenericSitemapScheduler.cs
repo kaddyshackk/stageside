@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using StageSide.Pipeline.Domain.Exceptions;
 using StageSide.Pipeline.Domain.Pipeline.Models;
+using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Scheduling.Interfaces;
 using StageSide.Pipeline.Domain.Scheduling.Models;
 
-namespace StageSide.Pipeline.Domain.PipelineAdapter
+namespace StageSide.Pipeline.Domain.Pipeline
 {
     public class GenericSitemapScheduler(ISitemapLoader sitemapLoader, ILogger<GenericSitemapScheduler> logger) : IScheduler
     {

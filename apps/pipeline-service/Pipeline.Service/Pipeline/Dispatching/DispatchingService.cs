@@ -1,10 +1,12 @@
 using StageSide.Pipeline.Domain.Pipeline.Interfaces;
 using StageSide.Pipeline.Domain.Queue.Interfaces;
-using StageSide.Pipeline.Domain.Queue.Models;
 using StageSide.Pipeline.Domain.Scheduling;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
+using StageSide.Pipeline.Domain.Models;
+using StageSide.Pipeline.Domain.Pipeline.Models;
 using StageSide.Pipeline.Domain.PipelineAdapter;
+using StageSide.Pipeline.Domain.Queue;
 
 namespace StageSide.Pipeline.Service.Pipeline.Dispatching
 {
@@ -24,17 +26,19 @@ namespace StageSide.Pipeline.Service.Pipeline.Dispatching
                 {
                     try
                     {
-                        if (await backPressureManager.ShouldApplyBackPressureAsync(Queues.Collection))
-                        {
-                            logger.LogWarning("Collection queue overloaded, delaying for another interval.");
-                            continue;
-                        }
-
                         using var scope = scopeFactory.CreateScope();
                         var service = scope.ServiceProvider.GetRequiredService<ExecutionService>();
                         
                         var nextSchedule = await service.GetNextSchedule(ct);
                         if (nextSchedule == null) continue;
+                        
+                        var targetQueue = GetTargetQueue(SkuConfiguration.GetCollectionType(nextSchedule.Sku));
+                        
+                        if (await backPressureManager.ShouldApplyBackPressureAsync(targetQueue))
+                        {
+                            logger.LogWarning("{TargetQueue} queue is overloaded, delaying for another interval.", targetQueue);
+                            continue;
+                        }
                         
                         var job = await service.CreateJobAsync(nextSchedule.Id, ct);
 
@@ -43,7 +47,7 @@ namespace StageSide.Pipeline.Service.Pipeline.Dispatching
 
                         var entries = await adapter.GetScheduler().ScheduleAsync(nextSchedule, job, ct);
                         
-                        await queueClient.EnqueueBatchAsync(Queues.Collection, entries);
+                        await queueClient.EnqueueBatchAsync(targetQueue, entries);
                     }
                     catch (Exception ex)
                     {
@@ -56,6 +60,17 @@ namespace StageSide.Pipeline.Service.Pipeline.Dispatching
                 }
                 logger.LogInformation("Stopped {ServiceName}", nameof(DispatchingService));
             }
+        }
+        
+        private static QueueConfig<PipelineContext> GetTargetQueue(CollectionType collectionType)
+        {
+            return collectionType switch
+            {
+                CollectionType.Dynamic => Queues.DynamicCollection,
+                CollectionType.Static => throw new NotImplementedException("Static collector not implemented yet"),
+                CollectionType.Api => throw new NotImplementedException("API collector not implemented yet"),
+                _ => throw new NotSupportedException($"Collection type {collectionType} not supported")
+            };
         }
     }
 }
