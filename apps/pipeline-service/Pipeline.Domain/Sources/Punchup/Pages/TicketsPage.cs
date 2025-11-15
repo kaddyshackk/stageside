@@ -1,3 +1,4 @@
+using StageSide.Pipeline.Domain.WebBrowser;
 using StageSide.Pipeline.Domain.WebBrowser.Interfaces;
 using StageSide.Pipeline.Domain.WebBrowser.Options;
 
@@ -20,7 +21,7 @@ namespace StageSide.Pipeline.Domain.Sources.Punchup.Pages
         public TicketsPage(IWebPage page)
         {
             // Global
-            SeeAllButton = page.GetByRole("button", new WebElementOptions
+            SeeAllButton = page.GetByRole("button", new WebElementParams
             {
                 Name = "See all shows"
             });

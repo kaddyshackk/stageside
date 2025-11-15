@@ -2,10 +2,7 @@
 using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Queue;
 using StageSide.Pipeline.Service.Pipeline;
-using StageSide.Pipeline.Service.Pipeline.Collection;
-using StageSide.Pipeline.Service.Pipeline.Dispatching;
-using StageSide.Pipeline.Service.Pipeline.Processing;
-using StageSide.Pipeline.Service.Pipeline.Transformation;
+using StageSide.Pipeline.Service.Pipeline.Options;
 
 namespace StageSide.Pipeline.Service.Extensions
 {
@@ -36,11 +33,11 @@ namespace StageSide.Pipeline.Service.Extensions
             services.AddSingleton<IPipelineAdapterFactory, PipelineAdapterFactory>();
             
             // Options
-            services.Configure<TransformationOptions>(configuration.GetSection("Pipeline:Transformation"));
-            services.Configure<ProcessingOptions>(configuration.GetSection("Pipeline:Processing"));
+            services.Configure<BackPressureOptions>(configuration.GetSection("Pipeline:BackPressure"));
             services.Configure<DispatchingOptions>(configuration.GetSection("Pipeline:Dispatching"));
             services.Configure<DynamicCollectionOptions>(configuration.GetSection("Pipeline:DynamicCollection"));
-            services.Configure<BackPressureOptions>(configuration.GetSection("Pipeline:BackPressure"));
+            services.Configure<TransformationOptions>(configuration.GetSection("Pipeline:Transformation"));
+            services.Configure<ProcessingOptions>(configuration.GetSection("Pipeline:Processing"));
         }
     }
 }

@@ -18,5 +18,5 @@ public class WebBrowserResourceOptions
     /// <summary>
     /// The end of life handling strategy for browser contexts.
     /// </summary>
-    public required WebBrowserContextStrategy WebBrowserContextStrategy { get; init; }
+    public required WebBrowserContextStrategy ContextStrategy { get; init; }
 }

@@ -1,4 +1,4 @@
-namespace StageSide.Pipeline.Service.Pipeline
+namespace StageSide.Pipeline.Service.Pipeline.Options
 {
     public class BackPressureOptions
     {

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using StageSide.Pipeline.Domain.Pipeline;
 using StageSide.Pipeline.Domain.Scheduling;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,13 +7,19 @@ using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Sources.Punchup;
 using StageSide.Pipeline.Domain.WebBrowser;
 using StageSide.Pipeline.Domain.WebBrowser.Interfaces;
+using StageSide.Pipeline.Domain.WebBrowser.Options;
 
 namespace StageSide.Pipeline.Domain.Extensions
 {
     public static class DomainExtensions
     {
-        public static void AddDomainLayer(this IServiceCollection services)
+        public static void AddDomainLayer(this IServiceCollection services, IConfiguration configuration)
         {
+            // Web Browser Options
+            services.Configure<WebBrowserContextOptions>(configuration.GetSection("WebBrowser:Context"));
+            services.Configure<WebBrowserLaunchOptions>(configuration.GetSection("WebBrowser:Launch"));
+            services.Configure<WebBrowserResourceOptions>(configuration.GetSection("WebBrowser:Resource"));
+            
             // Services
             services.AddScoped<SchedulingService>();
             services.AddScoped<ExecutionService>();

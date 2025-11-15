@@ -7,8 +7,9 @@ using StageSide.Pipeline.Domain.Queue.Interfaces;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
 using StageSide.Pipeline.Domain.Queue;
+using StageSide.Pipeline.Service.Pipeline.Options;
 
-namespace StageSide.Pipeline.Service.Pipeline.Processing
+namespace StageSide.Pipeline.Service.Pipeline
 {
     public class ProcessingService(
         IQueueClient queueClient,

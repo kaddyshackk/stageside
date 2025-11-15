@@ -6,7 +6,7 @@ public interface IWebPage : IAsyncDisposable
 {
     Task GotoAsync(string url);
     IWebElement Locator(string selector);
-    IWebElement GetByRole(string role, WebElementOptions? options = null);
+    IWebElement GetByRole(string role, WebElementParams? options = null);
     IWebElement GetByText(string text);
     Task CloseAsync();
 }

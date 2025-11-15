@@ -23,7 +23,7 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 builder.Services.AddOpenApi();
 builder.Services.AddServiceLayer(builder.Configuration);
 builder.Services.AddDataLayer(builder.Configuration);
-builder.Services.AddDomainLayer();
+builder.Services.AddDomainLayer(builder.Configuration);
 
 // -- [ Configure Application ] ----
 

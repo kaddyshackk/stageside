@@ -3,5 +3,5 @@
 public class WebBrowserContextOptions
 {
     public string? UserAgent { get; set; }
-    public WebViewportSize ViewportSize { get; set; }
+    public required WebViewportSize ViewportSize { get; set; }
 }

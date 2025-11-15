@@ -1,4 +1,5 @@
 ﻿using Microsoft.Playwright;
+using StageSide.Pipeline.Domain.WebBrowser;
 using StageSide.Pipeline.Domain.WebBrowser.Interfaces;
 using StageSide.Pipeline.Domain.WebBrowser.Options;
 
@@ -17,7 +18,7 @@ public class PlaywrightWebPageAdapter(IPage page) : IWebPage
         return new PlaywrightWebElementAdapter(locator);
     }
 
-    public IWebElement GetByRole(string role, WebElementOptions? options = null)
+    public IWebElement GetByRole(string role, WebElementParams? options = null)
     {
         var roleOptions = options != null ? new PageGetByRoleOptions { Name = options.Name } : null;
         var ariaRole = Enum.Parse<AriaRole>(role, true);

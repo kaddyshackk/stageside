@@ -6,26 +6,26 @@ using Microsoft.Extensions.Options;
 using Serilog.Context;
 using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Queue;
+using StageSide.Pipeline.Domain.WebBrowser.Options;
+using StageSide.Pipeline.Service.Pipeline.Options;
 
-namespace StageSide.Pipeline.Service.Pipeline.Collection
+namespace StageSide.Pipeline.Service.Pipeline
 {
     public class DynamicCollectionService(
         IQueueClient queueClient,
         IBackPressureManager backPressureManager,
         IPipelineAdapterFactory pipelineAdapterFactory,
         IOptions<DynamicCollectionOptions> options,
+        IOptions<WebBrowserResourceOptions> resourceOptions,
         ILogger<DynamicCollectionService> logger
         ) : BackgroundService
     {
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var workers = Enumerable.Range(0, options.Value.WebBrowserConcurrency)
+            var workers = Enumerable.Range(0, resourceOptions.Value.BrowserConcurrency)
                 .Select(_ => WorkerAsync(stoppingToken))
                 .ToArray();
-
-            logger.LogInformation("Starting PlaywrightScraper workers with concurrency {Concurrency}", options.Value.WebBrowserConcurrency);
-
             await Task.WhenAll(workers);
         }
 

@@ -2,6 +2,6 @@
 
 public class WebBrowserLaunchOptions
 {
-    public bool? Headless { get; set; }
-    public string[] Args { get; set; } = null!;
+    public bool Headless { get; init; } = true;
+    public string[] Args { get; init; } = null!;
 }

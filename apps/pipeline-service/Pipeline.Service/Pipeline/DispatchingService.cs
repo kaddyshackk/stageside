@@ -7,8 +7,9 @@ using StageSide.Pipeline.Domain.Models;
 using StageSide.Pipeline.Domain.Pipeline.Models;
 using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Queue;
+using StageSide.Pipeline.Service.Pipeline.Options;
 
-namespace StageSide.Pipeline.Service.Pipeline.Dispatching
+namespace StageSide.Pipeline.Service.Pipeline
 {
     public class DispatchingService(
         IServiceScopeFactory scopeFactory,

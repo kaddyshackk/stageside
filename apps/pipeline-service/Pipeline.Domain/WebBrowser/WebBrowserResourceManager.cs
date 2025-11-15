@@ -1,10 +1,11 @@
 ﻿using System.Collections.Concurrent;
+using Microsoft.Extensions.Options;
 using StageSide.Pipeline.Domain.WebBrowser.Interfaces;
 using StageSide.Pipeline.Domain.WebBrowser.Options;
 
 namespace StageSide.Pipeline.Domain.WebBrowser;
 
-public class WebBrowserResourceManager(IWebBrowser webBrowser, WebBrowserResourceOptions options) : IWebBrowserManager
+public class WebBrowserResourceManager(IWebBrowser webBrowser, IOptions<WebBrowserResourceOptions> options) : IWebBrowserManager
 {
     private readonly SemaphoreSlim _initLock = new(1, 1);
     private readonly ConcurrentBag<WebBrowserContextPool> _pools = [];
@@ -22,13 +23,13 @@ public class WebBrowserResourceManager(IWebBrowser webBrowser, WebBrowserResourc
         {
             if (_initialized) return;
 
-            for (var i = 0; i < options.BrowserConcurrency; i++)
+            for (var i = 0; i < options.Value.BrowserConcurrency; i++)
             {
                 _pools.Add(new WebBrowserContextPool
                 {
                     Browser = await webBrowser.Chromium.LaunchAsync(),
                     Contexts = [],
-                    Semaphore = new SemaphoreSlim(options.ContextConcurrency)
+                    Semaphore = new SemaphoreSlim(options.Value.ContextConcurrency)
                 });
             }
             
@@ -78,7 +79,7 @@ public class WebBrowserResourceManager(IWebBrowser webBrowser, WebBrowserResourc
                 return;
             }
 
-            switch (options.WebBrowserContextStrategy)
+            switch (options.Value.ContextStrategy)
             {
                 case WebBrowserContextStrategy.Dispose:
                     await context.CloseAsync();
@@ -88,7 +89,7 @@ public class WebBrowserResourceManager(IWebBrowser webBrowser, WebBrowserResourc
                     pool.Contexts.Add(context);
                     break;
                 default:
-                    throw new Exception($"Unknown ContextReuseStrategy {options.WebBrowserContextStrategy}");
+                    throw new Exception($"Unknown ContextReuseStrategy {options.Value.ContextStrategy}");
             }
             
             pool.Semaphore.Release();
