@@ -12,7 +12,7 @@ namespace StageSide.Pipeline.Data.Migrations.SchedulingDb
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Jobs",
+                name: "Schedules",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -30,15 +30,15 @@ namespace StageSide.Pipeline.Data.Migrations.SchedulingDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Jobs", x => x.Id);
+                    table.PrimaryKey("PK_Schedules", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "JobExecutions",
+                name: "Jobs",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    JobId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ScheduleId = table.Column<Guid>(type: "uuid", nullable: false),
                     Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     StartedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     CompletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -50,21 +50,21 @@ namespace StageSide.Pipeline.Data.Migrations.SchedulingDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_JobExecutions", x => x.Id);
+                    table.PrimaryKey("PK_Jobs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_JobExecutions_Jobs_JobId",
-                        column: x => x.JobId,
-                        principalTable: "Jobs",
+                        name: "FK_Jobs_Schedules_ScheduleId",
+                        column: x => x.ScheduleId,
+                        principalTable: "Schedules",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "JobSitemaps",
+                name: "Sitemaps",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    JobId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ScheduleId = table.Column<Guid>(type: "uuid", nullable: false),
                     Url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     RegexFilter = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
@@ -75,47 +75,47 @@ namespace StageSide.Pipeline.Data.Migrations.SchedulingDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_JobSitemaps", x => x.Id);
+                    table.PrimaryKey("PK_Sitemaps", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_JobSitemaps_Jobs_JobId",
-                        column: x => x.JobId,
-                        principalTable: "Jobs",
+                        name: "FK_Sitemaps_Schedules_ScheduleId",
+                        column: x => x.ScheduleId,
+                        principalTable: "Schedules",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_JobExecutions_JobId",
-                table: "JobExecutions",
-                column: "JobId");
+                name: "IX_Jobs_ScheduleId",
+                table: "Jobs",
+                column: "ScheduleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Jobs_IsActive_NextExecution",
-                table: "Jobs",
+                name: "IX_Schedules_IsActive_NextExecution",
+                table: "Schedules",
                 columns: new[] { "IsActive", "NextExecution" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Jobs_NextExecution",
-                table: "Jobs",
+                name: "IX_Schedules_NextExecution",
+                table: "Schedules",
                 column: "NextExecution");
 
             migrationBuilder.CreateIndex(
-                name: "IX_JobSitemaps_JobId",
-                table: "JobSitemaps",
-                column: "JobId");
+                name: "IX_Sitemaps_ScheduleId",
+                table: "Sitemaps",
+                column: "ScheduleId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "JobExecutions");
-
-            migrationBuilder.DropTable(
-                name: "JobSitemaps");
-
-            migrationBuilder.DropTable(
                 name: "Jobs");
+
+            migrationBuilder.DropTable(
+                name: "Sitemaps");
+
+            migrationBuilder.DropTable(
+                name: "Schedules");
         }
     }
 }

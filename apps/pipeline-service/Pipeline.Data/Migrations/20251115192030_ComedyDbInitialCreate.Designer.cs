@@ -12,7 +12,7 @@ using StageSide.Pipeline.Data.Contexts.Comedy;
 namespace StageSide.Pipeline.Data.Migrations
 {
     [DbContext(typeof(ComedyDbContext))]
-    [Migration("20251110184350_ComedyDbInitialCreate")]
+    [Migration("20251115192030_ComedyDbInitialCreate")]
     partial class ComedyDbInitialCreate
     {
         /// <inheritdoc />

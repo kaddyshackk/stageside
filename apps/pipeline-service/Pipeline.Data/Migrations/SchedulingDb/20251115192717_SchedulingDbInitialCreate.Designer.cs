@@ -12,7 +12,7 @@ using StageSide.Pipeline.Data.Contexts.Scheduling;
 namespace StageSide.Pipeline.Data.Migrations.SchedulingDb
 {
     [DbContext(typeof(SchedulingDbContext))]
-    [Migration("20251110184412_SchedulingDbInitialCreate")]
+    [Migration("20251115192717_SchedulingDbInitialCreate")]
     partial class SchedulingDbInitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace StageSide.Pipeline.Data.Migrations.SchedulingDb
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("StageSide.Pipeline.Domain.Scheduling.Models.Execution", b =>
+            modelBuilder.Entity("StageSide.Pipeline.Domain.Scheduling.Models.Job", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,7 +47,7 @@ namespace StageSide.Pipeline.Data.Migrations.SchedulingDb
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<Guid>("JobId")
+                    b.Property<Guid>("ScheduleId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset?>("StartedAt")
@@ -69,12 +69,12 @@ namespace StageSide.Pipeline.Data.Migrations.SchedulingDb
 
                     b.HasKey("Id");
 
-                    b.HasIndex("JobId");
+                    b.HasIndex("ScheduleId");
 
-                    b.ToTable("JobExecutions", (string)null);
+                    b.ToTable("Jobs", (string)null);
                 });
 
-            modelBuilder.Entity("StageSide.Pipeline.Domain.Scheduling.Models.Job", b =>
+            modelBuilder.Entity("StageSide.Pipeline.Domain.Scheduling.Models.Schedule", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -134,7 +134,7 @@ namespace StageSide.Pipeline.Data.Migrations.SchedulingDb
 
                     b.HasIndex("IsActive", "NextExecution");
 
-                    b.ToTable("Jobs", (string)null);
+                    b.ToTable("Schedules", (string)null);
                 });
 
             modelBuilder.Entity("StageSide.Pipeline.Domain.Scheduling.Models.Sitemap", b =>
@@ -157,12 +157,12 @@ namespace StageSide.Pipeline.Data.Migrations.SchedulingDb
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
 
-                    b.Property<Guid>("JobId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("RegexFilter")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
+
+                    b.Property<Guid>("ScheduleId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -180,36 +180,36 @@ namespace StageSide.Pipeline.Data.Migrations.SchedulingDb
 
                     b.HasKey("Id");
 
-                    b.HasIndex("JobId");
+                    b.HasIndex("ScheduleId");
 
-                    b.ToTable("JobSitemaps", (string)null);
-                });
-
-            modelBuilder.Entity("StageSide.Pipeline.Domain.Scheduling.Models.Execution", b =>
-                {
-                    b.HasOne("StageSide.Pipeline.Domain.Scheduling.Models.Job", "Job")
-                        .WithMany("Executions")
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Job");
-                });
-
-            modelBuilder.Entity("StageSide.Pipeline.Domain.Scheduling.Models.Sitemap", b =>
-                {
-                    b.HasOne("StageSide.Pipeline.Domain.Scheduling.Models.Job", "Job")
-                        .WithMany("Sitemaps")
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Job");
+                    b.ToTable("Sitemaps", (string)null);
                 });
 
             modelBuilder.Entity("StageSide.Pipeline.Domain.Scheduling.Models.Job", b =>
                 {
-                    b.Navigation("Executions");
+                    b.HasOne("StageSide.Pipeline.Domain.Scheduling.Models.Schedule", "Schedule")
+                        .WithMany("Jobs")
+                        .HasForeignKey("ScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Schedule");
+                });
+
+            modelBuilder.Entity("StageSide.Pipeline.Domain.Scheduling.Models.Sitemap", b =>
+                {
+                    b.HasOne("StageSide.Pipeline.Domain.Scheduling.Models.Schedule", "Schedule")
+                        .WithMany("Sitemaps")
+                        .HasForeignKey("ScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Schedule");
+                });
+
+            modelBuilder.Entity("StageSide.Pipeline.Domain.Scheduling.Models.Schedule", b =>
+                {
+                    b.Navigation("Jobs");
 
                     b.Navigation("Sitemaps");
                 });
