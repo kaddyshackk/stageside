@@ -1,4 +1,4 @@
-﻿namespace StageSide.Pipeline.Domain.Models
+﻿namespace StageSide.Domain.Models
 {
     /// <summary>
     /// Defines a comedy event.

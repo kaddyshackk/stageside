@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace StageSide.Pipeline.Domain.Models
+namespace StageSide.Domain.Models
 {
     /// <summary>
     /// Represents an entity that can be processed and displayed.

@@ -3,8 +3,6 @@ using StageSide.Pipeline.Domain.Queue.Interfaces;
 using StageSide.Pipeline.Domain.Scheduling;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
-using StageSide.Pipeline.Domain.Models;
-using StageSide.Pipeline.Domain.Pipeline.Models;
 using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Queue;
 using StageSide.Pipeline.Service.Pipeline.Options;

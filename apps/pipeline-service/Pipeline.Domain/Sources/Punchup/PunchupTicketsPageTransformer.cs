@@ -1,5 +1,5 @@
 using System.Text.Json;
-using StageSide.Pipeline.Domain.Models;
+using StageSide.Domain.Models;
 using StageSide.Pipeline.Domain.Pipeline;
 using StageSide.Pipeline.Domain.Pipeline.Models;
 using StageSide.Pipeline.Domain.PipelineAdapter;

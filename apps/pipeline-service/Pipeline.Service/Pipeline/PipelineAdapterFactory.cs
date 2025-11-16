@@ -1,4 +1,4 @@
-﻿using StageSide.Pipeline.Domain.Models;
+﻿using StageSide.Domain.Models;
 using StageSide.Pipeline.Domain.PipelineAdapter;
 
 namespace StageSide.Pipeline.Service.Pipeline;

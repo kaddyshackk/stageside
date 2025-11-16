@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace StageSide.Pipeline.Domain.Models
+namespace StageSide.Domain.Models
 {
     public enum Source
     {

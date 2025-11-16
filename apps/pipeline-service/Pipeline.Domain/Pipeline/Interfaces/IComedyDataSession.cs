@@ -1,5 +1,5 @@
-﻿using StageSide.Pipeline.Domain.Interfaces;
-using StageSide.Pipeline.Domain.Models;
+﻿using StageSide.Domain.Models;
+using StageSide.Pipeline.Domain.Interfaces;
 
 namespace StageSide.Pipeline.Domain.Pipeline.Interfaces
 {

@@ -448,10 +448,14 @@
         "resolved": "7.0.0",
         "contentHash": "qmeeYNROMsONF6ndEZcIQ+VxR4Q/TX/7uIVLJqtwIWL7dDWeh0l1UIqgo4wYyjG//5lUNhwkLDSFl+pAWO6oiA=="
       },
+      "domain": {
+        "type": "Project"
+      },
       "pipeline.domain": {
         "type": "Project",
         "dependencies": {
           "Cronos": "[0.11.1, )",
+          "Domain": "[1.0.0, )",
           "Microsoft.EntityFrameworkCore": "[9.0.0, )",
           "Microsoft.Extensions.Configuration.Abstractions": "[9.0.0, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[9.0.0, )",

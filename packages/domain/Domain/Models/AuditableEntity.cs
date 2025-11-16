@@ -1,28 +1,30 @@
-namespace StageSide.Pipeline.Domain.Interfaces
+using StageSide.Domain.Models.Interfaces;
+
+namespace StageSide.Domain.Models
 {
     /// <summary>
-    /// Represents an auditable entity with several tracking fields.
+    /// Defines a base entity.
     /// </summary>
-    public interface IAuditable
+    public record AuditableEntity : IAuditable
     {
         /// <summary>
         /// Gets or sets the time the entity was created.
         /// </summary>
-        DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         
         /// <summary>
         /// Gets or sets the user who created the entity.
         /// </summary>
-        string? CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
         
         /// <summary>
         /// Gets or sets the time the entity was updated.
         /// </summary>
-        DateTimeOffset UpdatedAt { get; set; }
-        
+        public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+
         /// <summary>
         /// Gets or sets the user who last updated the entity.
         /// </summary>
-        string? UpdatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
     }
 }

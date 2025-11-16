@@ -1,8 +1,8 @@
-using StageSide.Pipeline.Domain.Models;
 using StageSide.Pipeline.Domain.Pipeline.Interfaces;
 using StageSide.Pipeline.Domain.Pipeline.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using StageSide.Domain.Models;
 
 namespace StageSide.Pipeline.Domain.Pipeline
 {

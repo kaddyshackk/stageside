@@ -1,4 +1,4 @@
-using StageSide.Pipeline.Domain.Models;
+using StageSide.Domain.Models;
 
 namespace StageSide.Pipeline.Domain.Pipeline.Models
 {

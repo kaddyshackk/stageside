@@ -1,6 +1,6 @@
-using StageSide.Pipeline.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using StageSide.Domain.Models;
 
 namespace StageSide.Pipeline.Data.Models
 {

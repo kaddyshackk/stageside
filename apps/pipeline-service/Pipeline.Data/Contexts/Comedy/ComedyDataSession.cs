@@ -1,8 +1,8 @@
 ﻿using StageSide.Pipeline.Data.Services;
 using StageSide.Pipeline.Domain.Interfaces;
-using StageSide.Pipeline.Domain.Models;
 using StageSide.Pipeline.Domain.Pipeline.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
+using StageSide.Domain.Models;
 
 namespace StageSide.Pipeline.Data.Contexts.Comedy
 {

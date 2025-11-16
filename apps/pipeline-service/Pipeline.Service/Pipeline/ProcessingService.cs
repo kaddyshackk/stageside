@@ -1,11 +1,11 @@
 using System.Text.Json;
-using StageSide.Pipeline.Domain.Models;
 using StageSide.Pipeline.Domain.Pipeline;
 using StageSide.Pipeline.Domain.Pipeline.Interfaces;
 using StageSide.Pipeline.Domain.Pipeline.Models;
 using StageSide.Pipeline.Domain.Queue.Interfaces;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
+using StageSide.Domain.Models;
 using StageSide.Pipeline.Domain.Queue;
 using StageSide.Pipeline.Service.Pipeline.Options;
 

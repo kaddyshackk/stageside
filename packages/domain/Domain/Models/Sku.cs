@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace StageSide.Pipeline.Domain.Models
+namespace StageSide.Domain.Models
 {
     /// <summary>
     /// Defines a unique origin from a specific data source.

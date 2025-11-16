@@ -2,7 +2,7 @@ using Microsoft.Extensions.Configuration;
 using StageSide.Pipeline.Domain.Pipeline;
 using StageSide.Pipeline.Domain.Scheduling;
 using Microsoft.Extensions.DependencyInjection;
-using StageSide.Pipeline.Domain.Models;
+using StageSide.Domain.Models;
 using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Sources.Punchup;
 using StageSide.Pipeline.Domain.WebBrowser;
