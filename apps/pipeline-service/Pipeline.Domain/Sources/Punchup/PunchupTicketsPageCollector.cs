@@ -1,18 +1,20 @@
-﻿using StageSide.Pipeline.Domain.Pipeline.Interfaces;
+﻿using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Sources.Punchup.Models;
 using StageSide.Pipeline.Domain.Sources.Punchup.Pages;
 using StageSide.Pipeline.Domain.Utils;
+using StageSide.Pipeline.Domain.WebBrowser.Interfaces;
 
 namespace StageSide.Pipeline.Domain.Sources.Punchup
 {
-    public class PunchupTicketsPageCollector : IDynamicCollector
+    public class PunchupTicketsPageCollector(IWebPageSessionProvider provider) : ICollector
     {
-        public async Task<object> CollectPageAsync(string url, IWebPage page)
+        public async Task<object> CollectAsync(string url, CancellationToken ct)
         {
-            var pom = new TicketsPage(page);
+            var session = await provider.CreateSessionAsync(ct);
+            var pom = new TicketsPage(session.Page);
 
             // Load page
-            await page.GotoAsync(url);
+            await session.Page.GotoAsync(url);
             await pom.BioSection.WaitForAsync();
 
             // Parse bio

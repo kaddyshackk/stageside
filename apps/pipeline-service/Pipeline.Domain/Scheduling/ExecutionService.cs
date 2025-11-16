@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StageSide.Pipeline.Domain.Exceptions;
-using StageSide.Pipeline.Domain.Pipeline.Models;
 using StageSide.Pipeline.Domain.Scheduling.Interfaces;
 using StageSide.Pipeline.Domain.Scheduling.Models;
 
@@ -9,33 +8,7 @@ namespace StageSide.Pipeline.Domain.Scheduling
 {
     public class ExecutionService(ISchedulingDataSession session, ISitemapLoader sitemapLoader, ILogger<SchedulingService> logger)
     {
-        public async Task<ICollection<PipelineContext>> ExecuteNextScheduleAsync(CancellationToken ct)
-        {
-            var schedule = await GetNextSchedule(ct);
-            if (schedule == null)
-            {
-                return [];
-            }
-            
-            var sitemaps = schedule.Sitemaps.Where(j => j.IsActive).ToList();
-            if (sitemaps.Count == 0)
-            {
-                logger.LogError("Failed to dispatch next schedule. No sitemaps available.");
-                return [];
-            }
-            
-            var job = await CreateJobAsync(schedule.Id, ct);
-            var urls = await sitemapLoader.LoadManySitemapsAsync(sitemaps);
-            return urls.Select(u => new PipelineContext
-            {
-                JobId = job.Id,
-                Source = schedule.Source,
-                Sku = schedule.Sku,
-                Metadata = new PipelineMetadata { CollectionUrl = u }
-            }).ToList();
-        }
-        
-        private async Task<Schedule?> GetNextSchedule(CancellationToken ct)
+        public async Task<Schedule?> GetNextSchedule(CancellationToken ct)
         {
             return await session.Schedules.Query()
                 .AsNoTracking()
@@ -45,7 +18,7 @@ namespace StageSide.Pipeline.Domain.Scheduling
                 .FirstOrDefaultAsync(ct);
         }
         
-        private async Task<Job> CreateJobAsync(Guid scheduleId, CancellationToken ct)
+        public async Task<Job> CreateJobAsync(Guid scheduleId, CancellationToken ct)
         {
             try
             {

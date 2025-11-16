@@ -1,10 +1,8 @@
 ﻿using StageSide.Pipeline.Domain.Pipeline.Interfaces;
+using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Queue;
 using StageSide.Pipeline.Service.Pipeline;
-using StageSide.Pipeline.Service.Pipeline.Collection;
-using StageSide.Pipeline.Service.Pipeline.Dispatching;
-using StageSide.Pipeline.Service.Pipeline.Processing;
-using StageSide.Pipeline.Service.Pipeline.Transformation;
+using StageSide.Pipeline.Service.Pipeline.Options;
 
 namespace StageSide.Pipeline.Service.Extensions
 {
@@ -25,24 +23,21 @@ namespace StageSide.Pipeline.Service.Extensions
             // Pipeline Hosted Services
             services.AddHostedService<DispatchingService>();
             services.AddHostedService<CollectionService>();
-            services.AddHostedService<DynamicCollectionService>();
             services.AddHostedService<TransformationService>();
             services.AddHostedService<ProcessingService>();
             
             // Pipeline Management Services
             services.AddSingleton<IBackPressureManager, BackPressureService>();
             
-            // Pipeline.Service Factories
-            services.AddSingleton<ICollectorFactory, CollectorFactory>();
-            services.AddSingleton<ITransformerFactory, TransformerFactory>();
+            // Pipeline Helpers
+            services.AddSingleton<IPipelineAdapterFactory, PipelineAdapterFactory>();
             
             // Options
+            services.Configure<BackPressureOptions>(configuration.GetSection("Pipeline:BackPressure"));
+            services.Configure<DispatchingOptions>(configuration.GetSection("Pipeline:Dispatching"));
             services.Configure<CollectionOptions>(configuration.GetSection("Pipeline:Collection"));
             services.Configure<TransformationOptions>(configuration.GetSection("Pipeline:Transformation"));
             services.Configure<ProcessingOptions>(configuration.GetSection("Pipeline:Processing"));
-            services.Configure<DispatchingOptions>(configuration.GetSection("Pipeline:Dispatching"));
-            services.Configure<DynamicCollectionOptions>(configuration.GetSection("Pipeline:DynamicCollection"));
-            services.Configure<BackPressureOptions>(configuration.GetSection("Pipeline:BackPressure"));
         }
     }
 }

@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
 using StackExchange.Redis;
+using StageSide.Pipeline.Data.PlaywrightAdapter;
+using StageSide.Pipeline.Domain.WebBrowser.Interfaces;
 
 namespace StageSide.Pipeline.Data.Extensions
 {

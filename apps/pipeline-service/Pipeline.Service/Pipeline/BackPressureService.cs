@@ -1,8 +1,8 @@
 using StageSide.Pipeline.Domain.Pipeline.Interfaces;
 using StageSide.Pipeline.Domain.Queue;
 using StageSide.Pipeline.Domain.Queue.Interfaces;
-using StageSide.Pipeline.Domain.Queue.Models;
 using Microsoft.Extensions.Options;
+using StageSide.Pipeline.Service.Pipeline.Options;
 
 namespace StageSide.Pipeline.Service.Pipeline
 {

@@ -1,4 +1,4 @@
-using StageSide.Pipeline.Domain.Queue.Models;
+using StageSide.Pipeline.Domain.Queue;
 
 namespace StageSide.Pipeline.Domain.Pipeline.Interfaces
 {
