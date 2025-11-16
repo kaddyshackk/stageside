@@ -4,8 +4,8 @@ namespace StageSide.Pipeline.Domain.Queue
 {
     public enum QueueKey
     {
-        [Description("DynamicCollection")]
-        DynamicCollection,
+        [Description("Collection")]
+        Collection,
         
         [Description("Transformation")]
         Transformation,

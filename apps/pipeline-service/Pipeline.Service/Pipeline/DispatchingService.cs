@@ -33,11 +33,9 @@ namespace StageSide.Pipeline.Service.Pipeline
                         var nextSchedule = await service.GetNextSchedule(ct);
                         if (nextSchedule == null) continue;
                         
-                        var targetQueue = GetTargetQueue(SkuConfiguration.GetCollectionType(nextSchedule.Sku));
-                        
-                        if (await backPressureManager.ShouldApplyBackPressureAsync(targetQueue))
+                        if (await backPressureManager.ShouldApplyBackPressureAsync(Queues.Collection))
                         {
-                            logger.LogWarning("{TargetQueue} queue is overloaded, delaying for another interval.", targetQueue);
+                            logger.LogWarning("Collection queue is overloaded, delaying for another interval.");
                             continue;
                         }
                         
@@ -48,7 +46,7 @@ namespace StageSide.Pipeline.Service.Pipeline
 
                         var entries = await adapter.GetScheduler().ScheduleAsync(nextSchedule, job, ct);
                         
-                        await queueClient.EnqueueBatchAsync(targetQueue, entries);
+                        await queueClient.EnqueueBatchAsync(Queues.Collection, entries);
                     }
                     catch (Exception ex)
                     {
@@ -61,17 +59,6 @@ namespace StageSide.Pipeline.Service.Pipeline
                 }
                 logger.LogInformation("Stopped {ServiceName}", nameof(DispatchingService));
             }
-        }
-        
-        private static QueueConfig<PipelineContext> GetTargetQueue(CollectionType collectionType)
-        {
-            return collectionType switch
-            {
-                CollectionType.Dynamic => Queues.DynamicCollection,
-                CollectionType.Static => throw new NotImplementedException("Static collector not implemented yet"),
-                CollectionType.Api => throw new NotImplementedException("API collector not implemented yet"),
-                _ => throw new NotSupportedException($"Collection type {collectionType} not supported")
-            };
         }
     }
 }

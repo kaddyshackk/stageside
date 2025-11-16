@@ -1,6 +1,6 @@
 ﻿namespace StageSide.Pipeline.Service.Pipeline.Options
 {
-    public class DynamicCollectionOptions
+    public class CollectionOptions
     {
         public int DelayIntervalSeconds { get; init; }
     }

@@ -11,13 +11,13 @@ using StageSide.Pipeline.Service.Pipeline.Options;
 
 namespace StageSide.Pipeline.Service.Pipeline
 {
-    public class DynamicCollectionService(
+    public class CollectionService(
         IQueueClient queueClient,
         IBackPressureManager backPressureManager,
         IPipelineAdapterFactory pipelineAdapterFactory,
-        IOptions<DynamicCollectionOptions> options,
+        IOptions<CollectionOptions> options,
         IOptions<WebBrowserResourceOptions> resourceOptions,
-        ILogger<DynamicCollectionService> logger
+        ILogger<CollectionService> logger
         ) : BackgroundService
     {
 
@@ -31,9 +31,9 @@ namespace StageSide.Pipeline.Service.Pipeline
 
         private async Task WorkerAsync(CancellationToken ct)
         {
-            using (LogContext.PushProperty("ServiceName", nameof(DynamicCollectionService)))
+            using (LogContext.PushProperty("ServiceName", nameof(CollectionService)))
             {
-                logger.LogInformation("Started {ServiceName}", nameof(DynamicCollectionService));
+                logger.LogInformation("Started {ServiceName}", nameof(CollectionService));
                 while (!ct.IsCancellationRequested)
                 {
                     try
@@ -43,9 +43,9 @@ namespace StageSide.Pipeline.Service.Pipeline
                             logger.LogWarning("Transformation queue overloaded, delaying for another interval.");
                             continue;
                         }
-                        if (await queueClient.GetLengthAsync(Queues.DynamicCollection) == 0) continue;
+                        if (await queueClient.GetLengthAsync(Queues.Collection) == 0) continue;
 
-                        var context = await queueClient.DequeueAsync(Queues.DynamicCollection);
+                        var context = await queueClient.DequeueAsync(Queues.Collection);
                         if (context == null) continue;
                         
                         using (LogContext.PushProperty("ContextId", context.Id))
@@ -67,7 +67,7 @@ namespace StageSide.Pipeline.Service.Pipeline
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError(ex, "Error in dynamic collection worker");
+                        logger.LogError(ex, "Error in collection worker");
                     }
                     finally
                     {
@@ -76,7 +76,7 @@ namespace StageSide.Pipeline.Service.Pipeline
                         await Task.Delay(TimeSpan.FromSeconds(delaySeconds), ct);
                     }
                 }
-                logger.LogInformation("Stopped {ServiceName}", nameof(DynamicCollectionService));
+                logger.LogInformation("Stopped {ServiceName}", nameof(CollectionService));
             }
         }
     }
