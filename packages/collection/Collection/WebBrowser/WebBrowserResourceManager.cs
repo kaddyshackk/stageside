@@ -1,9 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
-using StageSide.Pipeline.Domain.WebBrowser.Interfaces;
-using StageSide.Pipeline.Domain.WebBrowser.Options;
+using StageSide.Collection.WebBrowser.Interfaces;
+using StageSide.Collection.WebBrowser.Options;
 
-namespace StageSide.Pipeline.Domain.WebBrowser;
+namespace StageSide.Collection.WebBrowser;
 
 public class WebBrowserResourceManager(IWebBrowser webBrowser, IOptions<WebBrowserResourceOptions> options) : IWebBrowserManager
 {

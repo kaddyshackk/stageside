@@ -298,15 +298,6 @@
           "Microsoft.Extensions.Options": "9.0.0"
         }
       },
-      "Microsoft.Extensions.Options": {
-        "type": "Transitive",
-        "resolved": "9.0.0",
-        "contentHash": "y2146b3jrPI3Q0lokKXdKLpmXqakYbDIPDV6r3M8SqvSf45WwOTzkyfDpxnZXJsJQEpAsAqjUq5Pu8RCJMjubg==",
-        "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0",
-          "Microsoft.Extensions.Primitives": "9.0.0"
-        }
-      },
       "Microsoft.Extensions.Primitives": {
         "type": "Transitive",
         "resolved": "9.0.0",
@@ -427,6 +418,12 @@
         "resolved": "7.0.0",
         "contentHash": "qmeeYNROMsONF6ndEZcIQ+VxR4Q/TX/7uIVLJqtwIWL7dDWeh0l1UIqgo4wYyjG//5lUNhwkLDSFl+pAWO6oiA=="
       },
+      "collection": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.Extensions.Options": "[9.0.0, )"
+        }
+      },
       "data": {
         "type": "Project",
         "dependencies": {
@@ -441,6 +438,7 @@
       "pipeline.domain": {
         "type": "Project",
         "dependencies": {
+          "Collection": "[1.0.0, )",
           "Cronos": "[0.11.1, )",
           "Data": "[1.0.0, )",
           "Domain": "[1.0.0, )",
@@ -512,6 +510,16 @@
         "contentHash": "g0UfujELzlLbHoVG8kPKVBaW470Ewi+jnptGS9KUi6jcb+k2StujtK3m26DFSGGwQ/+bVgZfsWqNzlP6YOejvw==",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0"
+        }
+      },
+      "Microsoft.Extensions.Options": {
+        "type": "CentralTransitive",
+        "requested": "[9.0.0, )",
+        "resolved": "9.0.0",
+        "contentHash": "y2146b3jrPI3Q0lokKXdKLpmXqakYbDIPDV6r3M8SqvSf45WwOTzkyfDpxnZXJsJQEpAsAqjUq5Pu8RCJMjubg==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0",
+          "Microsoft.Extensions.Primitives": "9.0.0"
         }
       },
       "Microsoft.Extensions.Options.ConfigurationExtensions": {

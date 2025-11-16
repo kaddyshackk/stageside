@@ -1,4 +1,4 @@
-﻿namespace StageSide.Pipeline.Domain.WebBrowser;
+﻿namespace StageSide.Collection.WebBrowser;
 
 public class WebElementParams
 {

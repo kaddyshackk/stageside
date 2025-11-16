@@ -1,8 +1,8 @@
-﻿using StageSide.Pipeline.Domain.PipelineAdapter;
+﻿using StageSide.Collection.WebBrowser.Interfaces;
+using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Sources.Punchup.Models;
 using StageSide.Pipeline.Domain.Sources.Punchup.Pages;
 using StageSide.Pipeline.Domain.Utils;
-using StageSide.Pipeline.Domain.WebBrowser.Interfaces;
 
 namespace StageSide.Pipeline.Domain.Sources.Punchup
 {

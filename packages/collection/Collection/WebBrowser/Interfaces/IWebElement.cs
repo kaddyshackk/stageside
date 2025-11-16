@@ -1,4 +1,4 @@
-﻿namespace StageSide.Pipeline.Domain.WebBrowser.Interfaces;
+﻿namespace StageSide.Collection.WebBrowser.Interfaces;
 
 public interface IWebElement
 {

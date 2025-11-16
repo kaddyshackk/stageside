@@ -1,4 +1,4 @@
-﻿namespace StageSide.Pipeline.Domain.WebBrowser.Options;
+﻿namespace StageSide.Collection.WebBrowser.Options;
 
 /// <summary>
 /// Defines the configuration options for Playwright resource management.

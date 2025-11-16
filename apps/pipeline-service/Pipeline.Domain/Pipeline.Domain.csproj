@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\packages\domain\Domain\Domain.csproj" />
     <ProjectReference Include="..\..\..\packages\data\Data\Data.csproj" />
+    <ProjectReference Include="..\..\..\packages\collection\Collection\Collection.csproj" />
   </ItemGroup>
 
 </Project>

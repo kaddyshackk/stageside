@@ -1,6 +1,6 @@
 ﻿using Microsoft.Playwright;
-using StageSide.Pipeline.Domain.WebBrowser.Interfaces;
-using StageSide.Pipeline.Domain.WebBrowser.Options;
+using StageSide.Collection.WebBrowser.Interfaces;
+using StageSide.Collection.WebBrowser.Options;
 
 namespace StageSide.Pipeline.Data.PlaywrightAdapter;
 

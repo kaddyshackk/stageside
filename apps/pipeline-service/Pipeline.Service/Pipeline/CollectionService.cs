@@ -4,9 +4,9 @@ using StageSide.Pipeline.Domain.Pipeline.Models;
 using StageSide.Pipeline.Domain.Queue.Interfaces;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
+using StageSide.Collection.WebBrowser.Options;
 using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Queue;
-using StageSide.Pipeline.Domain.WebBrowser.Options;
 using StageSide.Pipeline.Service.Pipeline.Options;
 
 namespace StageSide.Pipeline.Service.Pipeline

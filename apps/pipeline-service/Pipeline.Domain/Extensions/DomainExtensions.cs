@@ -2,12 +2,12 @@ using Microsoft.Extensions.Configuration;
 using StageSide.Pipeline.Domain.Pipeline;
 using StageSide.Pipeline.Domain.Scheduling;
 using Microsoft.Extensions.DependencyInjection;
+using StageSide.Collection.WebBrowser;
+using StageSide.Collection.WebBrowser.Interfaces;
+using StageSide.Collection.WebBrowser.Options;
 using StageSide.Domain.Models;
 using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Sources.Punchup;
-using StageSide.Pipeline.Domain.WebBrowser;
-using StageSide.Pipeline.Domain.WebBrowser.Interfaces;
-using StageSide.Pipeline.Domain.WebBrowser.Options;
 
 namespace StageSide.Pipeline.Domain.Extensions
 {

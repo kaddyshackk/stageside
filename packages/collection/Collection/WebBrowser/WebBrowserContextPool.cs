@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
-using StageSide.Pipeline.Domain.WebBrowser.Interfaces;
+using StageSide.Collection.WebBrowser.Interfaces;
 
-namespace StageSide.Pipeline.Domain.WebBrowser;
+namespace StageSide.Collection.WebBrowser;
 
 public class WebBrowserContextPool
 {

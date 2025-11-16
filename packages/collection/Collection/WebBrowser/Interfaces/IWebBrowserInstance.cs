@@ -1,6 +1,6 @@
-﻿using StageSide.Pipeline.Domain.WebBrowser.Options;
+﻿using StageSide.Collection.WebBrowser.Options;
 
-namespace StageSide.Pipeline.Domain.WebBrowser.Interfaces;
+namespace StageSide.Collection.WebBrowser.Interfaces;
 
 public interface IWebBrowserInstance : IAsyncDisposable
 {
