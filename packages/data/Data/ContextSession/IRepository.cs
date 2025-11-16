@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace StageSide.Pipeline.Domain.Interfaces
+namespace StageSide.Data.ContextSession
 {
     public interface IRepository<T> where T : class
     {

@@ -7,7 +7,7 @@ using StageSide.Domain.Models;
 namespace StageSide.Pipeline.Domain.Pipeline
 {
     public class EventService(
-        IComedyDataSession session,
+        IComedyContextSession session,
         ILogger<EventService> logger
     )
     {

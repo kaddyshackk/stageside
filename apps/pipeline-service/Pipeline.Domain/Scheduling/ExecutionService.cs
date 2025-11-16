@@ -6,7 +6,7 @@ using StageSide.Pipeline.Domain.Scheduling.Models;
 
 namespace StageSide.Pipeline.Domain.Scheduling
 {
-    public class ExecutionService(ISchedulingDataSession session, ISitemapLoader sitemapLoader, ILogger<SchedulingService> logger)
+    public class ExecutionService(ISchedulingContextSession session, ISitemapLoader sitemapLoader, ILogger<SchedulingService> logger)
     {
         public async Task<Schedule?> GetNextSchedule(CancellationToken ct)
         {

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StageSide.Domain.Models;
 
-namespace StageSide.Pipeline.Data.Models
+namespace StageSide.Data.Configuration
 {
     /// <summary>
     /// Configuration class for the BaseEntity fields of a table.

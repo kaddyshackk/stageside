@@ -1,7 +1,7 @@
-using StageSide.Pipeline.Data.Models;
 using StageSide.Pipeline.Domain.Scheduling.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using StageSide.Data.Configuration;
 
 namespace StageSide.Pipeline.Data.Contexts.Scheduling.Configurations
 {

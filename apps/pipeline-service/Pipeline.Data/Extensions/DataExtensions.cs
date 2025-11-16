@@ -38,8 +38,8 @@ namespace StageSide.Pipeline.Data.Extensions
             });
             
             // Sessions
-            services.AddScoped<IComedyDataSession, ComedyDataSession>();
-            services.AddScoped<ISchedulingDataSession, SchedulingDataSession>();
+            services.AddScoped<IComedyContextSession, ComedyContextSession>();
+            services.AddScoped<ISchedulingContextSession, SchedulingContextSession>();
             
             // Services
             services.AddSingleton<ISitemapLoader, SitemapLoader>();

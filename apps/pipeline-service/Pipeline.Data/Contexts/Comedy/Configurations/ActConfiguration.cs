@@ -1,6 +1,6 @@
-using StageSide.Pipeline.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using StageSide.Data.Configuration;
 using StageSide.Domain.Models;
 
 namespace StageSide.Pipeline.Data.Contexts.Comedy.Configurations

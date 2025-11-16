@@ -1,6 +1,6 @@
-﻿namespace StageSide.Pipeline.Domain.Interfaces
+﻿namespace StageSide.Data.ContextSession
 {
-    public interface IDataSession
+    public interface IContextSession
     {
         public Task<int> SaveChangesAsync(CancellationToken stoppingToken);
         public Task BeginTransactionAsync(CancellationToken stoppingToken);

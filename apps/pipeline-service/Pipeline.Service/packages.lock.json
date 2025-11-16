@@ -458,6 +458,14 @@
         "resolved": "7.0.0",
         "contentHash": "qmeeYNROMsONF6ndEZcIQ+VxR4Q/TX/7uIVLJqtwIWL7dDWeh0l1UIqgo4wYyjG//5lUNhwkLDSFl+pAWO6oiA=="
       },
+      "data": {
+        "type": "Project",
+        "dependencies": {
+          "Domain": "[1.0.0, )",
+          "Microsoft.EntityFrameworkCore": "[9.0.0, )",
+          "Microsoft.EntityFrameworkCore.Design": "[9.0.0, )"
+        }
+      },
       "domain": {
         "type": "Project"
       },
@@ -465,7 +473,6 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "[9.0.0, )",
-          "Microsoft.EntityFrameworkCore.Design": "[9.0.0, )",
           "Microsoft.EntityFrameworkCore.Tools": "[9.0.0, )",
           "Microsoft.Extensions.Configuration.EnvironmentVariables": "[9.0.0, )",
           "Microsoft.Extensions.Configuration.FileExtensions": "[9.0.0, )",
@@ -481,6 +488,7 @@
         "type": "Project",
         "dependencies": {
           "Cronos": "[0.11.1, )",
+          "Data": "[1.0.0, )",
           "Domain": "[1.0.0, )",
           "Microsoft.EntityFrameworkCore": "[9.0.0, )",
           "Microsoft.Extensions.Configuration.Abstractions": "[9.0.0, )",

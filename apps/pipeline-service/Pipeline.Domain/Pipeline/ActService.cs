@@ -6,7 +6,7 @@ using StageSide.Domain.Models;
 
 namespace StageSide.Pipeline.Domain.Pipeline
 {
-    public class ActService(IComedyDataSession session, ILogger<ActService> logger)
+    public class ActService(IComedyContextSession session, ILogger<ActService> logger)
     {
         public async Task<BatchProcessResult<ProcessedAct, Act>> ProcessActsAsync(
             IEnumerable<ProcessedAct> processedActs, CancellationToken ct)

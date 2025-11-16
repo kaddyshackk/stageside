@@ -8,7 +8,7 @@ using StageSide.Domain.Models;
 
 namespace StageSide.Pipeline.Domain.Scheduling
 {
-    public class SchedulingService(ISchedulingDataSession session, ILogger<SchedulingService> logger)
+    public class SchedulingService(ISchedulingContextSession session, ILogger<SchedulingService> logger)
     {
         public async Task<Schedule?> CreateScheduleAsync(CreateScheduleCommand command, CancellationToken ct)
         {

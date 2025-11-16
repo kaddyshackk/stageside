@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
-using StageSide.Pipeline.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using StageSide.Data.ContextSession;
 
 namespace StageSide.Pipeline.Data.Services
 {

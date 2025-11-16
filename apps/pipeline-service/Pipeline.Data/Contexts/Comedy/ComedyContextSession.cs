@@ -1,21 +1,23 @@
 ﻿using StageSide.Pipeline.Data.Services;
-using StageSide.Pipeline.Domain.Interfaces;
-using StageSide.Pipeline.Domain.Scheduling.Interfaces;
-using StageSide.Pipeline.Domain.Scheduling.Models;
+using StageSide.Pipeline.Domain.Pipeline.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
+using StageSide.Data.ContextSession;
+using StageSide.Domain.Models;
 
-namespace StageSide.Pipeline.Data.Contexts.Scheduling
+namespace StageSide.Pipeline.Data.Contexts.Comedy
 {
-    public class SchedulingDataSession(SchedulingDbContext context) : ISchedulingDataSession
+    public class ComedyContextSession(ComedyDbContext context) : IComedyContextSession
     {
-        private IRepository<Schedule>? _schedules;
-        private IRepository<Job>? _jobs;
-        private IRepository<Sitemap>? _sitemaps;
+        private IRepository<Act>? _acts;
+        private IRepository<Venue>? _venues;
+        private IRepository<Event>? _events;
+        private IRepository<EventAct>? _eventActs;
         private IDbContextTransaction? _transaction;
-
-        public IRepository<Schedule> Schedules => _schedules ??= new Repository<Schedule>(context);
-        public IRepository<Job> Jobs => _jobs ??= new Repository<Job>(context);
-        public IRepository<Sitemap> Sitemaps => _sitemaps ??= new Repository<Sitemap>(context);
+        
+        public IRepository<Act> Acts => _acts ??= new Repository<Act>(context);
+        public IRepository<Venue> Venues => _venues ??= new Repository<Venue>(context);
+        public IRepository<Event> Events => _events ??= new Repository<Event>(context);
+        public IRepository<EventAct> EventActs => _eventActs ??= new Repository<EventAct>(context);
         
         public async Task<int> SaveChangesAsync(CancellationToken stoppingToken)
         {

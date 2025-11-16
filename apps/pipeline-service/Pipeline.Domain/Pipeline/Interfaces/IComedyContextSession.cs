@@ -1,9 +1,9 @@
-﻿using StageSide.Domain.Models;
-using StageSide.Pipeline.Domain.Interfaces;
+﻿using StageSide.Data.ContextSession;
+using StageSide.Domain.Models;
 
 namespace StageSide.Pipeline.Domain.Pipeline.Interfaces
 {
-    public interface IComedyDataSession : IDataSession, IDisposable
+    public interface IComedyContextSession : IContextSession, IDisposable
     {
         IRepository<Act> Acts { get; }
         IRepository<Venue> Venues { get; }
