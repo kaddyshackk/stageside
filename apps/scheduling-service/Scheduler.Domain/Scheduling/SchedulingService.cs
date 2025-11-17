@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using StageSide.Domain.Models;
 using StageSide.Scheduler.Domain.ContextSession;
 using StageSide.Scheduler.Domain.Extensions;
+using StageSide.Scheduler.Domain.Models;
 using StageSide.Scheduler.Domain.Scheduling.Operations.CreateSchedule;
-using StageSide.Scheduling.Models;
 
 namespace StageSide.Scheduler.Domain.Scheduling
 {

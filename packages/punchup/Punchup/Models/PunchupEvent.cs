@@ -1,4 +1,4 @@
-namespace StageSide.Pipeline.Domain.Sources.Punchup.Models
+namespace StageSide.Punchup.Models
 {
     public record PunchupEvent
     {

@@ -160,6 +160,7 @@
       "spacollector.data": {
         "type": "Project",
         "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[9.0.0, )",
           "SpaCollector.Domain": "[1.0.0, )"
         }
       },

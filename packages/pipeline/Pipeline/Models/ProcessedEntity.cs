@@ -1,6 +1,6 @@
 using StageSide.Domain.Models;
 
-namespace StageSide.Pipeline.Domain.Pipeline.Models
+namespace StageSide.Pipeline.Models
 {
     public record ProcessedEntity
     {

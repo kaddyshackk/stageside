@@ -1,4 +1,4 @@
-namespace StageSide.Pipeline.Domain.Pipeline.Models
+namespace StageSide.Pipeline.Models
 {
     public record PipelineMetadata
     {

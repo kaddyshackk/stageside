@@ -1,11 +1,11 @@
 using System.Text.Json;
 using StageSide.Domain.Models;
-using StageSide.Pipeline.Domain.Pipeline;
-using StageSide.Pipeline.Domain.Pipeline.Models;
-using StageSide.Pipeline.Domain.PipelineAdapter;
-using StageSide.Pipeline.Domain.Sources.Punchup.Models;
+using StageSide.Domain.Services;
+using StageSide.Pipeline.Interfaces;
+using StageSide.Pipeline.Models;
+using StageSide.Punchup.Models;
 
-namespace StageSide.Pipeline.Domain.Sources.Punchup
+namespace StageSide.Punchup.Adapter
 {
     public class PunchupTicketsPageTransformer : ITransformer
     {
@@ -59,8 +59,7 @@ namespace StageSide.Pipeline.Domain.Sources.Punchup
                 };
             
             transformed.AddRange(venueEntities);
-
-
+            
             // Process Events
             var eventEntities = from punchupEvent in punchupRecord.Events
                 let venueSlug = SlugGenerator.GenerateSlug(punchupEvent.Venue)

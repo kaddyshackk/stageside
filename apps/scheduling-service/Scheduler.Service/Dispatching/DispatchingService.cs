@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using StageSide.Scheduler.Domain.Dispatching;
 
 namespace StageSide.Scheduler.Service.Dispatching;
 

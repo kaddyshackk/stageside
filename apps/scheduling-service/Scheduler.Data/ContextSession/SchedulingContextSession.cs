@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using StageSide.Data.ContextSession;
 using StageSide.Scheduler.Domain.ContextSession;
-using StageSide.Scheduling.Models;
+using StageSide.Scheduler.Domain.Models;
 
 namespace StageSide.Scheduler.Data.ContextSession
 {

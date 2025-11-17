@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using StageSide.Scheduler.Domain.ContextSession;
+using StageSide.Scheduler.Domain.Exceptions;
+using StageSide.Scheduler.Domain.Models;
 using StageSide.Scheduler.Domain.Scheduling;
-using StageSide.Scheduling.Exceptions;
-using StageSide.Scheduling.Models;
 
-namespace StageSide.Scheduler.Service.Dispatching
+namespace StageSide.Scheduler.Domain.Dispatching
 {
     public class ExecutionService(ISchedulingContextSession session, ILogger<ExecutionService> logger)
     {

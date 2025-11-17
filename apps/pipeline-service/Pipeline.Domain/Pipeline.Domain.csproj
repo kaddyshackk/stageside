@@ -24,4 +24,8 @@
     <ProjectReference Include="..\..\..\packages\scheduling\Scheduling\Scheduling.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="PipelineAdapter\" />
+  </ItemGroup>
+
 </Project>

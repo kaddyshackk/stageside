@@ -1,6 +1,6 @@
-using StageSide.Pipeline.Domain.Pipeline.Models;
+using StageSide.Pipeline.Models;
 
-namespace StageSide.Pipeline.Domain.PipelineAdapter
+namespace StageSide.Pipeline.Interfaces
 {
     public interface ITransformer
     {

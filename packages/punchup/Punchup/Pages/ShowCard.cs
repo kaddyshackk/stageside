@@ -1,6 +1,4 @@
-using StageSide.Collection.WebBrowser.Interfaces;
-
-namespace StageSide.Pipeline.Domain.Sources.Punchup.Pages
+namespace StageSide.Punchup.Pages
 {
     public class ShowCard(IWebElement locator)
     {

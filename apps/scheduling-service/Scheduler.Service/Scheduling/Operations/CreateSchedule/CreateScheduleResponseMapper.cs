@@ -1,5 +1,5 @@
 using Riok.Mapperly.Abstractions;
-using StageSide.Scheduling.Models;
+using StageSide.Scheduler.Domain.Models;
 
 namespace StageSide.Scheduler.Service.Scheduling.Operations.CreateSchedule
 {

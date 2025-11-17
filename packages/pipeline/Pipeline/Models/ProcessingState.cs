@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace StageSide.Pipeline.Domain.Pipeline.Models
+namespace StageSide.Pipeline.Models
 {
     public enum ProcessingState
     {

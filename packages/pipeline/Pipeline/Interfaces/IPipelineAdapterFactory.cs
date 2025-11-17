@@ -1,6 +1,6 @@
 ﻿using StageSide.Domain.Models;
 
-namespace StageSide.Pipeline.Domain.PipelineAdapter
+namespace StageSide.Pipeline.Interfaces
 {
     public interface IPipelineAdapterFactory
     {

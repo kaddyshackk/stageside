@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StageSide.Data.Configuration;
-using StageSide.Scheduling.Models;
+using StageSide.Scheduler.Domain.Models;
 
 namespace StageSide.Scheduler.Data.ContextSession.Configurations
 {

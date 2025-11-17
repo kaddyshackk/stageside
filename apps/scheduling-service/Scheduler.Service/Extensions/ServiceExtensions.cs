@@ -1,5 +1,5 @@
-﻿using StageSide.Scheduler.Service.Dispatching;
-using StageSide.Scheduler.Service.Scheduling;
+﻿using StageSide.Scheduler.Domain.Dispatching;
+using StageSide.Scheduler.Service.Dispatching;
 
 namespace StageSide.Scheduler.Service.Extensions;
 
