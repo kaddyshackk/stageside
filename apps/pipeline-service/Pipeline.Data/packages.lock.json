@@ -439,14 +439,7 @@
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[9.0.0, )",
           "Newtonsoft.Json": "[13.0.4, )",
           "Riok.Mapperly": "[4.3.0-next.5, )",
-          "Scheduling": "[1.0.0, )",
           "Serilog": "[4.2.0, )"
-        }
-      },
-      "scheduling": {
-        "type": "Project",
-        "dependencies": {
-          "Domain": "[1.0.0, )"
         }
       },
       "Microsoft.EntityFrameworkCore.Design": {

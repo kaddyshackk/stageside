@@ -1,12 +1,14 @@
 using Scalar.AspNetCore;
 using Serilog;
-using StageSide.Scheduler.Data.Extensions;
-using StageSide.Scheduler.Domain.Extensions;
-using StageSide.Scheduler.Service.Extensions;
+using StageSide.SpaCollector.Data.Extensions;
+using StageSide.SpaCollector.Domain.Extensions;
+using StageSide.SpaCollector.Service.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // -- [ Configure Services ] ----
+
+builder.Services.AddOpenApi();
 
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("Settings/appsettings.json", optional: false, reloadOnChange: true)
@@ -21,7 +23,7 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 
 builder.Services.AddOpenApi();
 builder.Services.AddServiceLayer();
-builder.Services.AddDataLayer(builder.Configuration);
+builder.Services.AddDataLayer();
 builder.Services.AddDomainLayer();
 
 // -- [ Configure Application ] ----
