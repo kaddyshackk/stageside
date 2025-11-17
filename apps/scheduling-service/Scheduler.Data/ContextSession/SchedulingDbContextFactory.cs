@@ -22,7 +22,7 @@ namespace StageSide.Scheduler.Data.ContextSession
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Pipeline.Service", "Settings"))
+                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Scheduler.Service", "Settings"))
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile($"appsettings.{environment}.json", optional: true)
                 .AddEnvironmentVariables();
