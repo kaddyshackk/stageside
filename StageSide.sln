@@ -31,10 +31,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scheduling-service", "sched
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler.Service", "apps\scheduling-service\Scheduler.Service\Scheduler.Service.csproj", "{7946EF18-6DA4-419A-A5E5-7CEE5E168DBA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scheduling", "scheduling", "{2300289D-498C-040A-CBD6-5928EA07B8DA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduling", "packages\scheduling\Scheduling\Scheduling.csproj", "{0703C8B0-8E0B-427A-BA57-690054E8CD6B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler.Data", "apps\scheduling-service\Scheduler.Data\Scheduler.Data.csproj", "{27FA9B4B-FB44-48FD-932E-2F096EF7D999}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler.Domain", "apps\scheduling-service\Scheduler.Domain\Scheduler.Domain.csproj", "{DD61D367-82E9-4882-B4B2-EE4D3D0EAE30}"

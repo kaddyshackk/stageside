@@ -1,4 +1,4 @@
-namespace StageSide.Scheduling.Models
+namespace StageSide.Scheduler.Domain.Models
 {
     public enum JobStatus
     {

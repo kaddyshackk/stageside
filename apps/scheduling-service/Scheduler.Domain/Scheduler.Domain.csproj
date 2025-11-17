@@ -12,7 +12,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\..\packages\data\Data\Data.csproj" />
-    <ProjectReference Include="..\..\..\packages\scheduling\Scheduling\Scheduling.csproj" />
   </ItemGroup>
 
 </Project>

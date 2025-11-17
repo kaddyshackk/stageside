@@ -1,6 +1,6 @@
 using StageSide.Domain.Models;
 
-namespace StageSide.Scheduling.Models
+namespace StageSide.Scheduler.Domain.Models
 {
     public record Sitemap : AuditableEntity
     {
