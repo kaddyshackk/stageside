@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Configuration;
 using StageSide.Pipeline.Domain.Pipeline;
-using StageSide.Pipeline.Domain.Scheduling;
 using Microsoft.Extensions.DependencyInjection;
 using StageSide.Collection.WebBrowser;
 using StageSide.Collection.WebBrowser.Interfaces;
@@ -21,8 +20,6 @@ namespace StageSide.Pipeline.Domain.Extensions
             services.Configure<WebBrowserResourceOptions>(configuration.GetSection("WebBrowser:Resource"));
             
             // Services
-            services.AddScoped<SchedulingService>();
-            services.AddScoped<ExecutionService>();
             services.AddScoped<ActService>();
             services.AddScoped<VenueService>();
             services.AddScoped<EventService>();

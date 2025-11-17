@@ -21,7 +21,6 @@ namespace StageSide.Pipeline.Service.Extensions
         private static void AddPipelineServices(this IServiceCollection services, IConfiguration configuration)
         {
             // Pipeline Hosted Services
-            services.AddHostedService<DispatchingService>();
             services.AddHostedService<CollectionService>();
             services.AddHostedService<TransformationService>();
             services.AddHostedService<ProcessingService>();
@@ -34,7 +33,6 @@ namespace StageSide.Pipeline.Service.Extensions
             
             // Options
             services.Configure<BackPressureOptions>(configuration.GetSection("Pipeline:BackPressure"));
-            services.Configure<DispatchingOptions>(configuration.GetSection("Pipeline:Dispatching"));
             services.Configure<CollectionOptions>(configuration.GetSection("Pipeline:Collection"));
             services.Configure<TransformationOptions>(configuration.GetSection("Pipeline:Transformation"));
             services.Configure<ProcessingOptions>(configuration.GetSection("Pipeline:Processing"));

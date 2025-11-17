@@ -1,5 +1,4 @@
 using StageSide.Pipeline.Data.Contexts.Comedy;
-using StageSide.Pipeline.Data.Contexts.Scheduling;
 using StageSide.Pipeline.Data.Services;
 using StageSide.Pipeline.Data.Utils;
 using StageSide.Pipeline.Domain.Pipeline.Interfaces;
@@ -32,14 +31,8 @@ namespace StageSide.Pipeline.Data.Extensions
                 DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration, "ComedyDb");
             });
             
-            services.AddDbContextFactory<SchedulingDbContext>((_, options) =>
-            {
-                DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration, "SchedulingDb");
-            });
-            
             // Sessions
             services.AddScoped<IComedyContextSession, ComedyContextSession>();
-            services.AddScoped<ISchedulingContextSession, SchedulingContextSession>();
             
             // Services
             services.AddSingleton<ISitemapLoader, SitemapLoader>();

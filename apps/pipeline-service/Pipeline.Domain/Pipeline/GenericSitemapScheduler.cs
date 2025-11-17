@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using StageSide.Pipeline.Domain.Exceptions;
 using StageSide.Pipeline.Domain.Pipeline.Models;
 using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Scheduling.Interfaces;
+using StageSide.Scheduling.Exceptions;
 using StageSide.Scheduling.Models;
 
 namespace StageSide.Pipeline.Domain.Pipeline

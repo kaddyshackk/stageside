@@ -24,8 +24,4 @@
     <ProjectReference Include="..\Pipeline.Domain\Pipeline.Domain.csproj" />
     <ProjectReference Include="..\..\..\packages\collection\Collection\Collection.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
 </Project>
