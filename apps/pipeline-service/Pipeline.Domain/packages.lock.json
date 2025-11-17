@@ -334,6 +334,12 @@
       "domain": {
         "type": "Project"
       },
+      "scheduling": {
+        "type": "Project",
+        "dependencies": {
+          "Domain": "[1.0.0, )"
+        }
+      },
       "Microsoft.EntityFrameworkCore.Design": {
         "type": "CentralTransitive",
         "requested": "[9.0.0, )",

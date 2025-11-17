@@ -1,8 +1,8 @@
 ﻿using StageSide.Pipeline.Data.Services;
 using StageSide.Pipeline.Domain.Scheduling.Interfaces;
-using StageSide.Pipeline.Domain.Scheduling.Models;
 using Microsoft.EntityFrameworkCore.Storage;
 using StageSide.Data.ContextSession;
+using StageSide.Scheduling.Models;
 
 namespace StageSide.Pipeline.Data.Contexts.Scheduling
 {

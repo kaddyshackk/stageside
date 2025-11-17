@@ -1,5 +1,5 @@
 ﻿using StageSide.Pipeline.Domain.Pipeline.Models;
-using StageSide.Pipeline.Domain.Scheduling.Models;
+using StageSide.Scheduling.Models;
 
 namespace StageSide.Pipeline.Domain.PipelineAdapter
 {

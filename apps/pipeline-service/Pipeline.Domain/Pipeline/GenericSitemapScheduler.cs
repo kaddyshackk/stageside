@@ -3,7 +3,7 @@ using StageSide.Pipeline.Domain.Exceptions;
 using StageSide.Pipeline.Domain.Pipeline.Models;
 using StageSide.Pipeline.Domain.PipelineAdapter;
 using StageSide.Pipeline.Domain.Scheduling.Interfaces;
-using StageSide.Pipeline.Domain.Scheduling.Models;
+using StageSide.Scheduling.Models;
 
 namespace StageSide.Pipeline.Domain.Pipeline
 {

@@ -1,5 +1,5 @@
-using StageSide.Pipeline.Domain.Scheduling.Models;
 using Riok.Mapperly.Abstractions;
+using StageSide.Scheduling.Models;
 
 namespace StageSide.Pipeline.Service.Operations.Scheduling.CreateSchedule
 {
@@ -7,7 +7,7 @@ namespace StageSide.Pipeline.Service.Operations.Scheduling.CreateSchedule
     public partial class CreateScheduleResponseMapper
     {
         [MapperIgnoreSource("Sitemaps")]
-        [MapperIgnoreSource("Executions")]
+        [MapperIgnoreSource("Jobs")]
         [MapperIgnoreSource("CreatedAt")]
         [MapperIgnoreSource("CreatedBy")]
         [MapperIgnoreSource("UpdatedAt")]

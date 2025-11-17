@@ -1,10 +1,10 @@
 ﻿using StageSide.Pipeline.Domain.Extensions;
 using StageSide.Pipeline.Domain.Operations;
 using StageSide.Pipeline.Domain.Scheduling.Interfaces;
-using StageSide.Pipeline.Domain.Scheduling.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StageSide.Domain.Models;
+using StageSide.Scheduling.Models;
 
 namespace StageSide.Pipeline.Domain.Scheduling
 {

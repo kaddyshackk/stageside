@@ -1,5 +1,5 @@
 ﻿using StageSide.Data.ContextSession;
-using StageSide.Pipeline.Domain.Scheduling.Models;
+using StageSide.Scheduling.Models;
 
 namespace StageSide.Pipeline.Domain.Scheduling.Interfaces
 {

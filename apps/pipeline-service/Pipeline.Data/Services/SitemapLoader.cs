@@ -1,9 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using StageSide.Pipeline.Domain.Scheduling.Interfaces;
-using StageSide.Pipeline.Domain.Scheduling.Models;
 using Microsoft.Extensions.Logging;
 using Serilog.Context;
+using StageSide.Scheduling.Models;
 
 namespace StageSide.Pipeline.Data.Services
 {

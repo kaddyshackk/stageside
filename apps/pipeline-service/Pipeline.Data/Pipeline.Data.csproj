@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\packages\scheduling\Scheduling\Scheduling.csproj" />
     <ProjectReference Include="..\Pipeline.Domain\Pipeline.Domain.csproj" />
     <ProjectReference Include="..\..\..\packages\collection\Collection\Collection.csproj" />
   </ItemGroup>
