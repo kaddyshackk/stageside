@@ -57,9 +57,9 @@
       },
       "Microsoft.Playwright": {
         "type": "Direct",
-        "requested": "[1.56.0, )",
-        "resolved": "1.56.0",
-        "contentHash": "DswyjEbhkTkQSyGnx2x1xhzwAztu/ckfOPZsT/fCA0HZVGdLkEWmf2u1FmUBWdT61do02VoMzp0dvA+oq7hKDg==",
+        "requested": "[1.54.0, )",
+        "resolved": "1.54.0",
+        "contentHash": "u/ftvv1mdusX2R+4u0XINaRw10w9oGhxZePjkFgNZhpG/hUaOg/0npgavXh3mlO1u8b06v+XQKuvOYdsieHMZg==",
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "6.0.0",
           "System.ComponentModel.Annotations": "5.0.0",
@@ -374,6 +374,13 @@
         "resolved": "7.0.0",
         "contentHash": "qmeeYNROMsONF6ndEZcIQ+VxR4Q/TX/7uIVLJqtwIWL7dDWeh0l1UIqgo4wYyjG//5lUNhwkLDSFl+pAWO6oiA=="
       },
+      "collection": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.Extensions.Http": "[9.0.0, )",
+          "Microsoft.Extensions.Options": "[9.0.0, )"
+        }
+      },
       "data": {
         "type": "Project",
         "dependencies": {
@@ -385,14 +392,22 @@
       "domain": {
         "type": "Project"
       },
+      "pipeline": {
+        "type": "Project",
+        "dependencies": {
+          "Domain": "[1.0.0, )"
+        }
+      },
       "spacollector.domain": {
         "type": "Project",
         "dependencies": {
+          "Collection": "[1.0.0, )",
           "Data": "[1.0.0, )",
           "Domain": "[1.0.0, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[9.0.0, )",
           "Microsoft.Extensions.Http": "[9.0.0, )",
-          "Microsoft.Extensions.Options": "[9.0.0, )"
+          "Microsoft.Extensions.Options": "[9.0.0, )",
+          "Pipeline": "[1.0.0, )"
         }
       },
       "Microsoft.EntityFrameworkCore.Design": {

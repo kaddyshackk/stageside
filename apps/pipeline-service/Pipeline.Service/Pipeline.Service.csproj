@@ -24,5 +24,11 @@
     <ProjectReference Include="..\Pipeline.Domain\Pipeline.Domain.csproj" />
     <ProjectReference Include="..\Pipeline.Data\Pipeline.Data.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Settings\appsettings.Development.json" />
+    <_ContentIncludedByDefault Remove="Settings\appsettings.json" />
+    <_ContentIncludedByDefault Remove="Settings\appsettings.Production.json" />
+  </ItemGroup>
 
 </Project>

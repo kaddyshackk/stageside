@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore.Storage;
-using StageSide.Data.ContextSession;
+using StageSide.Data.Database;
 using StageSide.SpaCollector.Domain.Collection;
 using StageSide.SpaCollector.Domain.Database;
 

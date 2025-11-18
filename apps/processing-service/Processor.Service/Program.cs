@@ -1,41 +1,43 @@
+using Serilog;
+using StageSide.Processor.Data.Extensions;
+using StageSide.Processor.Domain.Extensions;
+using StageSide.Processor.Service.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// -- [ Configure Services ] ----
+
 builder.Services.AddOpenApi();
+
+builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("Settings/appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"Settings/appsettings.{builder.Environment.EnvironmentName}.json", optional: true,
+        reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext());
+
+builder.Services.AddOpenApi();
+builder.Services.AddServiceLayer(builder.Configuration);
+builder.Services.AddDataLayer(builder.Configuration);
+builder.Services.AddDomainLayer();
+builder.Services.AddSources(builder.Configuration);
+
+// -- [ Configure Application ] ----
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+app.UseSerilogRequestLogging();
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+return 0;

@@ -13,8 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\packages\collection\Collection\Collection.csproj" />
     <ProjectReference Include="..\..\..\packages\data\Data\Data.csproj" />
     <ProjectReference Include="..\..\..\packages\domain\Domain\Domain.csproj" />
+    <ProjectReference Include="..\..\..\packages\pipeline\Pipeline\Pipeline.csproj" />
   </ItemGroup>
 
 </Project>

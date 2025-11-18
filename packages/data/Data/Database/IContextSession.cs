@@ -1,0 +1,10 @@
+﻿namespace StageSide.Data.Database
+{
+    public interface IContextSession
+    {
+        public Task<int> SaveChangesAsync(CancellationToken stoppingToken);
+        public Task BeginTransactionAsync(CancellationToken stoppingToken);
+        public Task CommitTransactionAsync(CancellationToken stoppingToken);
+        public Task RollbackTransactionAsync(CancellationToken stoppingToken);
+    }
+}

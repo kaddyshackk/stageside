@@ -1,6 +1,3 @@
-using StageSide.Pipeline.Data.Extensions;
-using StageSide.Pipeline.Domain.Extensions;
-using StageSide.Pipeline.Service.Extensions;
 using Microsoft.Playwright;
 using Scalar.AspNetCore;
 using Serilog;
@@ -21,9 +18,6 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .Enrich.FromLogContext());
 
 builder.Services.AddOpenApi();
-builder.Services.AddServiceLayer(builder.Configuration);
-builder.Services.AddDataLayer(builder.Configuration);
-builder.Services.AddDomainLayer(builder.Configuration);
 
 // -- [ Configure Application ] ----
 

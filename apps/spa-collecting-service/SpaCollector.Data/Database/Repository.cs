@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using StageSide.Data.ContextSession;
+using StageSide.Data.Database;
 
 namespace StageSide.SpaCollector.Data.Database
 {

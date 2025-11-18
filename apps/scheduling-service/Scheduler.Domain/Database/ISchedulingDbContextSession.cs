@@ -1,4 +1,4 @@
-﻿using StageSide.Data.ContextSession;
+﻿using StageSide.Data.Database;
 using StageSide.Scheduler.Domain.Models;
 
 namespace StageSide.Scheduler.Domain.Database

@@ -1,4 +1,4 @@
-﻿using StageSide.Collection.WebBrowser.Interfaces;
+﻿using StageSide.Collection.WebBrowser;
 using StageSide.Pipeline.Interfaces;
 using StageSide.Pipeline.Utils;
 using StageSide.Punchup.Models;

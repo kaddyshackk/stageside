@@ -1,4 +1,4 @@
-using StageSide.Collection.WebBrowser.Interfaces;
+using StageSide.Collection.WebBrowser;
 
 namespace StageSide.Punchup.Pages
 {

@@ -16,6 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\packages\pipeline\Pipeline\Pipeline.csproj" />
+    <ProjectReference Include="..\..\..\packages\punchup\Punchup\Punchup.csproj" />
     <ProjectReference Include="..\SpaCollector.Domain\SpaCollector.Domain.csproj" />
     <ProjectReference Include="..\SpaCollector.Data\SpaCollector.Data.csproj" />
   </ItemGroup>

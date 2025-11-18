@@ -22,9 +22,10 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .Enrich.FromLogContext());
 
 builder.Services.AddOpenApi();
-builder.Services.AddServiceLayer();
-builder.Services.AddDataLayer();
+builder.Services.AddServiceLayer(builder.Configuration);
+builder.Services.AddDataLayer(builder.Configuration);
 builder.Services.AddDomainLayer();
+builder.Services.AddSources();
 
 // -- [ Configure Application ] ----
 
@@ -38,7 +39,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseSerilogRequestLogging();
-app.UseHttpsRedirection();
 app.MapEndpoints(typeof(Program).Assembly);
 
 app.Run();

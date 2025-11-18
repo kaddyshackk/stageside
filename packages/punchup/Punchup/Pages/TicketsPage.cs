@@ -1,5 +1,5 @@
 using StageSide.Collection.WebBrowser;
-using StageSide.Collection.WebBrowser.Interfaces;
+using StageSide.Collection.WebBrowser.Params;
 
 namespace StageSide.Punchup.Pages
 {
