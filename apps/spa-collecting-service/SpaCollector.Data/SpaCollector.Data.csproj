@@ -12,10 +12,12 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
+    <PackageReference Include="Microsoft.Playwright" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\..\..\packages\collection\Collection\Collection.csproj" />
     <ProjectReference Include="..\..\..\packages\data\Data\Data.csproj" />
     <ProjectReference Include="..\SpaCollector.Domain\SpaCollector.Domain.csproj" />
   </ItemGroup>

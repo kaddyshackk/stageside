@@ -2,7 +2,7 @@
 using StageSide.Collection.WebBrowser.Interfaces;
 using StageSide.Collection.WebBrowser.Options;
 
-namespace StageSide.Pipeline.Data.PlaywrightAdapter;
+namespace StageSide.SpaCollector.Data.PlaywrightAdapter;
 
 public class PlaywrightWebBrowserInstance(IBrowser browser) : IWebBrowserInstance
 {

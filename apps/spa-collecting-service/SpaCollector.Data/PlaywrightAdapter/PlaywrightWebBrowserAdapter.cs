@@ -1,7 +1,7 @@
 ﻿using Microsoft.Playwright;
 using StageSide.Collection.WebBrowser.Interfaces;
 
-namespace StageSide.Pipeline.Data.PlaywrightAdapter;
+namespace StageSide.SpaCollector.Data.PlaywrightAdapter;
 
 public class PlaywrightWebBrowserAdapter(IPlaywright playwright) : IWebBrowser
 {

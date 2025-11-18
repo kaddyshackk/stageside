@@ -2,7 +2,7 @@
 using StageSide.Collection.WebBrowser;
 using StageSide.Collection.WebBrowser.Interfaces;
 
-namespace StageSide.Pipeline.Data.PlaywrightAdapter;
+namespace StageSide.SpaCollector.Data.PlaywrightAdapter;
 
 public class PlaywrightWebPageAdapter(IPage page) : IWebPage
 {
