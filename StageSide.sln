@@ -35,13 +35,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler.Data", "apps\sche
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler.Domain", "apps\scheduling-service\Scheduler.Domain\Scheduler.Domain.csproj", "{DD61D367-82E9-4882-B4B2-EE4D3D0EAE30}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "spa-collector-service", "spa-collector-service", "{C95682F3-33F0-2DE9-1EF7-290D58579341}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "spa-collecting-service", "spa-collecting-service", "{C95682F3-33F0-2DE9-1EF7-290D58579341}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaCollector.Domain", "apps\spa-collector-service\SpaCollector.Domain\SpaCollector.Domain.csproj", "{B027539A-5E30-4409-A41F-FC1ADB54C9B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaCollector.Domain", "apps\spa-collecting-service\SpaCollector.Domain\SpaCollector.Domain.csproj", "{B027539A-5E30-4409-A41F-FC1ADB54C9B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaCollector.Data", "apps\spa-collector-service\SpaCollector.Data\SpaCollector.Data.csproj", "{200B610E-F392-4975-AF78-0B72257872CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaCollector.Data", "apps\spa-collecting-service\SpaCollector.Data\SpaCollector.Data.csproj", "{200B610E-F392-4975-AF78-0B72257872CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaCollector.Service", "apps\spa-collector-service\SpaCollector.Service\SpaCollector.Service.csproj", "{044BFD32-0F6E-47A6-977E-D65DF6F1D09C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaCollector.Service", "apps\spa-collecting-service\SpaCollector.Service\SpaCollector.Service.csproj", "{044BFD32-0F6E-47A6-977E-D65DF6F1D09C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "contracts", "contracts", "{3024F0A4-8109-3CD3-0347-46F4E6C63FD7}"
 EndProject
