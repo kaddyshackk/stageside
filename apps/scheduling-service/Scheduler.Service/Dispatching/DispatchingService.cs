@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using StageSide.Domain.Models;
 using StageSide.Scheduler.Domain.Dispatching;
 
 namespace StageSide.Scheduler.Service.Dispatching;
@@ -12,13 +13,19 @@ public class DispatchingService(ExecutionService service, IOptions<DispatchingSe
         {
             try
             {
-                var nextSchedule = await service.GetNextSchedule(ct);
+                var nextSchedule = await service.GetNextScheduleAsync(ct);
                 if (nextSchedule == null) continue;
                 
                 var job = await service.CreateJobAsync(nextSchedule.Id, ct);
 
-                // TODO: Emit message that job is created and include schedule details
-                
+                if (nextSchedule.Sku.CollectionType == CollectionType.Spa)
+                {
+                    // TODO: Emit command event to start collecting
+                }
+                else
+                {
+                    throw new ArgumentException($"{nameof(nextSchedule.Sku.CollectionConfigId)} is invalid");
+                }
             }
             catch (Exception ex)
             {

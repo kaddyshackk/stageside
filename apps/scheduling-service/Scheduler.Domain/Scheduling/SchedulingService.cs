@@ -1,14 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using StageSide.Domain.Models;
-using StageSide.Scheduler.Domain.ContextSession;
-using StageSide.Scheduler.Domain.Extensions;
+﻿using Microsoft.Extensions.Logging;
+using StageSide.Scheduler.Domain.Database;
 using StageSide.Scheduler.Domain.Models;
 using StageSide.Scheduler.Domain.Scheduling.Operations.CreateSchedule;
 
 namespace StageSide.Scheduler.Domain.Scheduling
 {
-    public class SchedulingService(ISchedulingContextSession session, ILogger<SchedulingService> logger)
+    public class SchedulingService(ISchedulingDbContextSession session, ILogger<SchedulingService> logger)
     {
         public async Task<Schedule?> CreateScheduleAsync(CreateScheduleCommand command, CancellationToken ct)
         {
@@ -21,17 +18,17 @@ namespace StageSide.Scheduler.Domain.Scheduling
                 {
                     throw new ArgumentException("Failed to determine next occurence for new schedule.");
                 }
-
-                var source = EnumExtensions.ParseFromDescriptionOrThrow<Source>(command.Source);
-                var sku = EnumExtensions.ParseFromDescriptionOrThrow<Sku>(command.Sku);
-
-                await session.BeginTransactionAsync(ct);
+                
+                var sku = await session.Skus.GetByIdAsync(command.SkuId, ct);
+                if (sku == null)
+                {
+                    throw new ArgumentException($"Sku could not be found matching SkuId {command.SkuId}");
+                }
 
                 var now = DateTimeOffset.UtcNow;
                 var schedule = new Schedule
                 {
-                    Source = source,
-                    Sku = sku,
+                    SkuId = sku.Id,
                     Name = command.Name,
                     CronExpression = command.CronExpression,
                     IsActive = true,
@@ -42,34 +39,12 @@ namespace StageSide.Scheduler.Domain.Scheduling
                     UpdatedBy = "System",
                 };
                 await session.Schedules.AddAsync(schedule, ct);
-
-                if (command.Sitemaps is { Count: > 0 })
-                {
-                    var sitemaps = command.Sitemaps
-                        .Select(s => new Sitemap
-                        {
-                            ScheduleId = schedule.Id,
-                            Url = s.Url,
-                            RegexFilter = s.RegexFilter,
-                            CreatedAt = now,
-                            CreatedBy = "System",
-                            UpdatedAt = now,
-                            UpdatedBy = "System",
-                        })
-                        .ToList();
-                    await session.Sitemaps.AddRangeAsync(sitemaps, ct);
-                }
-                
                 await session.SaveChangesAsync(ct);
-                await session.CommitTransactionAsync(ct);
 
-                return await session.Schedules.Query()
-                    .Include(s => s.Sitemaps)
-                    .FirstOrDefaultAsync(s => s.Id == schedule.Id, ct);
+                return await session.Schedules.GetByIdAsync(schedule.Id, ct);
             }
             catch (Exception ex)
             {
-                await session.RollbackTransactionAsync(ct);
                 session.Dispose();
                 logger.LogError(ex, "Failed to create schedule.");
                 throw;

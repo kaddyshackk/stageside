@@ -5,15 +5,14 @@ namespace StageSide.Scheduler.Domain.Models
     public record Schedule : AuditableEntity
     {
         public Guid Id { get; set; }
-        public required Source Source { get; set; }
-        public required Sku Sku { get; set; }
+        public required Guid SkuId { get; init; }
         public required string Name { get; set; }
         public string? CronExpression { get; set; }
         public required bool IsActive { get; set; }
         public required DateTimeOffset NextExecution { get; set; }
         public DateTimeOffset? LastExecuted { get; set; }
-
-        public ICollection<Sitemap> Sitemaps { get; set; } = [];
+        
+        public Sku Sku { get; set; } = null!;
         public ICollection<Job> Jobs { get; set; } = [];
     }
 }

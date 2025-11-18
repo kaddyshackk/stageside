@@ -4,6 +4,6 @@ namespace StageSide.Pipeline.Interfaces
 {
     public interface IPipelineAdapterFactory
     {
-        public IPipelineAdapter GetAdapter(Sku sku);
+        public IPipelineAdapter GetAdapter(SkuKey skuKey);
     }
 }

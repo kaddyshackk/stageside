@@ -1,4 +1,10 @@
-﻿namespace StageSide.Punchup.Adapter
+﻿using StageSide.Collection.WebBrowser.Interfaces;
+using StageSide.Pipeline.Interfaces;
+using StageSide.Pipeline.Utils;
+using StageSide.Punchup.Models;
+using StageSide.Punchup.Pages;
+
+namespace StageSide.Punchup.Adapter
 {
     public class PunchupTicketsPageCollector(IWebPageSessionProvider provider) : ICollector
     {

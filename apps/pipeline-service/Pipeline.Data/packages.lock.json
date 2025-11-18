@@ -412,6 +412,7 @@
       "collection": {
         "type": "Project",
         "dependencies": {
+          "Microsoft.Extensions.Http": "[9.0.0, )",
           "Microsoft.Extensions.Options": "[9.0.0, )"
         }
       },

@@ -30,7 +30,7 @@ namespace StageSide.Pipeline.Domain.Extensions
             
             // Punchup
             services.AddScoped<PunchupTicketsPageCollector>();
-            services.AddKeyedScoped<IPipelineAdapter, PunchupTicketsPageAdapter>(Sku.PunchupTicketsPage.GetEnumDescription());
+            services.AddKeyedScoped<IPipelineAdapter, PunchupTicketsPageAdapter>(SkuKey.PunchupTicketsPage.GetEnumDescription());
         }
     }
 }

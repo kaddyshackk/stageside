@@ -1,19 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using StageSide.Scheduler.Domain.ContextSession;
+using StageSide.Scheduler.Domain.Database;
 using StageSide.Scheduler.Domain.Exceptions;
 using StageSide.Scheduler.Domain.Models;
 using StageSide.Scheduler.Domain.Scheduling;
 
 namespace StageSide.Scheduler.Domain.Dispatching
 {
-    public class ExecutionService(ISchedulingContextSession session, ILogger<ExecutionService> logger)
+    public class ExecutionService(ISchedulingDbContextSession session, ILogger<ExecutionService> logger)
     {
-        public async Task<Schedule?> GetNextSchedule(CancellationToken ct)
+        public async Task<Schedule?> GetNextScheduleAsync(CancellationToken ct)
         {
             return await session.Schedules.Query()
                 .AsNoTracking()
-                .Include(s => s.Sitemaps)
+                .Include(s => s.Sku)
                 .Where(s => s.IsActive && s.NextExecution <= DateTimeOffset.UtcNow)
                 .OrderBy(s => s.NextExecution)
                 .FirstOrDefaultAsync(ct);

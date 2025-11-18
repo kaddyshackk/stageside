@@ -6,7 +6,7 @@ namespace StageSide.Scheduler.Service.Scheduling.Operations.CreateSchedule
     [Mapper]
     public partial class CreateScheduleResponseMapper
     {
-        [MapperIgnoreSource("Sitemaps")]
+        [MapperIgnoreSource("Sku")]
         [MapperIgnoreSource("Jobs")]
         [MapperIgnoreSource("CreatedAt")]
         [MapperIgnoreSource("CreatedBy")]

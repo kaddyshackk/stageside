@@ -1,3 +1,6 @@
+using StageSide.Collection.WebBrowser;
+using StageSide.Collection.WebBrowser.Interfaces;
+
 namespace StageSide.Punchup.Pages
 {
     public class TicketsPage

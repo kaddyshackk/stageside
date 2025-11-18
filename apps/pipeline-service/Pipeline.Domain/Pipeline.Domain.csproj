@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="PipelineAdapter\" />
+    <Folder Include="Utils\" />
   </ItemGroup>
 
 </Project>
