@@ -1,3 +1,4 @@
+using Microsoft.Playwright;
 using Scalar.AspNetCore;
 using Serilog;
 using StageSide.SpaCollector.Data.Extensions;
@@ -31,6 +32,8 @@ builder.Services.AddSources();
 
 var app = builder.Build();
 
+await VerifyPlaywrightAsync();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -44,3 +47,23 @@ app.MapEndpoints(typeof(Program).Assembly);
 app.Run();
 
 return 0;
+
+static async Task VerifyPlaywrightAsync()
+{
+    try
+    {
+        Log.Information("Verifying playwright installation.");
+        using var playwright = await Playwright.CreateAsync();
+        var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+        {
+            Headless = true
+        });
+        await browser.CloseAsync();
+        Log.Debug("Verified playwright installation.");
+    }
+    catch (Exception ex)
+    {
+        Log.Fatal("Playwright verification failed: {Error}", ex.Message);
+        throw new InvalidOperationException("Playwright verification failed. Browser binaries are not installed.");
+    }
+}
