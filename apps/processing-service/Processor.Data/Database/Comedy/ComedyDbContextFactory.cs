@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using StageSide.Processor.Data.Utils;
 
-namespace StageSide.Processor.Data.Database
+namespace StageSide.Processor.Data.Database.Comedy
 {
     /// <summary>
     /// Design-time factory for ComedyDbContext to support EF migrations.

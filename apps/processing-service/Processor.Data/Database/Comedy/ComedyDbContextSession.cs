@@ -3,7 +3,7 @@ using StageSide.Data.Database;
 using StageSide.Domain.Models;
 using StageSide.Processor.Domain.Database;
 
-namespace StageSide.Processor.Data.Database
+namespace StageSide.Processor.Data.Database.Comedy
 {
     public class ComedyDbContextSession(ComedyDbContext context) : IComedyDbContextSession
     {

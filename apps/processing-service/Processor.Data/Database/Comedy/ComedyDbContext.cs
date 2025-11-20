@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StageSide.Domain.Models;
-using StageSide.Processor.Data.Database.Configurations;
+using StageSide.Processor.Data.Database.Comedy.Configurations;
 
-namespace StageSide.Processor.Data.Database
+namespace StageSide.Processor.Data.Database.Comedy
 {
     /// <summary>
     /// Schema context - manages database migrations for all tables.

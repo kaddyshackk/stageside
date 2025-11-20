@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Processor.Domain\Processor.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Database\Scheduling\" />
+  </ItemGroup>
+
 </Project>

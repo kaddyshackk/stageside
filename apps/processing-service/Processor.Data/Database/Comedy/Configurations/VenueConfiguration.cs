@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StageSide.Data.Configuration;
 using StageSide.Domain.Models;
 
-namespace StageSide.Processor.Data.Database.Configurations
+namespace StageSide.Processor.Data.Database.Comedy.Configurations
 {
     /// <summary>
     /// Configuration class for the Venues table.

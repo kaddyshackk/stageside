@@ -7,6 +7,7 @@ services:
     image: scheduling-service:latest
     environment:
       - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
+      - ConnectionStrings__SchedulingDb=${SCHEDULING_POSTGRES_CONNECTION}
     ports:
       - "5281:8080"
     depends_on:
@@ -22,6 +23,7 @@ services:
     image: spa-collecting-service:latest
     environment:
       - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
+      - ConnectionStrings__SpaCollectingDb=${SPA_POSTGRES_CONNECTION}
     ports:
       - "5281:8080"
     depends_on:
@@ -40,6 +42,8 @@ services:
     image: processing-service:latest
     environment:
       - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
+      - ConnectionStrings__ProcessingDb=${PROCESSING_POSTGRES_CONNECTION}
+      - ConnectionStrings__ProcessingDb=${COMEDY_POSTGRES_CONNECTION}
     ports:
       - "5281:8080"
     depends_on:
