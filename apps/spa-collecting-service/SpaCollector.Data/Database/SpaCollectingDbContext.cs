@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StageSide.SpaCollector.Data.Database.Configurations;
-using StageSide.SpaCollector.Domain.Collection;
+using StageSide.SpaCollector.Domain.Collection.Models;
 
 namespace StageSide.SpaCollector.Data.Database;
 

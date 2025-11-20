@@ -1,4 +1,6 @@
-﻿namespace StageSide.SpaCollector.Domain.Collection.Interfaces
+﻿using StageSide.SpaCollector.Domain.Collection.Models;
+
+namespace StageSide.SpaCollector.Domain.Collection.Interfaces
 {
     public interface ISitemapLoader
     {

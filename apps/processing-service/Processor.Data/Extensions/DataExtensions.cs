@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using StageSide.Processor.Data.Database;
+using StageSide.Processor.Data.Database.Comedy;
 using StageSide.Processor.Data.Utils;
 using StageSide.Processor.Domain.Database;
 

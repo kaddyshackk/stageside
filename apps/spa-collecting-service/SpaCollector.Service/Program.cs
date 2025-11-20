@@ -1,3 +1,5 @@
+using Coravel;
+using Coravel.Queuing.Interfaces;
 using Microsoft.Playwright;
 using Scalar.AspNetCore;
 using Serilog;
@@ -25,7 +27,7 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 builder.Services.AddOpenApi();
 builder.Services.AddServiceLayer(builder.Configuration);
 builder.Services.AddDataLayer(builder.Configuration);
-builder.Services.AddDomainLayer();
+builder.Services.AddDomainLayer(builder.Configuration);
 builder.Services.AddSources();
 
 // -- [ Configure Application ] ----
@@ -43,6 +45,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseSerilogRequestLogging();
 app.MapEndpoints(typeof(Program).Assembly);
+app.Services.ConfigureQueue()
+    .LogQueuedTaskProgress(app.Services.GetRequiredService<ILogger<IQueue>>());
 
 app.Run();
 

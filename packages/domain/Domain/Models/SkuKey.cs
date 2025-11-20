@@ -1,13 +1,10 @@
-﻿using System.ComponentModel;
-
-namespace StageSide.Domain.Models
+﻿namespace StageSide.Domain.Models
 {
     /// <summary>
     /// Defines a unique origin from a specific data source.
     /// </summary>
-    public enum SkuKey
+    public static class SkuKey
     {
-        [Description("PunchupTicketsPage")]
-        PunchupTicketsPage
+        public const string PunchupTicketsPage = "PunchupTicketsPage";
     }
 }

@@ -1,8 +1,8 @@
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
-using StageSide.SpaCollector.Domain.Collection;
 using StageSide.SpaCollector.Domain.Collection.Interfaces;
+using StageSide.SpaCollector.Domain.Collection.Models;
 
 namespace StageSide.SpaCollector.Data.Collection;
 

@@ -13,6 +13,6 @@ public static class SourceExtensions
 
     private static void AddPunchupSource(this IServiceCollection services)
     {
-        services.AddKeyedScoped<IPipelineAdapter, PunchupTicketsPageAdapter>(SkuKey.PunchupTicketsPage.GetEnumDescription());
+        services.AddKeyedScoped<IPipelineAdapter, PunchupTicketsPageAdapter>(SkuKey.PunchupTicketsPage);
     }
 }

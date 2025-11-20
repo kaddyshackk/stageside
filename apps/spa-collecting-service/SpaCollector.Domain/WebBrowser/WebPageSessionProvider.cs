@@ -12,6 +12,7 @@ public class WebPageSessionProvider(IWebBrowserManager manager) : IWebPageSessio
             var page = await context.NewPageAsync();
             return new WebPageSession
             {
+                BrowserManager = manager,
                 Page = page,
                 Context = context,
             };

@@ -7,7 +7,6 @@ namespace StageSide.Pipeline.Models
         public Guid Id { get; init; } = Guid.NewGuid();
         public required Guid JobId { get; init; } = Guid.NewGuid();
         public required Source Source { get; init; }
-        public required SkuKey SkuKey { get; init; }
         public required PipelineMetadata Metadata { get; init; }
         public string? RawData { get; set; }
         public ICollection<ProcessedEntity> ProcessedEntities { get; set; } = [];

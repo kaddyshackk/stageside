@@ -1,6 +1,6 @@
 using StageSide.Domain.Models;
 
-namespace StageSide.SpaCollector.Domain.Collection;
+namespace StageSide.SpaCollector.Domain.Collection.Models;
 
 public record CollectionConfig : AuditableEntity
 {

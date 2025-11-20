@@ -10,7 +10,7 @@ namespace StageSide.Punchup.Adapter
     {
         public async Task<object> CollectAsync(string url, CancellationToken ct)
         {
-            var session = await provider.CreateSessionAsync(ct);
+            await using var session = await provider.CreateSessionAsync(ct);
             var pom = new TicketsPage(session.Page);
 
             // Load page

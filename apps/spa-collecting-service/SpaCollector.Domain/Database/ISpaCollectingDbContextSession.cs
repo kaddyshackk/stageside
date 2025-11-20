@@ -1,5 +1,5 @@
-using StageSide.SpaCollector.Domain.Collection;
 using StageSide.Data.Database;
+using StageSide.SpaCollector.Domain.Collection.Models;
 
 namespace StageSide.SpaCollector.Domain.Database;
 

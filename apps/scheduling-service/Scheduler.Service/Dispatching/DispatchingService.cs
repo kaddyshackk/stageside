@@ -1,10 +1,13 @@
-﻿using Microsoft.Extensions.Options;
+﻿using MassTransit;
+using Microsoft.Extensions.Options;
+using StageSide.Contracts.Queue;
+using StageSide.Contracts.Scheduling.Commands;
 using StageSide.Domain.Models;
 using StageSide.Scheduler.Domain.Dispatching;
 
 namespace StageSide.Scheduler.Service.Dispatching;
 
-public class DispatchingService(ExecutionService service, IOptions<DispatchingServiceOptions> options, ILogger<DispatchingService> logger) : BackgroundService
+public class DispatchingService(IServiceScopeFactory scopeFactory, IOptions<DispatchingServiceOptions> options, ILogger<DispatchingService> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
@@ -13,18 +16,36 @@ public class DispatchingService(ExecutionService service, IOptions<DispatchingSe
         {
             try
             {
+                await using var scope = scopeFactory.CreateAsyncScope();
+                var service = scope.ServiceProvider.GetRequiredService<ExecutionService>();
+                var endpointProvider = scope.ServiceProvider.GetRequiredService<ISendEndpointProvider>();
+                
                 var nextSchedule = await service.GetNextScheduleAsync(ct);
-                if (nextSchedule == null) continue;
+                if (nextSchedule == null)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(options.Value.DelayIntervalSeconds), ct);
+                    continue;
+                }
                 
                 var job = await service.CreateJobAsync(nextSchedule.Id, ct);
 
-                if (nextSchedule.Sku.CollectionType == CollectionType.Spa)
+                switch (nextSchedule.Sku.CollectionType)
                 {
-                    // TODO: Emit command event to start collecting
-                }
-                else
-                {
-                    throw new ArgumentException($"{nameof(nextSchedule.Sku.CollectionConfigId)} is invalid");
+                    case CollectionType.Spa:
+                    {
+                        var endpoint = await endpointProvider.GetSendEndpoint(new Uri($"queue:{QueueNames.SpaCollection}"));
+                        await endpoint.Send(new StartSpaCollectionJobCommand
+                        {
+                            JobId = job.Id,
+                            SkuId = nextSchedule.Sku.Id,
+                            SkuName = nextSchedule.Sku.Name,
+                        }, ct);
+                        break;
+                    }
+                    case CollectionType.Api:
+                        throw new NotImplementedException($"Collection of api data sources is not supported.");
+                    default:
+                        throw new ArgumentException($"{nameof(nextSchedule.Sku.CollectionConfigId)} is invalid");
                 }
             }
             catch (Exception ex)
