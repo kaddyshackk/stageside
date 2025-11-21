@@ -15,11 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\packages\collection\Collection\Collection.csproj" />
-    <ProjectReference Include="..\..\..\packages\contracts\Contracts\Contracts.csproj" />
-    <ProjectReference Include="..\..\..\packages\data\Data\Data.csproj" />
     <ProjectReference Include="..\..\..\packages\domain\Domain\Domain.csproj" />
+    <ProjectReference Include="..\..\..\packages\data\Data\Data.csproj" />
+    <ProjectReference Include="..\..\..\packages\contracts\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\..\..\packages\pipeline\Pipeline\Pipeline.csproj" />
+    <ProjectReference Include="..\..\..\packages\collection\Collection\Collection.csproj" />
     <ProjectReference Include="..\..\..\packages\punchup\Punchup\Punchup.csproj" />
   </ItemGroup>
 

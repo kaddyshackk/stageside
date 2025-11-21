@@ -1,18 +1,14 @@
 ﻿{
-  "name": "scheduling-service",
+  "name": "contracts",
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "dotnet build ./Scheduler.Service",
+    "build": "dotnet build ./Contracts",
     "test": "dotnet test --filter \"TestCategory=Unit\"",
     "docker:build": "docker build ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.19.0",
-  "dependencies": {
-    "data": "workspace:*",
-    "contracts": "workspace:*"
-  }
+  "packageManager": "pnpm@10.19.0"
 }

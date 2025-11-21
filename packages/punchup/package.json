@@ -1,9 +1,9 @@
 ﻿{
-  "name": "scheduling-service",
+  "name": "punchup",
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "dotnet build ./Scheduler.Service",
+    "build": "dotnet build ./Punchup",
     "test": "dotnet test --filter \"TestCategory=Unit\"",
     "docker:build": "docker build ."
   },
@@ -12,7 +12,8 @@
   "license": "ISC",
   "packageManager": "pnpm@10.19.0",
   "dependencies": {
-    "data": "workspace:*",
-    "contracts": "workspace:*"
+    "domain": "workspace:*",
+    "pipeline": "workspace:*",
+    "collection": "workspace:*"
   }
 }

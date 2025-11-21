@@ -12,6 +12,24 @@ importers:
         specifier: ^2.5.8
         version: 2.5.8
 
+  apps/processing-service: {}
+
+  apps/scheduling-service: {}
+
+  apps/spa-collecting-service: {}
+
+  packages/collection: {}
+
+  packages/contracts: {}
+
+  packages/data: {}
+
+  packages/domain: {}
+
+  packages/pipeline: {}
+
+  packages/punchup: {}
+
 packages:
 
   turbo-darwin-64@2.5.8:
