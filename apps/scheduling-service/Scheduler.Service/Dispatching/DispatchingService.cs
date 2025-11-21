@@ -18,7 +18,7 @@ public class DispatchingService(IServiceScopeFactory scopeFactory, IOptions<Disp
             {
                 await using var scope = scopeFactory.CreateAsyncScope();
                 var service = scope.ServiceProvider.GetRequiredService<ExecutionService>();
-                var endpointProvider = scope.ServiceProvider.GetRequiredService<ISendEndpointProvider>();
+                var endpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
                 
                 var nextSchedule = await service.GetNextScheduleAsync(ct);
                 if (nextSchedule == null)
@@ -33,8 +33,7 @@ public class DispatchingService(IServiceScopeFactory scopeFactory, IOptions<Disp
                 {
                     case CollectionType.Spa:
                     {
-                        var endpoint = await endpointProvider.GetSendEndpoint(new Uri($"queue:{QueueNames.SpaCollection}"));
-                        await endpoint.Send(new StartSpaCollectionJobCommand
+                        await endpoint.Publish(new StartSpaCollectionJobCommand
                         {
                             JobId = job.Id,
                             SkuId = nextSchedule.Sku.Id,
