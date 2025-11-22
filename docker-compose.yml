@@ -1,57 +1,6 @@
 services:
 
-  scheduling-service:
-    build:
-      context: .
-      dockerfile: ./apps/scheduling-service/Dockerfile
-    image: scheduling-service:latest
-    environment:
-      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
-      - ConnectionStrings__SchedulingDb=${SCHEDULING_POSTGRES_CONNECTION}
-    ports:
-      - "5281:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - comedypull-dev
-  
-  spa-collecting-service:
-    build:
-      context: .
-      dockerfile: ./apps/spa-collecting-service/Dockerfile
-    image: spa-collecting-service:latest
-    environment:
-      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
-      - ConnectionStrings__SpaCollectingDb=${SPA_POSTGRES_CONNECTION}
-    ports:
-      - "5281:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - comedypull-dev
-    # Playwright-specific configuration
-    init: true
-    ipc: host
-    
-  processing-service:
-    build:
-      context: .
-      dockerfile: ./apps/processing-service/Dockerfile
-    image: processing-service:latest
-    environment:
-      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
-      - ConnectionStrings__ProcessingDb=${PROCESSING_POSTGRES_CONNECTION}
-      - ConnectionStrings__ProcessingDb=${COMEDY_POSTGRES_CONNECTION}
-    ports:
-      - "5281:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - comedypull-dev
-
+  # Infrastructure Services
   postgres:
     image: postgres:15-alpine
     environment:
@@ -70,6 +19,30 @@ services:
       retries: 5
     networks:
       - comedypull-dev
+    profiles:
+      - infrastructure
+      - services
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-admin}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-password}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - comedypull-dev
+    profiles:
+      - infrastructure
+      - services
 
   seq:
     image: datalust/seq:latest
@@ -82,10 +55,79 @@ services:
       - seq_data:/data
     networks:
       - comedypull-dev
+    profiles:
+      - infrastructure
+      - services
+
+  # Microservices
+  scheduling-service:
+    build:
+      context: .
+      dockerfile: ./apps/scheduling-service/Dockerfile
+    image: scheduling-service:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
+      - ConnectionStrings__SchedulingDb=${SCHEDULING_POSTGRES_CONNECTION}
+    ports:
+      - "5281:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - comedypull-dev
+    profiles:
+      - services
+  
+  spa-collecting-service:
+    build:
+      context: .
+      dockerfile: ./apps/spa-collecting-service/Dockerfile
+    image: spa-collecting-service:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
+      - ConnectionStrings__SpaCollectingDb=${SPA_POSTGRES_CONNECTION}
+    ports:
+      - "5282:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - comedypull-dev
+    profiles:
+      - services
+    # Playwright-specific configuration
+    init: true
+    ipc: host
+    
+  processing-service:
+    build:
+      context: .
+      dockerfile: ./apps/processing-service/Dockerfile
+    image: processing-service:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
+      - ConnectionStrings__ProcessingDb=${PROCESSING_POSTGRES_CONNECTION}
+      - ConnectionStrings__ProcessingDb=${COMEDY_POSTGRES_CONNECTION}
+    ports:
+      - "5283:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - comedypull-dev
+    profiles:
+      - services
 
 volumes:
   postgres_data:
   seq_data:
+  rabbitmq_data:
 
 networks:
   comedypull-dev:
