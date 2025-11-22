@@ -7,9 +7,6 @@
     "test": {
       "dependsOn": ["^build", "^test"]
     },
-    "docker:build": {
-      "dependsOn": ["^test", "^docker:build"]
-    },
     "dev": {
       "persistent": true,
       "cache": false
