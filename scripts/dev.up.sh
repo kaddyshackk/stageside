@@ -11,5 +11,11 @@ until docker compose ps postgres | grep -q "healthy"; do
 done
 
 echo "> Applying migrations"
-source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/pipeline-service/Pipeline.Data --context ComedyDbContext
-source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/pipeline-service/Pipeline.Data --context SchedulingDbContext
+
+# scheduling-service
+source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/scheduling-service/Scheduler.Data --context SchedulingDbContext
+# spa-collecting-service
+source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/spa-collecting-service/SpaCollector.Data --context SpaCollectingDbContext
+# processing-service
+source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/processing-service/Processor.Data --context ComedyDbContext
+

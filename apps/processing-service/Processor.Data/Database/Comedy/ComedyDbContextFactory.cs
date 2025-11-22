@@ -22,7 +22,7 @@ namespace StageSide.Processor.Data.Database.Comedy
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Pipeline.Service", "Settings"))
+                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Processor.Service", "Settings"))
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile($"appsettings.{environment}.json", optional: true)
                 .AddEnvironmentVariables();
