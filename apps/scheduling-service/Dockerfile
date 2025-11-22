@@ -1,5 +1,5 @@
 # -- [ RESTORE ] ----
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS restore
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS restore
 
 WORKDIR /src
 
@@ -25,7 +25,7 @@ COPY . .
 RUN dotnet publish apps/scheduling-service/Scheduler.Service/Scheduler.Service.csproj -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # -- [ PACKAGE API ] ----
-FROM build AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 
 WORKDIR /app
 
