@@ -253,12 +253,6 @@
       "domain": {
         "type": "Project"
       },
-      "scheduling": {
-        "type": "Project",
-        "dependencies": {
-          "Domain": "[1.0.0, )"
-        }
-      },
       "Microsoft.EntityFrameworkCore": {
         "type": "CentralTransitive",
         "requested": "[9.0.0, )",
