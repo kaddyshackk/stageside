@@ -1,13 +1,14 @@
-﻿using MassTransit;
+using MassTransit;
 using StageSide.Scheduler.Service.Dispatching;
 
 namespace StageSide.Scheduler.Service.Extensions;
 
 public static class ServiceExtensions
 {
-    public static void AddServiceLayer(this IServiceCollection services)
+    public static void AddServiceLayer(this IServiceCollection services, IConfiguration configuration)
     {
         // Dispatching services
+        services.Configure<DispatchingServiceOptions>(configuration.GetSection("DispatchingService"));
         services.AddHostedService<DispatchingService>();
         
         services.AddMassTransit(x =>

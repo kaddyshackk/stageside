@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StageSide.Scheduler.Domain.Database;
 using StageSide.Scheduler.Domain.Models;

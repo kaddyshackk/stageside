@@ -1,4 +1,4 @@
-﻿using Cronos;
+using Cronos;
 
 namespace StageSide.Scheduler.Domain.Scheduling
 {

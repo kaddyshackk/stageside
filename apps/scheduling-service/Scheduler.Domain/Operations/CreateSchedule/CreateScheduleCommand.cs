@@ -1,4 +1,4 @@
-﻿namespace StageSide.Scheduler.Domain.Operations.CreateSchedule
+namespace StageSide.Scheduler.Domain.Operations.CreateSchedule
 {
     public record CreateScheduleCommand
     {

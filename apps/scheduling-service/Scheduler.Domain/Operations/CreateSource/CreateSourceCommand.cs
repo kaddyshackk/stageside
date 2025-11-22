@@ -1,4 +1,4 @@
-﻿namespace StageSide.Scheduler.Domain.Operations.CreateSource
+namespace StageSide.Scheduler.Domain.Operations.CreateSource
 {
     public record CreateSourceCommand
     {

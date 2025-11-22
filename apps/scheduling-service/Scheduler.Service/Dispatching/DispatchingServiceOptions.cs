@@ -1,4 +1,4 @@
-﻿namespace StageSide.Scheduler.Service.Dispatching;
+namespace StageSide.Scheduler.Service.Dispatching;
 
 public class DispatchingServiceOptions
 {

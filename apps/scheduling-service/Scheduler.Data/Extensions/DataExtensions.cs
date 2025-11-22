@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StageSide.Scheduler.Data.Database;
 using StageSide.Scheduler.Data.Utils;

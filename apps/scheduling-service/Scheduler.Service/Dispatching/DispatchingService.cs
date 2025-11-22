@@ -1,4 +1,4 @@
-﻿using MassTransit;
+using MassTransit;
 using Microsoft.Extensions.Options;
 using StageSide.Contracts.Scheduling.Commands;
 using StageSide.Domain.Models;

@@ -20,7 +20,7 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .Enrich.FromLogContext());
 
 builder.Services.AddOpenApi();
-builder.Services.AddServiceLayer();
+builder.Services.AddServiceLayer(builder.Configuration);
 builder.Services.AddDataLayer(builder.Configuration);
 builder.Services.AddDomainLayer();
 

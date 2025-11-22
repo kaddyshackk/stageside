@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using StageSide.Scheduler.Domain.Dispatching;
 using StageSide.Scheduler.Domain.Scheduling;
 

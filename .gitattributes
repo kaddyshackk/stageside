@@ -1,0 +1,12 @@
+# Default: normalize to LF on checkin, LF in working directory
+* text=auto eol=lf
+
+# Enforce Unix line endings for shell scripts
+*.sh text eol=lf
+
+# Environment files must use LF
+.env* text eol=lf
+
+# EditorConfig and gitattributes must use LF
+.editorconfig text eol=lf
+.gitattributes text eol=lf
