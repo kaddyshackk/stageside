@@ -18,6 +18,9 @@ namespace StageSide.Scheduler.Data.Database.Configurations
             builder.Property(x => x.SkuId)
                 .IsRequired();
             
+            builder.Property(x => x.SourceId)
+                .IsRequired();
+            
             builder.Property(x => x.Name)
                 .HasMaxLength(100)
                 .IsRequired();

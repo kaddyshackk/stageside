@@ -1,8 +1,9 @@
-namespace StageSide.Scheduler.Service.Scheduling.Operations.CreateSchedule
+namespace StageSide.Scheduler.Service.Operations.CreateSchedule
 {
     public class CreateScheduleResponse
     {
         public required string Id { get; set; }
+        public required string SourceId { get; set; }
         public required string SkuId { get; set; }
         public required string Name { get; set; }
         public string? CronExpression { get; set; }

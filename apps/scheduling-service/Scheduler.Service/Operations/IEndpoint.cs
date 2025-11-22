@@ -1,4 +1,4 @@
-namespace StageSide.Scheduler.Service
+namespace StageSide.Scheduler.Service.Operations
 {
     public interface IEndpoint
     {

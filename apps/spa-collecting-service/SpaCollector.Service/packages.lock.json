@@ -65,6 +65,12 @@
           "System.Text.Json": "6.0.10"
         }
       },
+      "Riok.Mapperly": {
+        "type": "Direct",
+        "requested": "[4.3.0-next.5, )",
+        "resolved": "4.3.0-next.5",
+        "contentHash": "sICJfHHDO3X7nXp0kPNyXyYpMO0iTw6aIKNnYzLVRbCsw5BS8CSV2sqfJ+gk9416q5yrt9QqtJzS4n79gPsBeQ=="
+      },
       "Scalar.AspNetCore": {
         "type": "Direct",
         "requested": "[2.8.11, )",

@@ -1,4 +1,4 @@
-namespace StageSide.Scheduler.Domain.Scheduling.Operations.CreateSchedule
+namespace StageSide.Scheduler.Domain.Operations.CreateSchedule
 {
     public class SitemapDto
     {

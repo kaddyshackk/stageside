@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StageSide.Data.Configuration;
-using StageSide.SpaCollector.Domain.Collection.Models;
+using StageSide.SpaCollector.Domain.Models;
 
 namespace StageSide.SpaCollector.Data.Database.Configurations
 {
@@ -15,7 +15,7 @@ namespace StageSide.SpaCollector.Data.Database.Configurations
 
             builder.HasKey(x => x.Id);
             
-            builder.Property(x => x.ScheduleId)
+            builder.Property(x => x.SkuId)
                 .IsRequired();
             
             builder.Property(x => x.Url)

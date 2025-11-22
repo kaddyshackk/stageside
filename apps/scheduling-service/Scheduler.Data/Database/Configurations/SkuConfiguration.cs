@@ -22,12 +22,9 @@ public class SkuConfiguration : BaseEntityConfiguration<Sku>
             .HasMaxLength(100)
             .IsRequired();
         
-        builder.Property(s => s.CollectionType)
+        builder.Property(s => s.Type)
             .HasConversion<string>()
             .HasMaxLength(50)
-            .IsRequired();
-
-        builder.Property(s => s.CollectionConfigId)
             .IsRequired();
     }
 }

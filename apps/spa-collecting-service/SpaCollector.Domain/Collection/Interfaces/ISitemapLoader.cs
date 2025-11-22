@@ -1,4 +1,4 @@
-﻿using StageSide.SpaCollector.Domain.Collection.Models;
+﻿using StageSide.SpaCollector.Domain.Models;
 
 namespace StageSide.SpaCollector.Domain.Collection.Interfaces
 {

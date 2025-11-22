@@ -1,17 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StageSide.Data.Configuration;
-using StageSide.SpaCollector.Domain.Collection.Models;
+using StageSide.SpaCollector.Domain.Models;
 
 namespace StageSide.SpaCollector.Data.Database.Configurations;
 
-public class CollectionConfigConfiguration : BaseEntityConfiguration<CollectionConfig>
+public class SpaConfigConfiguration : BaseEntityConfiguration<SpaConfig>
 {
-    public override void Configure(EntityTypeBuilder<CollectionConfig> builder)
+    public override void Configure(EntityTypeBuilder<SpaConfig> builder)
     {
         base.Configure(builder);
 
-        builder.ToTable("CollectionConfigs");
+        builder.ToTable("SpaConfigs");
 
         builder.HasKey(x => x.Id);
 

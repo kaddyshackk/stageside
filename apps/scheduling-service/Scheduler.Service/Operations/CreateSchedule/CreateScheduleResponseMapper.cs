@@ -1,11 +1,12 @@
 using Riok.Mapperly.Abstractions;
 using StageSide.Scheduler.Domain.Models;
 
-namespace StageSide.Scheduler.Service.Scheduling.Operations.CreateSchedule
+namespace StageSide.Scheduler.Service.Operations.CreateSchedule
 {
     [Mapper]
     public partial class CreateScheduleResponseMapper
     {
+        [MapperIgnoreSource("Source")]
         [MapperIgnoreSource("Sku")]
         [MapperIgnoreSource("Jobs")]
         [MapperIgnoreSource("CreatedAt")]

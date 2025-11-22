@@ -1,18 +1,18 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using StageSide.Data.Database;
-using StageSide.SpaCollector.Domain.Collection.Models;
 using StageSide.SpaCollector.Domain.Database;
+using StageSide.SpaCollector.Domain.Models;
 
 namespace StageSide.SpaCollector.Data.Database;
 
 public class SpaCollectingDbContextSession(SpaCollectingDbContext context) : ISpaCollectingDbContextSession
 {
     private IRepository<Sitemap>? _sitemaps;
-    private IRepository<CollectionConfig>? _collectionConfigs;
+    private IRepository<SpaConfig>? _spaConfigs;
     private IDbContextTransaction? _transaction;
 
     public IRepository<Sitemap> Sitemaps => _sitemaps ??= new Repository<Sitemap>(context);
-    public IRepository<CollectionConfig> CollectionConfigs => _collectionConfigs ??= new Repository<CollectionConfig>(context);
+    public IRepository<SpaConfig> SpaConfigs => _spaConfigs ??= new Repository<SpaConfig>(context);
 
     public async Task<int> SaveChangesAsync(CancellationToken stoppingToken)
     {

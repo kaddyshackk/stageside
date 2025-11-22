@@ -26,7 +26,7 @@ public class SpaCollectionJob(
         var sitemapLoader = scope.ServiceProvider.GetRequiredService<ISitemapLoader>();
         var pipelineAdapterFactory = scope.ServiceProvider.GetRequiredService<IPipelineAdapterFactory>();
         
-        var config = await session.CollectionConfigs.Query()
+        var config = await session.SpaConfigs.Query()
             .Include(x => x.Sitemaps)
             .Where(x => x.SkuId == Payload.SkuId)
             .FirstOrDefaultAsync(ct);

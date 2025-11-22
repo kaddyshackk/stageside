@@ -1,6 +1,5 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Options;
-using StageSide.Contracts.Queue;
 using StageSide.Contracts.Scheduling.Commands;
 using StageSide.Domain.Models;
 using StageSide.Scheduler.Domain.Dispatching;
@@ -29,9 +28,9 @@ public class DispatchingService(IServiceScopeFactory scopeFactory, IOptions<Disp
                 
                 var job = await service.CreateJobAsync(nextSchedule.Id, ct);
 
-                switch (nextSchedule.Sku.CollectionType)
+                switch (nextSchedule.Sku.Type)
                 {
-                    case CollectionType.Spa:
+                    case SkuType.Spa:
                     {
                         await endpoint.Publish(new StartSpaCollectionJobCommand
                         {
@@ -41,10 +40,10 @@ public class DispatchingService(IServiceScopeFactory scopeFactory, IOptions<Disp
                         }, ct);
                         break;
                     }
-                    case CollectionType.Api:
+                    case SkuType.Api:
                         throw new NotImplementedException($"Collection of api data sources is not supported.");
                     default:
-                        throw new ArgumentException($"{nameof(nextSchedule.Sku.CollectionConfigId)} is invalid");
+                        throw new ArgumentException($"Sku of {nameof(nextSchedule.Sku.Type)} is invalid");
                 }
             }
             catch (Exception ex)

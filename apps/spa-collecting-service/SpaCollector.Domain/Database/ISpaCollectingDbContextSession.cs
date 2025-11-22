@@ -1,10 +1,10 @@
 using StageSide.Data.Database;
-using StageSide.SpaCollector.Domain.Collection.Models;
+using StageSide.SpaCollector.Domain.Models;
 
 namespace StageSide.SpaCollector.Domain.Database;
 
 public interface ISpaCollectingDbContextSession : IContextSession, IDisposable
 {
     IRepository<Sitemap> Sitemaps { get; }
-    IRepository<CollectionConfig> CollectionConfigs { get; }
+    IRepository<SpaConfig> SpaConfigs { get; }
 }

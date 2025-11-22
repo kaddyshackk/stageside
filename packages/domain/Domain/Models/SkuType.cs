@@ -1,6 +1,6 @@
 namespace StageSide.Domain.Models
 {
-    public enum CollectionType
+    public enum SkuType
     {
         Spa,
         Api

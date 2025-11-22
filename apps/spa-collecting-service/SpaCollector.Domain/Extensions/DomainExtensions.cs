@@ -5,6 +5,7 @@ using StageSide.Collection.WebBrowser.Params;
 using StageSide.Pipeline.Interfaces;
 using StageSide.Punchup.Adapter;
 using StageSide.SpaCollector.Domain.Collection;
+using StageSide.SpaCollector.Domain.Configuration;
 using StageSide.SpaCollector.Domain.WebBrowser;
 using StageSide.SpaCollector.Domain.WebBrowser.Options;
 
@@ -14,7 +15,10 @@ public static class DomainExtensions
 {
     public static void AddDomainLayer(this IServiceCollection services, IConfiguration configuration)
     {
-        // Collection Jobs
+        // Configuration Services
+        services.AddScoped<ConfigurationService>();
+        
+        // Collection Services
         services.AddTransient<SpaCollectionJob>();
         
         // Web Browser

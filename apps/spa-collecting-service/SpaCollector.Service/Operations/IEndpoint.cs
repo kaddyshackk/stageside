@@ -1,4 +1,4 @@
-namespace StageSide.SpaCollector.Service
+namespace StageSide.SpaCollector.Service.Operations
 {
     public interface IEndpoint
     {

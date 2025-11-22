@@ -18,5 +18,9 @@ public class SourceConfiguration : BaseEntityConfiguration<Source>
         builder.Property(s => s.Name)
             .HasMaxLength(100)
             .IsRequired();
+        
+        builder.Property(s => s.Website)
+            .HasMaxLength(255)
+            .IsRequired();
     }
 }

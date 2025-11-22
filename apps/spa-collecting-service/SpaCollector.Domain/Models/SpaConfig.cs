@@ -1,8 +1,8 @@
 using StageSide.Domain.Models;
 
-namespace StageSide.SpaCollector.Domain.Collection.Models;
+namespace StageSide.SpaCollector.Domain.Models;
 
-public record CollectionConfig : AuditableEntity
+public record SpaConfig : AuditableEntity
 {
     public Guid Id { get; set; }
     public required Guid SkuId { get; set; }

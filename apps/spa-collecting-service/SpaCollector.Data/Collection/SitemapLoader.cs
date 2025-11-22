@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using StageSide.SpaCollector.Domain.Collection.Interfaces;
-using StageSide.SpaCollector.Domain.Collection.Models;
+using StageSide.SpaCollector.Domain.Models;
 
 namespace StageSide.SpaCollector.Data.Collection;
 

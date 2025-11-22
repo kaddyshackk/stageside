@@ -1,4 +1,5 @@
 using System.Reflection;
+using StageSide.SpaCollector.Service.Operations;
 
 namespace StageSide.SpaCollector.Service.Extensions
 {

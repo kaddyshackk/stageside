@@ -1,5 +1,5 @@
 using System.Reflection;
-using StageSide.Scheduler.Service.Scheduling.Operations;
+using StageSide.Scheduler.Service.Operations;
 
 namespace StageSide.Scheduler.Service.Extensions
 {
