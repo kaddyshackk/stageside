@@ -1,4 +1,4 @@
-﻿using StageSide.Scheduler.Domain.Dispatching;
+﻿using MassTransit;
 using StageSide.Scheduler.Service.Dispatching;
 
 namespace StageSide.Scheduler.Service.Extensions;
@@ -9,6 +9,14 @@ public static class ServiceExtensions
     {
         // Dispatching services
         services.AddHostedService<DispatchingService>();
-        services.AddSingleton<ExecutionService>();
+        
+        services.AddMassTransit(x =>
+        {
+            x.SetKebabCaseEndpointNameFormatter();
+            x.UsingInMemory((context, config) =>
+            {
+                config.ConfigureEndpoints(context);
+            });
+        });
     }
 }

@@ -4,7 +4,7 @@ using StageSide.Pipeline.Models;
 
 namespace StageSide.Processor.Domain.Transforming;
 
-public class TransformingService(IPipelineAdapterFactory adapterFactory, ILogger<TransformingService> logger)
+public class TransformingService()
 {
     private void TransformBatch(ICollection<PipelineContext> batch)
     {

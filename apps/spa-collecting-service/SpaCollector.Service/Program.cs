@@ -24,6 +24,7 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Services(services)
     .Enrich.FromLogContext());
 
+builder.Services.AddHttpClient();
 builder.Services.AddOpenApi();
 builder.Services.AddServiceLayer(builder.Configuration);
 builder.Services.AddDataLayer(builder.Configuration);

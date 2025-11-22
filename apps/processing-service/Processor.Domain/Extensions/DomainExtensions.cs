@@ -11,8 +11,5 @@ public static class DomainExtensions
         services.AddScoped<ActService>();
         services.AddScoped<VenueService>();
         services.AddScoped<EventService>();
-
-        services.AddSingleton<ProcessingService>();
-        services.AddSingleton<TransformingService>();
     }
 }
