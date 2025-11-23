@@ -3,6 +3,8 @@ services:
   # Infrastructure Services
   postgres:
     image: postgres:15-alpine
+    env_file:
+      - ./docker-compose.env
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -25,6 +27,8 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
+    env_file:
+      - ./docker-compose.env
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-admin}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-password}
@@ -46,6 +50,8 @@ services:
 
   seq:
     image: datalust/seq:latest
+    env_file:
+      - ./docker-compose.env
     environment:
       - ACCEPT_EULA=Y
       - SEQ_FIRSTRUN_ADMINPASSWORD=${SEQ_PASSWORD}
@@ -65,9 +71,8 @@ services:
       context: .
       dockerfile: ./apps/scheduling-service/Dockerfile
     image: scheduling-service:latest
-    environment:
-      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
-      - ConnectionStrings__SchedulingDb=${SCHEDULING_POSTGRES_CONNECTION}
+    env_file:
+      - ./apps/scheduling-service/.env
     ports:
       - "5281:8080"
     depends_on:
@@ -85,9 +90,8 @@ services:
       context: .
       dockerfile: ./apps/spa-collecting-service/Dockerfile
     image: spa-collecting-service:latest
-    environment:
-      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
-      - ConnectionStrings__SpaCollectingDb=${SPA_POSTGRES_CONNECTION}
+    env_file:
+      - ./apps/spa-collecting-service/.env
     ports:
       - "5282:8080"
     depends_on:
@@ -108,10 +112,8 @@ services:
       context: .
       dockerfile: ./apps/processing-service/Dockerfile
     image: processing-service:latest
-    environment:
-      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
-      - ConnectionStrings__ProcessingDb=${PROCESSING_POSTGRES_CONNECTION}
-      - ConnectionStrings__ProcessingDb=${COMEDY_POSTGRES_CONNECTION}
+    env_file:
+      - ./apps/processing-service/.env
     ports:
       - "5283:8080"
     depends_on:

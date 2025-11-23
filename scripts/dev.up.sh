@@ -3,7 +3,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "> Starting infrastructure services (postgres, rabbitmq, seq)"
-docker compose --env-file .env --profile infrastructure up -d
+docker compose --env-file docker-compose.env --profile infrastructure up -d
 
 echo "> Waiting for postgres to be healthy"
 until docker compose ps postgres | grep -q "healthy"; do
@@ -22,19 +22,19 @@ echo "> Applying migrations"
 
 # scheduling-service
 echo "  Applying scheduling-service migrations..."
-source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/scheduling-service/Scheduler.Data --context SchedulingDbContext
+source "$SCRIPT_DIR/ef.sh" apps/scheduling-service/.env.local database update --project apps/scheduling-service/Scheduler.Data --context SchedulingDbContext
 
 # spa-collecting-service
 echo "  Applying spa-collecting-service migrations..."
-source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/spa-collecting-service/SpaCollector.Data --context SpaCollectingDbContext
+source "$SCRIPT_DIR/ef.sh" apps/spa-collecting-service/.env.local database update --project apps/spa-collecting-service/SpaCollector.Data --context SpaCollectingDbContext
 
 # processing-service
 echo "  Applying processing-service migrations..."
-source "$SCRIPT_DIR/ef.sh" .env.local database update --project apps/processing-service/Processor.Data --context ComedyDbContext
+source "$SCRIPT_DIR/ef.sh" apps/processing-service/.env.local database update --project apps/processing-service/Processor.Data --context ComedyDbContext
 
 echo "> Migrations completed"
 echo "> Starting microservices (scheduling, spa-collecting, processing)"
-docker compose --env-file .env --profile services up -d --build
+docker compose --env-file docker-compose.env --profile services up -d --build
 
 echo "> All services started successfully!"
 echo "> Access points:"
