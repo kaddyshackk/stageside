@@ -58,13 +58,14 @@ jobs:
           SERVICE_NAME="processing-service"
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${SERVICE_NAME}"
           
+          TAG_ARGS=""
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            TAGS="${IMAGE}:pr-${{ github.event.number }}"
+            TAG_ARGS="--tag ${IMAGE}:pr-${{ github.event.number }}"
           else
             BRANCH_NAME=$(echo "${{ github.ref_name }}" | tr '/' '-')
-            TAGS="${IMAGE}:${BRANCH_NAME},${IMAGE}:${{ github.sha }}"
+            TAG_ARGS="--tag ${IMAGE}:${BRANCH_NAME} --tag ${IMAGE}:${{ github.sha }}"
             if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.ref_name }}" == "master" ]]; then
-              TAGS="${TAGS},${IMAGE}:latest"
+              TAG_ARGS="${TAG_ARGS} --tag ${IMAGE}:latest"
             fi
           fi
           
@@ -75,7 +76,7 @@ jobs:
 
           docker buildx build \
             --platform linux/amd64 \
-            --tag ${TAGS} \
+            ${TAG_ARGS} \
             --cache-from type=gha \
             --cache-to type=gha,mode=max \
             ${PUSH_FLAG} \
@@ -87,13 +88,14 @@ jobs:
           SERVICE_NAME="scheduling-service"
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${SERVICE_NAME}"
           
+          TAG_ARGS=""
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            TAGS="${IMAGE}:pr-${{ github.event.number }}"
+            TAG_ARGS="--tag ${IMAGE}:pr-${{ github.event.number }}"
           else
             BRANCH_NAME=$(echo "${{ github.ref_name }}" | tr '/' '-')
-            TAGS="${IMAGE}:${BRANCH_NAME},${IMAGE}:${{ github.sha }}"
+            TAG_ARGS="--tag ${IMAGE}:${BRANCH_NAME} --tag ${IMAGE}:${{ github.sha }}"
             if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.ref_name }}" == "master" ]]; then
-              TAGS="${TAGS},${IMAGE}:latest"
+              TAG_ARGS="${TAG_ARGS} --tag ${IMAGE}:latest"
             fi
           fi
           
@@ -104,7 +106,7 @@ jobs:
 
           docker buildx build \
             --platform linux/amd64 \
-            --tag ${TAGS} \
+            ${TAG_ARGS} \
             --cache-from type=gha \
             --cache-to type=gha,mode=max \
             ${PUSH_FLAG} \
@@ -116,13 +118,14 @@ jobs:
           SERVICE_NAME="spa-collecting-service"
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${SERVICE_NAME}"
           
+          TAG_ARGS=""
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            TAGS="${IMAGE}:pr-${{ github.event.number }}"
+            TAG_ARGS="--tag ${IMAGE}:pr-${{ github.event.number }}"
           else
             BRANCH_NAME=$(echo "${{ github.ref_name }}" | tr '/' '-')
-            TAGS="${IMAGE}:${BRANCH_NAME},${IMAGE}:${{ github.sha }}"
+            TAG_ARGS="--tag ${IMAGE}:${BRANCH_NAME} --tag ${IMAGE}:${{ github.sha }}"
             if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.ref_name }}" == "master" ]]; then
-              TAGS="${TAGS},${IMAGE}:latest"
+              TAG_ARGS="${TAG_ARGS} --tag ${IMAGE}:latest"
             fi
           fi
           
@@ -133,7 +136,7 @@ jobs:
 
           docker buildx build \
             --platform linux/amd64 \
-            --tag ${TAGS} \
+            ${TAG_ARGS} \
             --cache-from type=gha \
             --cache-to type=gha,mode=max \
             ${PUSH_FLAG} \
