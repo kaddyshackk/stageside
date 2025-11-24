@@ -12,6 +12,81 @@ importers:
         specifier: ^2.5.8
         version: 2.5.8
 
+  apps/processing-service:
+    dependencies:
+      data:
+        specifier: workspace:*
+        version: link:../../packages/data
+      domain:
+        specifier: workspace:*
+        version: link:../../packages/domain
+      pipeline:
+        specifier: workspace:*
+        version: link:../../packages/pipeline
+      punchup:
+        specifier: workspace:*
+        version: link:../../packages/punchup
+
+  apps/scheduling-service:
+    dependencies:
+      contracts:
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      data:
+        specifier: workspace:*
+        version: link:../../packages/data
+
+  apps/spa-collecting-service:
+    dependencies:
+      collection:
+        specifier: workspace:*
+        version: link:../../packages/collection
+      contracts:
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      data:
+        specifier: workspace:*
+        version: link:../../packages/data
+      domain:
+        specifier: workspace:*
+        version: link:../../packages/domain
+      pipeline:
+        specifier: workspace:*
+        version: link:../../packages/pipeline
+      punchup:
+        specifier: workspace:*
+        version: link:../../packages/punchup
+
+  packages/collection: {}
+
+  packages/contracts: {}
+
+  packages/data:
+    dependencies:
+      domain:
+        specifier: workspace:*
+        version: link:../domain
+
+  packages/domain: {}
+
+  packages/pipeline:
+    dependencies:
+      domain:
+        specifier: workspace:*
+        version: link:../domain
+
+  packages/punchup:
+    dependencies:
+      collection:
+        specifier: workspace:*
+        version: link:../collection
+      domain:
+        specifier: workspace:*
+        version: link:../domain
+      pipeline:
+        specifier: workspace:*
+        version: link:../pipeline
+
 packages:
 
   turbo-darwin-64@2.5.8:

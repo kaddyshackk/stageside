@@ -1,0 +1,17 @@
+﻿{
+  "name": "pipeline",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "dotnet build ./Pipeline",
+    "test": "dotnet test --filter \"TestCategory=Unit\"",
+    "docker:build": "docker build ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.19.0",
+  "dependencies": {
+    "domain": "workspace:*"
+  }
+}

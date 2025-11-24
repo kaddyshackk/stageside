@@ -47,47 +47,28 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        run: |
-          docker buildx create --use --name mybuilder --driver docker-container
-          docker buildx inspect --bootstrap
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to Container Registry
         if: github.event_name != 'pull_request'
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
-      - name: Extract metadata
-        id: meta
+      - name: Build processing-service
         run: |
-          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
-          TAGS=""
-          LABELS=""
+          SERVICE_NAME="processing-service"
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${SERVICE_NAME}"
           
-          # Generate tags based on event type
+          TAG_ARGS=""
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            TAGS="${IMAGE}:pr-${{ github.event.number }}"
+            TAG_ARGS="--tag ${IMAGE}:pr-${{ github.event.number }}"
           else
             BRANCH_NAME=$(echo "${{ github.ref_name }}" | tr '/' '-')
-            TAGS="${IMAGE}:${BRANCH_NAME}"
-            TAGS="${TAGS},${IMAGE}:${{ github.sha }}"
+            TAG_ARGS="--tag ${IMAGE}:${BRANCH_NAME} --tag ${IMAGE}:${{ github.sha }}"
             if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.ref_name }}" == "master" ]]; then
-              TAGS="${TAGS},${IMAGE}:latest"
+              TAG_ARGS="${TAG_ARGS} --tag ${IMAGE}:latest"
             fi
           fi
           
-          # Generate labels
-          LABELS="org.opencontainers.image.title=${{ github.repository }}"
-          LABELS="${LABELS},org.opencontainers.image.description=StageSide Pipeline Service"
-          LABELS="${LABELS},org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }}"
-          LABELS="${LABELS},org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}"
-          LABELS="${LABELS},org.opencontainers.image.version=${{ github.sha }}"
-          LABELS="${LABELS},org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          LABELS="${LABELS},org.opencontainers.image.revision=${{ github.sha }}"
-          
-          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
-          echo "labels=${LABELS}" >> $GITHUB_OUTPUT
-
-      - name: Build and push Docker image
-        run: |
           PUSH_FLAG=""
           if [[ "${{ github.event_name }}" != "pull_request" ]]; then
             PUSH_FLAG="--push"
@@ -95,10 +76,69 @@ jobs:
 
           docker buildx build \
             --platform linux/amd64 \
-            --tag ${{ steps.meta.outputs.tags }} \
-            --label "${{ steps.meta.outputs.labels }}" \
+            ${TAG_ARGS} \
             --cache-from type=gha \
             --cache-to type=gha,mode=max \
             ${PUSH_FLAG} \
-            -f apps/pipeline-service/Dockerfile \
+            -f apps/processing-service/Dockerfile \
+            .
+
+      - name: Build scheduling-service
+        run: |
+          SERVICE_NAME="scheduling-service"
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${SERVICE_NAME}"
+          
+          TAG_ARGS=""
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            TAG_ARGS="--tag ${IMAGE}:pr-${{ github.event.number }}"
+          else
+            BRANCH_NAME=$(echo "${{ github.ref_name }}" | tr '/' '-')
+            TAG_ARGS="--tag ${IMAGE}:${BRANCH_NAME} --tag ${IMAGE}:${{ github.sha }}"
+            if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.ref_name }}" == "master" ]]; then
+              TAG_ARGS="${TAG_ARGS} --tag ${IMAGE}:latest"
+            fi
+          fi
+          
+          PUSH_FLAG=""
+          if [[ "${{ github.event_name }}" != "pull_request" ]]; then
+            PUSH_FLAG="--push"
+          fi
+
+          docker buildx build \
+            --platform linux/amd64 \
+            ${TAG_ARGS} \
+            --cache-from type=gha \
+            --cache-to type=gha,mode=max \
+            ${PUSH_FLAG} \
+            -f apps/scheduling-service/Dockerfile \
+            .
+
+      - name: Build spa-collecting-service
+        run: |
+          SERVICE_NAME="spa-collecting-service"
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${SERVICE_NAME}"
+          
+          TAG_ARGS=""
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            TAG_ARGS="--tag ${IMAGE}:pr-${{ github.event.number }}"
+          else
+            BRANCH_NAME=$(echo "${{ github.ref_name }}" | tr '/' '-')
+            TAG_ARGS="--tag ${IMAGE}:${BRANCH_NAME} --tag ${IMAGE}:${{ github.sha }}"
+            if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.ref_name }}" == "master" ]]; then
+              TAG_ARGS="${TAG_ARGS} --tag ${IMAGE}:latest"
+            fi
+          fi
+          
+          PUSH_FLAG=""
+          if [[ "${{ github.event_name }}" != "pull_request" ]]; then
+            PUSH_FLAG="--push"
+          fi
+
+          docker buildx build \
+            --platform linux/amd64 \
+            ${TAG_ARGS} \
+            --cache-from type=gha \
+            --cache-to type=gha,mode=max \
+            ${PUSH_FLAG} \
+            -f apps/spa-collecting-service/Dockerfile \
             .

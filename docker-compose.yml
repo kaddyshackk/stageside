@@ -1,28 +1,6 @@
 services:
-  
-  pipeline-service:
-    build:
-      context: .
-      dockerfile: ./apps/pipeline-service/Dockerfile
-    image: pipeline-service:latest
-    environment:
-      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
-      - ConnectionStrings__ComedyDb=${POSTGRES_CONNECTION_COMEDY}
-      - ConnectionStrings__SchedulingDb=${POSTGRES_CONNECTION_SCHEDULING}
-      - ConnectionStrings__Redis=${REDIS_CONNECTION}
-    ports:
-      - "5281:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - comedypull-dev
-    # Playwright-specific configuration
-    init: true
-    ipc: host
 
+  # Infrastructure Services
   postgres:
     image: postgres:15-alpine
     environment:
@@ -40,7 +18,31 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - comedypull-dev
+      - stageside-dev
+    profiles:
+      - infrastructure
+      - services
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-admin}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-password}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stageside-dev
+    profiles:
+      - infrastructure
+      - services
 
   seq:
     image: datalust/seq:latest
@@ -52,41 +54,77 @@ services:
     volumes:
       - seq_data:/data
     networks:
-      - comedypull-dev
+      - stageside-dev
+    profiles:
+      - infrastructure
+      - services
 
-  redis:
-    image: redis:7-alpine
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - REDISCLI_AUTH=${REDIS_PASSWORD}
+  # Microservices
+  scheduling-service:
+    build:
+      context: .
+      dockerfile: ./apps/scheduling-service/Dockerfile
+    image: scheduling-service:latest
+    env_file:
+      - ./apps/scheduling-service/.env
     ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "sh", "-c", "redis-cli --no-auth-warning ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
+      - "5281:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     networks:
-      - comedypull-dev
-    command: redis-server --requirepass ${REDIS_PASSWORD}
+      - stageside-dev
+    profiles:
+      - services
+  
+  spa-collecting-service:
+    build:
+      context: .
+      dockerfile: ./apps/spa-collecting-service/Dockerfile
+    image: spa-collecting-service:latest
+    env_file:
+      - ./apps/spa-collecting-service/.env
+    ports:
+      - "5282:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - stageside-dev
+    profiles:
+      - services
+    # Playwright-specific configuration
+    init: true
+    ipc: host
     
-  redis-insight:
-    image: redislabs/redisinsight:latest
+  processing-service:
+    build:
+      context: .
+      dockerfile: ./apps/processing-service/Dockerfile
+    image: processing-service:latest
+    env_file:
+      - ./apps/processing-service/.env
     ports:
-      - "8001:5540"
-    volumes:
-      - redisinsight_data:/data
+      - "5283:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     networks:
-      - comedypull-dev
+      - stageside-dev
+    profiles:
+      - services
 
 volumes:
   postgres_data:
   seq_data:
-  redis_data:
-  redisinsight_data:
+  rabbitmq_data:
 
 networks:
-  comedypull-dev:
+  stageside-dev:
     driver: bridge

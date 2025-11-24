@@ -1,0 +1,20 @@
+{
+  "name": "processing-service",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "dotnet build ./Processor.Service",
+    "test": "dotnet test --filter \"TestCategory=Unit\"",
+    "docker:build": "docker build ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.19.0",
+  "dependencies": {
+    "domain": "workspace:*",
+    "data": "workspace:*",
+    "pipeline": "workspace:*",
+    "punchup": "workspace:*"
+  }
+}

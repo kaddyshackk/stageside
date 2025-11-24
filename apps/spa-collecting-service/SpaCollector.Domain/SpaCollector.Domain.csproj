@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MassTransit" />
+    <PackageReference Include="Coravel" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\packages\domain\Domain\Domain.csproj" />
+    <ProjectReference Include="..\..\..\packages\data\Data\Data.csproj" />
+    <ProjectReference Include="..\..\..\packages\contracts\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\..\..\packages\pipeline\Pipeline\Pipeline.csproj" />
+    <ProjectReference Include="..\..\..\packages\collection\Collection\Collection.csproj" />
+    <ProjectReference Include="..\..\..\packages\punchup\Punchup\Punchup.csproj" />
+  </ItemGroup>
+
+</Project>

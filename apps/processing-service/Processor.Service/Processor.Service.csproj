@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="Serilog.Sinks.Seq" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\packages\domain\Domain\Domain.csproj" />
+    <ProjectReference Include="..\..\..\packages\pipeline\Pipeline\Pipeline.csproj" />
+    <ProjectReference Include="..\..\..\packages\punchup\Punchup\Punchup.csproj" />
+    <ProjectReference Include="..\Processor.Data\Processor.Data.csproj" />
+    <ProjectReference Include="..\Processor.Domain\Processor.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

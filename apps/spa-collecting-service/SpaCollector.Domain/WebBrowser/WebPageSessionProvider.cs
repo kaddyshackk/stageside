@@ -1,0 +1,26 @@
+﻿using StageSide.Collection.WebBrowser;
+
+namespace StageSide.SpaCollector.Domain.WebBrowser;
+
+public class WebPageSessionProvider(IWebBrowserManager manager) : IWebPageSessionProvider
+{
+    public async Task<IWebPageSession> CreateSessionAsync(CancellationToken ct)
+    {
+        var context = await manager.AcquireContextAsync(ct);
+        try
+        {
+            var page = await context.NewPageAsync();
+            return new WebPageSession
+            {
+                BrowserManager = manager,
+                Page = page,
+                Context = context,
+            };
+        }
+        catch
+        {
+            await manager.ReleaseContextAsync(context, ct);
+            throw;
+        }
+    }
+}

@@ -1,0 +1,12 @@
+using StageSide.Domain.Models;
+
+namespace StageSide.SpaCollector.Domain.Models;
+
+public record SpaConfig : AuditableEntity
+{
+    public Guid Id { get; set; }
+    public required Guid SkuId { get; set; }
+    public string? UserAgent { get; set; }
+    public int MaxConcurrency { get; set; }
+    public ICollection<Sitemap> Sitemaps { get; set; } = [];
+}
