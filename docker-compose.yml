@@ -3,8 +3,6 @@ services:
   # Infrastructure Services
   postgres:
     image: postgres:15-alpine
-    env_file:
-      - ./docker-compose.env
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -20,15 +18,13 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - comedypull-dev
+      - stageside-dev
     profiles:
       - infrastructure
       - services
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    env_file:
-      - ./docker-compose.env
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-admin}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-password}
@@ -43,15 +39,13 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - comedypull-dev
+      - stageside-dev
     profiles:
       - infrastructure
       - services
 
   seq:
     image: datalust/seq:latest
-    env_file:
-      - ./docker-compose.env
     environment:
       - ACCEPT_EULA=Y
       - SEQ_FIRSTRUN_ADMINPASSWORD=${SEQ_PASSWORD}
@@ -60,7 +54,7 @@ services:
     volumes:
       - seq_data:/data
     networks:
-      - comedypull-dev
+      - stageside-dev
     profiles:
       - infrastructure
       - services
@@ -81,7 +75,7 @@ services:
       rabbitmq:
         condition: service_healthy
     networks:
-      - comedypull-dev
+      - stageside-dev
     profiles:
       - services
   
@@ -100,7 +94,7 @@ services:
       rabbitmq:
         condition: service_healthy
     networks:
-      - comedypull-dev
+      - stageside-dev
     profiles:
       - services
     # Playwright-specific configuration
@@ -122,7 +116,7 @@ services:
       rabbitmq:
         condition: service_healthy
     networks:
-      - comedypull-dev
+      - stageside-dev
     profiles:
       - services
 
@@ -132,5 +126,5 @@ volumes:
   rabbitmq_data:
 
 networks:
-  comedypull-dev:
+  stageside-dev:
     driver: bridge
