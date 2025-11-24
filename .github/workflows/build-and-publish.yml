@@ -41,6 +41,9 @@ jobs:
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        service: [processing-service, scheduling-service, spa-collecting-service]
 
     steps:
       - name: Checkout repository
@@ -58,7 +61,8 @@ jobs:
       - name: Extract metadata
         id: meta
         run: |
-          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+          SERVICE_NAME="${{ matrix.service }}"
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${SERVICE_NAME}"
           TAGS=""
           LABELS=""
           
@@ -75,8 +79,8 @@ jobs:
           fi
           
           # Generate labels
-          LABELS="org.opencontainers.image.title=${{ github.repository }}"
-          LABELS="${LABELS},org.opencontainers.image.description=StageSide Pipeline Service"
+          LABELS="org.opencontainers.image.title=${{ github.repository }}-${SERVICE_NAME}"
+          LABELS="${LABELS},org.opencontainers.image.description=StageSide ${SERVICE_NAME}"
           LABELS="${LABELS},org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }}"
           LABELS="${LABELS},org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}"
           LABELS="${LABELS},org.opencontainers.image.version=${{ github.sha }}"
@@ -100,5 +104,5 @@ jobs:
             --cache-from type=gha \
             --cache-to type=gha,mode=max \
             ${PUSH_FLAG} \
-            -f apps/pipeline-service/Dockerfile \
+            -f apps/${{ matrix.service }}/Dockerfile \
             .
