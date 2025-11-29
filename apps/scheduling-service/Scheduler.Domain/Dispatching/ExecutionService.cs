@@ -62,7 +62,7 @@ namespace StageSide.Scheduler.Domain.Dispatching
                     schedule.NextExecution = nextExecution.Value;
                 }
                 
-                schedule.LastExecuted = now;
+                schedule.LastExecution = now;
                 schedule.UpdatedAt = now;
                 schedule.UpdatedBy = "System";
                 session.Schedules.Update(schedule);

@@ -8,7 +8,9 @@ public record Sku : AuditableEntity
     public required Guid SourceId { get; set; }
     public string Name { get; set; }
     public required SkuType Type { get; set; }
+    public bool IsActive { get; set; } = true;
     
     // Navigation properties
+    public Source Source { get; set; }
     public ICollection<Schedule> Schedules { get; set; } = []!;
 }

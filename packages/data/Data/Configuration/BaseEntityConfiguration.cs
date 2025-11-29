@@ -16,17 +16,21 @@ namespace StageSide.Data.Configuration
         public virtual void Configure(EntityTypeBuilder<T> builder)
         {
             builder.Property(e => e.CreatedAt)
+	            .HasColumnName("created_at")
                 .HasDefaultValueSql("NOW()")
                 .IsRequired();
 
             builder.Property(e => e.CreatedBy)
+	            .HasColumnName("created_by")
                 .IsRequired();
             
             builder.Property(e => e.UpdatedAt)
+	            .HasColumnName("updated_at")
                 .HasDefaultValueSql("NOW()")
                 .IsRequired();
 
             builder.Property(e => e.UpdatedBy)
+	            .HasColumnName("updated_by")
                 .IsRequired();
         }
     }

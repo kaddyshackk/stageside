@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StageSide.Data.Configuration;
 using StageSide.Scheduler.Domain.Models;
 
-namespace StageSide.Scheduler.Data.Database.Configurations;
+namespace StageSide.Scheduler.Data.Database.SchedulingDb.Configurations;
 
 public class SourceConfiguration : BaseEntityConfiguration<Source>
 {
@@ -11,16 +11,26 @@ public class SourceConfiguration : BaseEntityConfiguration<Source>
     {
         base.Configure(builder);
 
-        builder.ToTable("Sources");
+        builder.ToTable("sources");
         
         builder.HasKey(s => s.Id);
         
+        builder.Property(s => s.Id)
+	        .HasColumnName("id");
+        
         builder.Property(s => s.Name)
-            .HasMaxLength(100)
+	        .HasColumnName("name")
+            .HasMaxLength(255)
             .IsRequired();
         
         builder.Property(s => s.Website)
+	        .HasColumnName("website")
             .HasMaxLength(255)
             .IsRequired();
+        
+        builder.Property(x => x.IsActive)
+	        .HasColumnName("is_active")
+	        .HasDefaultValue(true)
+	        .IsRequired();
     }
 }

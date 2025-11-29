@@ -9,9 +9,9 @@ namespace StageSide.Scheduler.Domain.Models
         public required Guid SkuId { get; init; }
         public required string Name { get; set; }
         public string? CronExpression { get; set; }
-        public required bool IsActive { get; set; }
         public required DateTimeOffset NextExecution { get; set; }
-        public DateTimeOffset? LastExecuted { get; set; }
+        public DateTimeOffset? LastExecution { get; set; }
+        public required bool IsActive { get; set; }
 
         public Source Source { get; set; } = null!;
         public Sku Sku { get; set; } = null!;

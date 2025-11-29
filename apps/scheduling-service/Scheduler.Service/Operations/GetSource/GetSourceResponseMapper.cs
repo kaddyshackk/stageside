@@ -6,6 +6,8 @@ namespace StageSide.Scheduler.Service.Operations.GetSource
     [Mapper]
     public partial class GetSourceResponseMapper
     {
+	    [MapperIgnoreSource("IsActive")]
+	    [MapperIgnoreSource("Schedules")]
         [MapperIgnoreSource("CreatedAt")]
         [MapperIgnoreSource("CreatedBy")]
         [MapperIgnoreSource("UpdatedAt")]
@@ -13,6 +15,8 @@ namespace StageSide.Scheduler.Service.Operations.GetSource
         public partial GetSourceResponse MapToResponse(Source source);
 
         [MapperIgnoreSource("SourceId")]
+        [MapperIgnoreSource("IsActive")]
+        [MapperIgnoreSource("Source")]
         [MapperIgnoreSource("Schedules")]
         [MapperIgnoreSource("CreatedAt")]
         [MapperIgnoreSource("CreatedBy")]

@@ -39,6 +39,8 @@ app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.MapEndpoints(typeof(Program).Assembly);
 
+app.Services.RunMigrations();
+
 app.Run();
 
 return 0;
