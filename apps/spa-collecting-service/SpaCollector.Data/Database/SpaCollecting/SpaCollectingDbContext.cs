@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using StageSide.Data.Database;
 using StageSide.SpaCollector.Data.Database.SpaCollecting.Configurations;
 using StageSide.SpaCollector.Domain.Models;
 
 namespace StageSide.SpaCollector.Data.Database.SpaCollecting;
 
-public class SpaCollectingDbContext(DbContextOptions<SpaCollectingDbContext> options) : DbContext(options)
+public class SpaCollectingDbContext(DbContextOptions<SpaCollectingDbContext> options) : BaseDbContext(options)
 {
     public DbSet<Sitemap> Sitemaps { get; set; }
     public DbSet<SpaConfig> SpaCollectionConfigs { get; set; }
@@ -12,7 +13,7 @@ public class SpaCollectingDbContext(DbContextOptions<SpaCollectingDbContext> opt
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-            
+	    
         modelBuilder.ApplyConfiguration(new SitemapConfiguration());
         modelBuilder.ApplyConfiguration(new SpaConfigConfiguration());
     }

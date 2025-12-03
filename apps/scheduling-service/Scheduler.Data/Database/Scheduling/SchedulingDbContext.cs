@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using StageSide.Data.Database;
 using StageSide.Scheduler.Data.Database.Scheduling.Configurations;
 using StageSide.Scheduler.Domain.Models;
 
 namespace StageSide.Scheduler.Data.Database.Scheduling
 {
-    public class SchedulingDbContext(DbContextOptions<SchedulingDbContext> options) : DbContext(options)
+    public class SchedulingDbContext(DbContextOptions<SchedulingDbContext> options) : BaseDbContext(options)
     {
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<Job> Jobs { get; set; }

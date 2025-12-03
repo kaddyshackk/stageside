@@ -11,15 +11,15 @@ namespace StageSide.SpaCollector.Data.Database.SpaCollecting.Configurations
         {
             base.Configure(builder);
 
-            builder.ToTable("Sitemaps");
+            builder.ToTable("sitemaps");
 
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Id)
 	            .HasColumnName("id");
             
-            builder.Property(x => x.SkuId)
-	            .HasColumnName("sku_id")
+            builder.Property(x => x.SpaConfigId)
+	            .HasColumnName("spa_config_id")
                 .IsRequired();
             
             builder.Property(x => x.Url)
@@ -35,6 +35,11 @@ namespace StageSide.SpaCollector.Data.Database.SpaCollecting.Configurations
 	            .HasColumnName("is_active")
                 .HasDefaultValue(true)
                 .IsRequired();
+            
+            builder.HasOne(x => x.SpaConfig)
+	            .WithMany(x => x.Sitemaps)
+	            .HasForeignKey(x => x.SpaConfigId)
+	            .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

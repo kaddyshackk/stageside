@@ -20,7 +20,7 @@ public static class DataExtensions
         // Context
         services.AddDbContextFactory<SpaCollectingDbContext>((_, options) =>
         {
-            DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration, "ComedyDb");
+            DbContextConfigurationUtil.ConfigureDbContextOptionsBuilder(options, configuration, "SpaCollectingDb");
         });
         services.AddScoped<ISpaCollectingDbContextSession, SpaCollectingDbContextSession>();
         

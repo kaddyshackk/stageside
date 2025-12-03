@@ -12,6 +12,7 @@ namespace StageSide.SpaCollector.Service.Operations.CreateSpaConfig
         [MapperIgnoreSource("UpdatedBy")]
         public partial CreateSpaConfigResponse MapToResponse(SpaConfig config);
 
+        [MapperIgnoreSource("SpaConfig")]
         [MapperIgnoreSource("IsActive")]
         [MapperIgnoreSource("CreatedAt")]
         [MapperIgnoreSource("CreatedBy")]
