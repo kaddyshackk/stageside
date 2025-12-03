@@ -7,6 +7,8 @@ namespace StageSide.Scheduler.Service.Operations.CreateSource
     public partial class CreateSourceResponseMapper
     {
         [MapperIgnoreSource("Skus")]
+        [MapperIgnoreSource("Schedules")]
+        [MapperIgnoreSource("IsActive")]
         [MapperIgnoreSource("CreatedBy")]
         [MapperIgnoreSource("CreatedAt")]
         [MapperIgnoreSource("UpdatedBy")]

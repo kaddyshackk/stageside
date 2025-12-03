@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using StageSide.SpaCollector.Data.Database.Configurations;
+using StageSide.SpaCollector.Data.Database.SpaCollecting.Configurations;
 using StageSide.SpaCollector.Domain.Models;
 
-namespace StageSide.SpaCollector.Data.Database;
+namespace StageSide.SpaCollector.Data.Database.SpaCollecting;
 
 public class SpaCollectingDbContext(DbContextOptions<SpaCollectingDbContext> options) : DbContext(options)
 {

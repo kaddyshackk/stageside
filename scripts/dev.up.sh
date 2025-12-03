@@ -18,25 +18,12 @@ until docker compose ps rabbitmq | grep -q "healthy"; do
 done
 
 echo "> Infrastructure services are ready"
-echo "> Applying migrations"
 
-# scheduling-service
-echo "  Applying scheduling-service migrations..."
-source "$SCRIPT_DIR/ef.sh" apps/scheduling-service/.env database update --project apps/scheduling-service/Scheduler.Data --context SchedulingDbContext
-
-# spa-collecting-service
-echo "  Applying spa-collecting-service migrations..."
-source "$SCRIPT_DIR/ef.sh" apps/spa-collecting-service/.env database update --project apps/spa-collecting-service/SpaCollector.Data --context SpaCollectingDbContext
-
-# processing-service
-echo "  Applying processing-service migrations..."
-source "$SCRIPT_DIR/ef.sh" apps/processing-service/.env database update --project apps/processing-service/Processor.Data --context ComedyDbContext
-
-echo "> Migrations completed"
 echo "> Starting microservices (scheduling, spa-collecting, processing)"
 docker compose --env-file .env --profile services up -d --build
 
 echo "> All services started successfully!"
+
 echo "> Access points:"
 echo "  - Scheduling Service: http://localhost:5281"
 echo "  - SPA Collecting Service: http://localhost:5282"

@@ -2,6 +2,25 @@
   "version": 2,
   "dependencies": {
     "net9.0": {
+      "dbup-core": {
+        "type": "Direct",
+        "requested": "[6.0.15, )",
+        "resolved": "6.0.15",
+        "contentHash": "w0eaoyVitzgBiHTILEnj23smrbrxZ1nLF7K8uOyG6rvrctRtC0NTuSYHoB/3aq+B9hi9E/DiW9pOtNto5V9P3g==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0"
+        }
+      },
+      "dbup-postgresql": {
+        "type": "Direct",
+        "requested": "[6.1.5, )",
+        "resolved": "6.1.5",
+        "contentHash": "oIqxqC8f2j6/VLsvzV971sOcTugytrU2sot29GlBFMJQmnkBn3S15mSgA4Qt6fOx9sdbf2rp9yGUtvocBlKu3A==",
+        "dependencies": {
+          "Npgsql": "9.0.4",
+          "dbup-core": "6.0.15"
+        }
+      },
       "Microsoft.EntityFrameworkCore": {
         "type": "Direct",
         "requested": "[9.0.0, )",
@@ -333,8 +352,8 @@
       },
       "Npgsql": {
         "type": "Transitive",
-        "resolved": "9.0.2",
-        "contentHash": "hCbO8box7i/XXiTFqCJ3GoowyLqx3JXxyrbOJ6om7dr+eAknvBNhhUHeJVGAQo44sySZTfdVffp4BrtPeLZOAA==",
+        "resolved": "9.0.4",
+        "contentHash": "68BASXH0FAEuL/J4J0eRfYC8/3vzqQTmoW8zDzNf0JgaVxc7LZeEkS6jaG0ib3voFLxY5ZiCwJG+uQM+mzuu0Q==",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
         }

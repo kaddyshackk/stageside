@@ -3,7 +3,7 @@ using StageSide.Data.Database;
 using StageSide.Scheduler.Domain.Database;
 using StageSide.Scheduler.Domain.Models;
 
-namespace StageSide.Scheduler.Data.Database
+namespace StageSide.Scheduler.Data.Database.Scheduling
 {
     public class SchedulingDbContextSession(SchedulingDbContext context) : ISchedulingDbContextSession
     {
