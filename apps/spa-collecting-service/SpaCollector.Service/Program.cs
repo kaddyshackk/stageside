@@ -48,6 +48,7 @@ app.UseSerilogRequestLogging();
 app.MapEndpoints(typeof(Program).Assembly);
 app.Services.ConfigureQueue()
     .LogQueuedTaskProgress(app.Services.GetRequiredService<ILogger<IQueue>>());
+app.Services.RunMigrations();
 
 app.Run();
 

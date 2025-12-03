@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using StageSide.Scheduler.Data.Database.SchedulingDb.Configurations;
+using StageSide.Scheduler.Data.Database.Scheduling.Configurations;
 using StageSide.Scheduler.Domain.Models;
 
-namespace StageSide.Scheduler.Data.Database.SchedulingDb
+namespace StageSide.Scheduler.Data.Database.Scheduling
 {
     public class SchedulingDbContext(DbContextOptions<SchedulingDbContext> options) : DbContext(options)
     {

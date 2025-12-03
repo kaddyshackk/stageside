@@ -3,7 +3,7 @@ using StageSide.Data.Database;
 using StageSide.SpaCollector.Domain.Database;
 using StageSide.SpaCollector.Domain.Models;
 
-namespace StageSide.SpaCollector.Data.Database;
+namespace StageSide.SpaCollector.Data.Database.SpaCollecting;
 
 public class SpaCollectingDbContextSession(SpaCollectingDbContext context) : ISpaCollectingDbContextSession
 {

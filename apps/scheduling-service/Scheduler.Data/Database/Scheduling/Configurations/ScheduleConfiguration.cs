@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StageSide.Data.Configuration;
 using StageSide.Scheduler.Domain.Models;
 
-namespace StageSide.Scheduler.Data.Database.SchedulingDb.Configurations
+namespace StageSide.Scheduler.Data.Database.Scheduling.Configurations
 {
     public class ScheduleConfiguration : BaseEntityConfiguration<Schedule>
     {
@@ -57,8 +57,11 @@ namespace StageSide.Scheduler.Data.Database.SchedulingDb.Configurations
 	            .HasForeignKey(s => s.SourceId)
 	            .OnDelete(DeleteBehavior.Cascade);
             
-            builder.HasIndex(x => x.NextExecution);
-            builder.HasIndex(x => new { x.IsActive, x.NextExecution });
+            builder.HasIndex(x => x.NextExecution)
+	            .HasDatabaseName("ix_schedules_nextexecution");
+            
+            builder.HasIndex(x => new { x.IsActive, x.NextExecution })
+	            .HasDatabaseName("ix_schedules_isactive_nextexecution");
         }
     }
 }

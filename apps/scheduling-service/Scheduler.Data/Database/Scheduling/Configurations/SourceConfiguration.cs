@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StageSide.Data.Configuration;
 using StageSide.Scheduler.Domain.Models;
 
-namespace StageSide.Scheduler.Data.Database.SchedulingDb.Configurations;
+namespace StageSide.Scheduler.Data.Database.Scheduling.Configurations;
 
 public class SourceConfiguration : BaseEntityConfiguration<Source>
 {

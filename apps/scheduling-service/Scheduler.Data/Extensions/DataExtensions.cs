@@ -2,7 +2,7 @@ using System.Reflection;
 using DbUp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using StageSide.Scheduler.Data.Database.SchedulingDb;
+using StageSide.Scheduler.Data.Database.Scheduling;
 using StageSide.Scheduler.Data.Utils;
 using StageSide.Scheduler.Domain.Database;
 
