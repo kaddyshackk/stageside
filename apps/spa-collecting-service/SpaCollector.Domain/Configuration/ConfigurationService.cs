@@ -17,12 +17,27 @@ public class ConfigurationService(ISpaCollectingDbContextSession session, ILogge
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.SkuId == command.SkuId, ct);
             if (existing != null) throw new ArgumentException($"Collection configuration for sku {existing.SkuId} already exists");
-
+            
             var config = new SpaConfig
             {
                 SkuId = command.SkuId,
+                MaxConcurrency = command.MaxConcurrency,
+                UserAgent = command.UserAgent,
+                CreatedBy = "System",
+                UpdatedBy = "System"
             };
             await session.SpaConfigs.AddAsync(config, ct);
+
+            var sitemaps = command.Sitemaps.Select(x => new Sitemap
+            {
+	            SpaConfigId = config.Id,
+	            Url = x.Url,
+	            RegexFilter = x.RegexFilter,
+	            CreatedBy = "System",
+	            UpdatedBy = "System"
+            });
+            await session.Sitemaps.AddRangeAsync(sitemaps, ct);
+            
             await session.SaveChangesAsync(ct);
 
             return config;

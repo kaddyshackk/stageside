@@ -26,7 +26,7 @@ namespace StageSide.Scheduler.Service.Operations.CreateSku
             var sku = await scheduling.CreateSkuAsync(command, ct);
             if (sku == null) return TypedResults.BadRequest("Failed to create sku");
             var response = new CreateSkuResponseMapper().MapToResponse(sku);
-            return TypedResults.Created($"/api/sources/${response.SourceId}/skus/{response.Id}", response);
+            return TypedResults.Created($"/api/sources/{response.SourceId}/skus/{response.Id}", response);
         }
     }
 }

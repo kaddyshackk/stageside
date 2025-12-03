@@ -11,6 +11,7 @@ namespace StageSide.SpaCollector.Service.Operations.CreateSpaConfig
         public required int MaxConcurrency { get; init; }
         [Required]
         public string? UserAgent { get; init; }
-        public ICollection<CreateSpaConfigSitemapDto> Sitemaps { get; set; }
+
+        public ICollection<CreateSpaConfigSitemapDto> Sitemaps { get; set; } = []!;
     }
 }
